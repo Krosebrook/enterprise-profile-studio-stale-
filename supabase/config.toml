@@ -1,1 +1,7 @@
 project_id = "hrjqmgbmbzregowdepac"
+
+[functions.generate-profile-content]
+verify_jwt = false
+
+[functions.track-analytics]
+verify_jwt = false
