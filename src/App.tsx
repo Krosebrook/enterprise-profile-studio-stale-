@@ -12,6 +12,9 @@ import ProfileEditPage from "./pages/ProfileEditPage";
 import ProfilePreviewPage from "./pages/ProfilePreviewPage";
 import PublicProfilePage from "./pages/PublicProfilePage";
 import AnalyticsDashboardPage from "./pages/AnalyticsDashboardPage";
+import KnowledgeBasePage from "./pages/KnowledgeBasePage";
+import KnowledgeDocumentPage from "./pages/KnowledgeDocumentPage";
+import KnowledgeEditorPage from "./pages/KnowledgeEditorPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +32,10 @@ const App = () => (
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/analytics" element={<AnalyticsDashboardPage />} />
+            <Route path="/knowledge" element={<KnowledgeBasePage />} />
+            <Route path="/knowledge/new" element={<KnowledgeEditorPage />} />
+            <Route path="/knowledge/:slug" element={<KnowledgeDocumentPage />} />
+            <Route path="/knowledge/:slug/edit" element={<KnowledgeEditorPage />} />
             <Route path="/profile/:id/edit" element={<ProfileEditPage />} />
             <Route path="/profile/:id/preview" element={<ProfilePreviewPage />} />
             <Route path="/p/:slug" element={<PublicProfilePage />} />

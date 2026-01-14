@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { Building2, LogOut, LayoutDashboard } from 'lucide-react';
+import { Building2, LogOut, LayoutDashboard, BookOpen, BarChart3 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,13 +30,25 @@ export function Navbar() {
           <span>ProfileBuilder</span>
         </Link>
 
-        <nav className="flex items-center gap-4">
+        <nav className="flex items-center gap-2">
           {user ? (
             <>
-              <Button variant="ghost" asChild>
+              <Button variant="ghost" size="sm" asChild>
                 <Link to="/dashboard">
                   <LayoutDashboard className="mr-2 h-4 w-4" />
                   Dashboard
+                </Link>
+              </Button>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/knowledge">
+                  <BookOpen className="mr-2 h-4 w-4" />
+                  Knowledge
+                </Link>
+              </Button>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/analytics">
+                  <BarChart3 className="mr-2 h-4 w-4" />
+                  Analytics
                 </Link>
               </Button>
               <DropdownMenu>
