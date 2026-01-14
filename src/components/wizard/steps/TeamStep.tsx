@@ -4,8 +4,16 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, Plus, Trash2, UserCircle } from 'lucide-react';
+import { ImageUpload } from '@/components/ui/ImageUpload';
+import { Users, Plus, Trash2, UserCircle, Camera } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 interface TeamMember {
   id: string;
@@ -29,6 +37,7 @@ export function TeamStep({ data, onChange }: TeamStepProps) {
     avatarUrl: '',
     linkedin: '',
   });
+  const [editingPhotoId, setEditingPhotoId] = useState<string | null>(null);
 
   const addMember = () => {
     if (!newMember.name.trim() || !newMember.role.trim()) return;
@@ -81,12 +90,36 @@ export function TeamStep({ data, onChange }: TeamStepProps) {
                   </Button>
                   
                   <div className="flex items-start gap-4">
-                    <Avatar className="h-14 w-14">
-                      <AvatarImage src={member.avatarUrl} alt={member.name} />
-                      <AvatarFallback className="bg-primary/10 text-primary">
-                        {member.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
+                    <Dialog open={editingPhotoId === member.id} onOpenChange={(open) => setEditingPhotoId(open ? member.id : null)}>
+                      <DialogTrigger asChild>
+                        <button className="group/avatar relative">
+                          <Avatar className="h-14 w-14">
+                            <AvatarImage src={member.avatarUrl} alt={member.name} />
+                            <AvatarFallback className="bg-primary/10 text-primary">
+                              {member.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity group-hover/avatar:opacity-100">
+                            <Camera className="h-5 w-5 text-white" />
+                          </div>
+                        </button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Upload Photo for {member.name}</DialogTitle>
+                        </DialogHeader>
+                        <ImageUpload
+                          value={member.avatarUrl || ''}
+                          onChange={(url) => {
+                            updateMember(member.id, { avatarUrl: url });
+                            setEditingPhotoId(null);
+                          }}
+                          folder="team-photos"
+                          aspectRatio="square"
+                          placeholder="Upload team member photo"
+                        />
+                      </DialogContent>
+                    </Dialog>
                     <div className="flex-1 space-y-2">
                       <Input
                         placeholder="Name"
@@ -98,6 +131,12 @@ export function TeamStep({ data, onChange }: TeamStepProps) {
                         placeholder="Role / Title"
                         value={member.role}
                         onChange={(e) => updateMember(member.id, { role: e.target.value })}
+                        className="text-sm"
+                      />
+                      <Input
+                        placeholder="LinkedIn URL"
+                        value={member.linkedin || ''}
+                        onChange={(e) => updateMember(member.id, { linkedin: e.target.value })}
                         className="text-sm"
                       />
                     </div>
@@ -114,58 +153,60 @@ export function TeamStep({ data, onChange }: TeamStepProps) {
               Add Team Member
             </h4>
             <div className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="memberName">Name *</Label>
-                  <Input
-                    id="memberName"
-                    placeholder="John Doe"
-                    value={newMember.name}
-                    onChange={(e) => setNewMember({ ...newMember, name: e.target.value })}
+              <div className="flex items-start gap-4">
+                <div className="shrink-0">
+                  <ImageUpload
+                    value={newMember.avatarUrl || ''}
+                    onChange={(url) => setNewMember({ ...newMember, avatarUrl: url })}
+                    folder="team-photos"
+                    aspectRatio="square"
+                    placeholder="Photo"
+                    className="w-24"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="memberRole">Role / Title *</Label>
-                  <Input
-                    id="memberRole"
-                    placeholder="CEO, CTO, etc."
-                    value={newMember.role}
-                    onChange={(e) => setNewMember({ ...newMember, role: e.target.value })}
-                  />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="memberBio">Short Bio</Label>
-                <Textarea
-                  id="memberBio"
-                  placeholder="Brief background and expertise..."
-                  value={newMember.bio}
-                  onChange={(e) => setNewMember({ ...newMember, bio: e.target.value })}
-                  rows={2}
-                />
-              </div>
+                <div className="flex-1 space-y-3">
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="memberName">Name *</Label>
+                      <Input
+                        id="memberName"
+                        placeholder="John Doe"
+                        value={newMember.name}
+                        onChange={(e) => setNewMember({ ...newMember, name: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="memberRole">Role / Title *</Label>
+                      <Input
+                        id="memberRole"
+                        placeholder="CEO, CTO, etc."
+                        value={newMember.role}
+                        onChange={(e) => setNewMember({ ...newMember, role: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="memberBio">Short Bio</Label>
+                    <Textarea
+                      id="memberBio"
+                      placeholder="Brief background and expertise..."
+                      value={newMember.bio}
+                      onChange={(e) => setNewMember({ ...newMember, bio: e.target.value })}
+                      rows={2}
+                    />
+                  </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="memberAvatar">Avatar URL</Label>
-                  <Input
-                    id="memberAvatar"
-                    type="url"
-                    placeholder="https://..."
-                    value={newMember.avatarUrl}
-                    onChange={(e) => setNewMember({ ...newMember, avatarUrl: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="memberLinkedin">LinkedIn</Label>
-                  <Input
-                    id="memberLinkedin"
-                    type="url"
-                    placeholder="https://linkedin.com/in/..."
-                    value={newMember.linkedin}
-                    onChange={(e) => setNewMember({ ...newMember, linkedin: e.target.value })}
-                  />
+                  <div className="space-y-2">
+                    <Label htmlFor="memberLinkedin">LinkedIn</Label>
+                    <Input
+                      id="memberLinkedin"
+                      type="url"
+                      placeholder="https://linkedin.com/in/..."
+                      value={newMember.linkedin}
+                      onChange={(e) => setNewMember({ ...newMember, linkedin: e.target.value })}
+                    />
+                  </div>
                 </div>
               </div>
 

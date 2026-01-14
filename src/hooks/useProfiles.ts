@@ -142,6 +142,7 @@ export function useDeleteProfile() {
 
 export function usePublishProfile() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async (id: string) => {
@@ -156,6 +157,25 @@ export function usePublishProfile() {
         .single();
 
       if (error) throw error;
+      
+      // Send notification email
+      if (user?.email && data) {
+        try {
+          await supabase.functions.invoke('send-notification', {
+            body: {
+              type: 'profile_published',
+              profileId: data.id,
+              profileName: data.name,
+              recipientEmail: user.email,
+              profileSlug: data.slug,
+            },
+          });
+        } catch (e) {
+          console.error('Failed to send notification:', e);
+          // Don't fail the publish if notification fails
+        }
+      }
+      
       return data as EnterpriseProfile;
     },
     onSuccess: (data) => {

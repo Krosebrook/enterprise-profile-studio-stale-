@@ -11,6 +11,7 @@ import DashboardPage from "./pages/DashboardPage";
 import ProfileEditPage from "./pages/ProfileEditPage";
 import ProfilePreviewPage from "./pages/ProfilePreviewPage";
 import PublicProfilePage from "./pages/PublicProfilePage";
+import AnalyticsDashboardPage from "./pages/AnalyticsDashboardPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/analytics" element={<AnalyticsDashboardPage />} />
             <Route path="/profile/:id/edit" element={<ProfileEditPage />} />
             <Route path="/profile/:id/preview" element={<ProfilePreviewPage />} />
             <Route path="/p/:slug" element={<PublicProfilePage />} />

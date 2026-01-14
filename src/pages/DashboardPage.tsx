@@ -1,11 +1,12 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { Navbar } from '@/components/layout/Navbar';
 import { ProfileCard } from '@/components/dashboard/ProfileCard';
 import { CreateProfileDialog } from '@/components/dashboard/CreateProfileDialog';
+import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfiles, useDeleteProfile } from '@/hooks/useProfiles';
-import { Building2, Loader2 } from 'lucide-react';
+import { Building2, Loader2, BarChart3 } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,7 +17,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { useState } from 'react';
 
 export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth();
@@ -59,7 +59,15 @@ export default function DashboardPage() {
                 Manage your enterprise profiles
               </p>
             </div>
-            <CreateProfileDialog />
+            <div className="flex items-center gap-3">
+              <Button variant="outline" asChild>
+                <Link to="/analytics">
+                  <BarChart3 className="mr-2 h-4 w-4" />
+                  Analytics
+                </Link>
+              </Button>
+              <CreateProfileDialog />
+            </div>
           </div>
 
           {/* Profiles Grid */}
