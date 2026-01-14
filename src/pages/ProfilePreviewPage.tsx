@@ -1,5 +1,5 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,10 +7,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile, usePublishProfile } from '@/hooks/useProfiles';
+import { generateProfilePDF } from '@/lib/pdf-generator';
 import { 
   Loader2, 
   ArrowLeft, 
-  Edit, 
   Globe, 
   ExternalLink,
   Building2,
@@ -31,6 +31,7 @@ export default function ProfilePreviewPage() {
   const { user, loading: authLoading } = useAuth();
   const { data: profile, isLoading: profileLoading, error } = useProfile(id);
   const publishProfile = usePublishProfile();
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -56,6 +57,27 @@ export default function ProfilePreviewPage() {
     } else {
       toast.error('Publish your profile first to share it');
     }
+  };
+
+  const handleExportPDF = () => {
+    if (!profile || !contentRef.current) return;
+    
+    const companyInfo = profile.company_info || {};
+    const branding = profile.branding || {};
+    const services = profile.services || [];
+    const team = profile.team || [];
+    const compliance = profile.compliance || {};
+
+    generateProfilePDF({
+      name: profile.name,
+      companyInfo,
+      branding,
+      services,
+      team,
+      compliance,
+    });
+
+    toast.success('PDF export started! Check your downloads.');
   };
 
   if (authLoading || profileLoading) {
@@ -108,7 +130,7 @@ export default function ProfilePreviewPage() {
                 <Share2 className="mr-2 h-4 w-4" />
                 Share
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={handleExportPDF}>
                 <Download className="mr-2 h-4 w-4" />
                 Export PDF
               </Button>
@@ -129,7 +151,7 @@ export default function ProfilePreviewPage() {
         </div>
 
         {/* Profile Content */}
-        <div className="container max-w-4xl py-8">
+        <div ref={contentRef} className="container max-w-4xl py-8">
           {/* Header */}
           <div 
             className="relative mb-8 overflow-hidden rounded-2xl p-8"

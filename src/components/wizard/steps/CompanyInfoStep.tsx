@@ -2,6 +2,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { AIGenerateButton } from '@/components/ui/AIGenerateButton';
 import { Building2, Globe, MapPin, Phone, Mail } from 'lucide-react';
 
 interface CompanyInfoStepProps {
@@ -12,6 +13,10 @@ interface CompanyInfoStepProps {
 export function CompanyInfoStep({ data, onChange }: CompanyInfoStepProps) {
   const handleChange = (field: string, value: string) => {
     onChange({ ...data, [field]: value });
+  };
+
+  const handleAIGenerate = (field: string, value: string) => {
+    handleChange(field, value);
   };
 
   return (
@@ -38,7 +43,19 @@ export function CompanyInfoStep({ data, onChange }: CompanyInfoStepProps) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="tagline">Tagline</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="tagline">Tagline</Label>
+                <AIGenerateButton
+                  type="tagline"
+                  context={{
+                    companyName: data.companyName,
+                    industry: data.industry,
+                    description: data.description,
+                  }}
+                  onGenerate={(value) => handleAIGenerate('tagline', value)}
+                  disabled={!data.companyName}
+                />
+              </div>
               <Input
                 id="tagline"
                 placeholder="Innovation for tomorrow"
@@ -49,7 +66,19 @@ export function CompanyInfoStep({ data, onChange }: CompanyInfoStepProps) {
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="description">Company Description *</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="description">Company Description *</Label>
+              <AIGenerateButton
+                type="description"
+                context={{
+                  companyName: data.companyName,
+                  industry: data.industry,
+                  tagline: data.tagline,
+                }}
+                onGenerate={(value) => handleAIGenerate('description', value)}
+                disabled={!data.companyName}
+              />
+            </div>
             <Textarea
               id="description"
               placeholder="Tell us about your company, mission, and values..."

@@ -1,4 +1,11 @@
-import { EnterpriseProfile } from '@/hooks/useProfiles';
+interface ProfileData {
+  name: string;
+  companyInfo: Record<string, any>;
+  branding: Record<string, any>;
+  services: any[];
+  team: any[];
+  compliance: Record<string, any>;
+}
 
 interface CertificationLabels {
   [key: string]: string;
@@ -13,12 +20,8 @@ const certificationLabels: CertificationLabels = {
   ccpa: 'CCPA',
 };
 
-export async function generateProfilePDF(profile: EnterpriseProfile): Promise<Blob> {
-  const companyInfo = profile.company_info || {};
-  const branding = profile.branding || {};
-  const services = profile.services || [];
-  const team = profile.team || [];
-  const compliance = profile.compliance || {};
+export function generateProfilePDF(profileData: ProfileData): void {
+  const { name, companyInfo, branding, services, team, compliance } = profileData;
 
   // Build HTML content for the PDF
   const htmlContent = `
@@ -26,6 +29,7 @@ export async function generateProfilePDF(profile: EnterpriseProfile): Promise<Bl
 <html>
 <head>
   <meta charset="UTF-8">
+  <title>${companyInfo.companyName || name} - Enterprise Profile</title>
   <style>
     * {
       margin: 0;
@@ -126,11 +130,6 @@ export async function generateProfilePDF(profile: EnterpriseProfile): Promise<Bl
       background: #f8f9fa;
       border-radius: 8px;
     }
-    .contact-icon {
-      width: 20px;
-      height: 20px;
-      color: ${branding.primaryColor || '#3B82F6'};
-    }
     .services-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -201,6 +200,11 @@ export async function generateProfilePDF(profile: EnterpriseProfile): Promise<Bl
       font-size: 12px;
       color: #999;
     }
+    @media print {
+      body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .header { break-inside: avoid; }
+      .section { break-inside: avoid; }
+    }
   </style>
 </head>
 <body>
@@ -211,7 +215,7 @@ export async function generateProfilePDF(profile: EnterpriseProfile): Promise<Bl
           ${branding.logoUrl ? `<img src="${branding.logoUrl}" alt="Logo">` : '🏢'}
         </div>
         <div>
-          <div class="company-name">${companyInfo.companyName || profile.name}</div>
+          <div class="company-name">${companyInfo.companyName || name}</div>
           ${companyInfo.tagline ? `<div class="tagline">${companyInfo.tagline}</div>` : ''}
           <div class="badges">
             ${companyInfo.industry ? `<span class="badge">${companyInfo.industry}</span>` : ''}
@@ -291,26 +295,17 @@ export async function generateProfilePDF(profile: EnterpriseProfile): Promise<Bl
 </html>
   `;
 
-  // Create a blob with the HTML content
-  // For a real PDF, you would use a library like jsPDF or html2pdf
-  // Here we'll create a printable HTML that can be converted to PDF
+  // Create a blob and open in new window for printing
   const blob = new Blob([htmlContent], { type: 'text/html' });
-  return blob;
-}
-
-export function downloadProfilePDF(profile: EnterpriseProfile) {
-  generateProfilePDF(profile).then((blob) => {
-    // Open in new window for printing as PDF
-    const url = URL.createObjectURL(blob);
-    const printWindow = window.open(url, '_blank');
-    
-    if (printWindow) {
-      printWindow.onload = () => {
-        printWindow.print();
-      };
-    }
-    
-    // Clean up
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  });
+  const url = URL.createObjectURL(blob);
+  const printWindow = window.open(url, '_blank');
+  
+  if (printWindow) {
+    printWindow.onload = () => {
+      printWindow.print();
+    };
+  }
+  
+  // Clean up
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
 }

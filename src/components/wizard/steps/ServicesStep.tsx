@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { AIGenerateButton } from '@/components/ui/AIGenerateButton';
 import { Briefcase, Plus, Trash2, GripVertical } from 'lucide-react';
 
 interface Service {
@@ -16,9 +17,14 @@ interface Service {
 interface ServicesStepProps {
   data: Service[];
   onChange: (data: Service[]) => void;
+  companyContext?: {
+    companyName?: string;
+    industry?: string;
+    description?: string;
+  };
 }
 
-export function ServicesStep({ data, onChange }: ServicesStepProps) {
+export function ServicesStep({ data, onChange, companyContext }: ServicesStepProps) {
   const [newService, setNewService] = useState({ name: '', description: '' });
 
   const addService = () => {
@@ -40,6 +46,10 @@ export function ServicesStep({ data, onChange }: ServicesStepProps) {
 
   const updateService = (id: string, field: keyof Service, value: string) => {
     onChange(data.map(s => s.id === id ? { ...s, [field]: value } : s));
+  };
+
+  const handleAIGenerateDescription = (serviceId: string, serviceName: string, value: string) => {
+    updateService(serviceId, 'description', value);
   };
 
   return (
@@ -72,12 +82,25 @@ export function ServicesStep({ data, onChange }: ServicesStepProps) {
                         onChange={(e) => updateService(service.id, 'name', e.target.value)}
                         className="font-medium"
                       />
-                      <Textarea
-                        placeholder="Describe this service..."
-                        value={service.description}
-                        onChange={(e) => updateService(service.id, 'description', e.target.value)}
-                        rows={2}
-                      />
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-end">
+                          <AIGenerateButton
+                            type="service"
+                            context={{
+                              serviceName: service.name,
+                              ...companyContext,
+                            }}
+                            onGenerate={(value) => handleAIGenerateDescription(service.id, service.name, value)}
+                            disabled={!service.name}
+                          />
+                        </div>
+                        <Textarea
+                          placeholder="Describe this service..."
+                          value={service.description}
+                          onChange={(e) => updateService(service.id, 'description', e.target.value)}
+                          rows={2}
+                        />
+                      </div>
                     </div>
                     <Button
                       variant="ghost"

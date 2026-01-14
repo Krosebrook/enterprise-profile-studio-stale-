@@ -6,12 +6,13 @@ const corsHeaders = {
 };
 
 interface GenerateRequest {
-  type: 'company_description' | 'tagline' | 'service_description';
+  type: 'description' | 'tagline' | 'service';
   context: {
     companyName?: string;
     industry?: string;
     serviceName?: string;
-    existingDescription?: string;
+    description?: string;
+    tagline?: string;
     keywords?: string[];
   };
 }
@@ -33,14 +34,14 @@ serve(async (req) => {
     let userPrompt = "";
 
     switch (type) {
-      case 'company_description':
+      case 'description':
         systemPrompt = `You are a professional business copywriter specializing in enterprise company descriptions. 
 Write compelling, professional descriptions that highlight value propositions and establish credibility.
 Keep descriptions between 100-200 words. Use professional business language.
 Do not use overly promotional or salesy language. Focus on value and expertise.`;
         userPrompt = `Write a professional company description for ${context.companyName || 'a company'} in the ${context.industry || 'technology'} industry.
-${context.keywords?.length ? `Key themes to incorporate: ${context.keywords.join(', ')}` : ''}
-${context.existingDescription ? `Current description to improve upon: ${context.existingDescription}` : ''}`;
+${context.tagline ? `Company tagline: ${context.tagline}` : ''}
+${context.keywords?.length ? `Key themes to incorporate: ${context.keywords.join(', ')}` : ''}`;
         break;
 
       case 'tagline':
@@ -49,11 +50,11 @@ Create concise, impactful taglines that capture the essence of a company's value
 Keep taglines under 10 words. Make them memorable and distinctive.
 Avoid clichés and overused phrases.`;
         userPrompt = `Create a compelling tagline for ${context.companyName || 'a company'} in the ${context.industry || 'technology'} industry.
-${context.existingDescription ? `Company context: ${context.existingDescription.substring(0, 200)}` : ''}
+${context.description ? `Company context: ${context.description.substring(0, 200)}` : ''}
 Provide just the tagline, nothing else.`;
         break;
 
-      case 'service_description':
+      case 'service':
         systemPrompt = `You are a professional services copywriter.
 Write clear, compelling service descriptions that explain value to potential clients.
 Keep descriptions between 50-100 words. Focus on benefits and outcomes.
