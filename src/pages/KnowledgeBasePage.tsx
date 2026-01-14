@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
-import { Plus, Search, BookOpen, Loader2, PanelLeftClose, PanelLeft } from 'lucide-react';
+import { Plus, Search, BookOpen, Loader2, PanelLeftClose, PanelLeft, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function KnowledgeBasePage() {
@@ -70,7 +70,7 @@ export default function KnowledgeBasePage() {
           {/* Sidebar with folders */}
           <div
             className={cn(
-              'border-r border-border bg-muted/30 transition-all duration-300',
+              'border-r border-border/40 bg-muted/20 transition-all duration-300',
               sidebarOpen ? 'w-64' : 'w-0'
             )}
             onDrop={(e) => handleDrop(e, null)}
@@ -79,11 +79,14 @@ export default function KnowledgeBasePage() {
             {sidebarOpen && (
               <div className="p-4 h-full overflow-y-auto">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold text-sm text-foreground">Folders</h3>
+                  <div className="flex items-center gap-2">
+                    <span className="the-dot" />
+                    <h3 className="font-semibold text-sm text-foreground">Folders</h3>
+                  </div>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-6 w-6"
+                    className="h-7 w-7"
                     onClick={() => setSidebarOpen(false)}
                   >
                     <PanelLeftClose className="h-4 w-4" />
@@ -100,7 +103,7 @@ export default function KnowledgeBasePage() {
 
           {/* Main content */}
           <div className="flex-1 overflow-y-auto">
-            <div className="container mx-auto px-4 py-8">
+            <div className="container mx-auto px-6 py-8">
               {/* Header */}
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div className="flex items-center gap-4">
@@ -113,12 +116,12 @@ export default function KnowledgeBasePage() {
                       <PanelLeft className="h-4 w-4" />
                     </Button>
                   )}
-                  <div>
-                    <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
-                      <BookOpen className="h-8 w-8 text-primary" />
+                  <div className="pillar-border pl-4">
+                    <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
+                      <BookOpen className="h-6 w-6 text-primary" />
                       Knowledge Base
                     </h1>
-                    <p className="text-muted-foreground mt-1">
+                    <p className="text-muted-foreground text-sm mt-0.5">
                       Your team's documentation and wiki
                     </p>
                   </div>
@@ -126,7 +129,7 @@ export default function KnowledgeBasePage() {
                 <div className="flex gap-2">
                   <SeedDocumentsButton />
                   <ImportDocumentsDialog />
-                  <Button asChild>
+                  <Button asChild className="accent-gradient border-0 shadow-sm hover:shadow-md transition-shadow">
                     <Link to="/knowledge/new">
                       <Plus className="h-4 w-4 mr-2" />
                       New Document
@@ -135,7 +138,7 @@ export default function KnowledgeBasePage() {
                 </div>
               </div>
 
-              {/* Search and Filters */}
+              {/* Search */}
               <div className="flex flex-col md:flex-row gap-4 mb-6">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -143,18 +146,18 @@ export default function KnowledgeBasePage() {
                     placeholder="Search documents..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 border-border/60 focus:border-primary"
                   />
                 </div>
               </div>
 
               {/* Category Tabs */}
               <Tabs defaultValue="all" className="mb-6">
-                <TabsList className="flex-wrap h-auto gap-1">
+                <TabsList className="flex-wrap h-auto gap-1 bg-muted/50 p-1">
                   <TabsTrigger
                     value="all"
                     onClick={() => setSelectedCategory(null)}
-                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-sm"
                   >
                     All Documents
                   </TabsTrigger>
@@ -163,7 +166,7 @@ export default function KnowledgeBasePage() {
                       key={category}
                       value={category}
                       onClick={() => setSelectedCategory(category)}
-                      className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                      className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-sm"
                     >
                       {category}
                     </TabsTrigger>
@@ -173,22 +176,27 @@ export default function KnowledgeBasePage() {
 
               {/* Documents Grid */}
               {isLoading ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <div className="flex items-center justify-center py-16">
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="the-dot-lg animate-pulse-dot" />
+                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                  </div>
                 </div>
               ) : filteredDocuments?.length === 0 ? (
-                <div className="text-center py-12">
-                  <BookOpen className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium text-foreground mb-2">
+                <div className="text-center py-16">
+                  <div className="mb-6 mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
+                    <FileText className="h-8 w-8 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
                     {searchTerm || selectedCategory || selectedFolderId ? 'No documents found' : 'No documents yet'}
                   </h3>
-                  <p className="text-muted-foreground mb-4">
+                  <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
                     {searchTerm || selectedCategory || selectedFolderId
                       ? 'Try adjusting your search or filters'
                       : 'Create your first document to get started'}
                   </p>
                   {!searchTerm && !selectedCategory && !selectedFolderId && (
-                    <Button asChild>
+                    <Button asChild className="accent-gradient border-0">
                       <Link to="/knowledge/new">
                         <Plus className="h-4 w-4 mr-2" />
                         Create Document
@@ -210,15 +218,24 @@ export default function KnowledgeBasePage() {
 
               {/* Stats */}
               {documents && documents.length > 0 && (
-                <div className="mt-8 pt-8 border-t border-border">
-                  <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                    <span>{documents.length} total documents</span>
-                    <span>•</span>
-                    <span>{categories.length} categories</span>
-                    <span>•</span>
-                    <span>{folders.length} folders</span>
-                    <span>•</span>
-                    <span>{documents.filter((d) => d.is_public).length} public</span>
+                <div className="mt-8 pt-6 border-t border-border/40">
+                  <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      <span className="the-dot" />
+                      <span>{documents.length} documents</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-primary" />
+                      <span>{categories.length} categories</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-accent" />
+                      <span>{folders.length} folders</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-success" />
+                      <span>{documents.filter((d) => d.is_public).length} public</span>
+                    </div>
                   </div>
                 </div>
               )}

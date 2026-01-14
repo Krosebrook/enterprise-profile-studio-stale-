@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Navbar } from '@/components/layout/Navbar';
+import { Footer } from '@/components/layout/Footer';
 import { ProfileCard } from '@/components/dashboard/ProfileCard';
 import { CreateProfileDialog } from '@/components/dashboard/CreateProfileDialog';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfiles, useDeleteProfile } from '@/hooks/useProfiles';
-import { Building2, Loader2, BarChart3 } from 'lucide-react';
+import { Loader2, BarChart3, Plus, Sparkles } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,27 +41,33 @@ export default function DashboardPage() {
 
   if (authLoading || profilesLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <div className="the-dot-lg animate-pulse-dot" />
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        </div>
       </div>
     );
   }
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
-      <main className="min-h-screen bg-background pb-24 pt-24">
+      
+      <main className="flex-1 pt-20 pb-12">
         <div className="container">
           {/* Header */}
-          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h1 className="font-display text-3xl font-bold">Dashboard</h1>
-              <p className="mt-1 text-muted-foreground">
-                Manage your enterprise profiles
-              </p>
+          <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-4">
+              <div className="pillar-border-accent pl-4">
+                <h1 className="font-display text-3xl font-bold">Dashboard</h1>
+                <p className="mt-1 text-muted-foreground">
+                  Manage your enterprise profiles
+                </p>
+              </div>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="outline" asChild>
+              <Button variant="outline" size="sm" asChild className="border-border/60">
                 <Link to="/analytics">
                   <BarChart3 className="mr-2 h-4 w-4" />
                   Analytics
@@ -82,19 +89,41 @@ export default function DashboardPage() {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border bg-muted/30 py-24">
-              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
-                <Building2 className="h-8 w-8 text-primary" />
+            <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border bg-muted/20 py-20">
+              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent/10">
+                <Sparkles className="h-8 w-8 text-accent" />
               </div>
               <h3 className="mb-2 font-display text-xl font-semibold">No profiles yet</h3>
-              <p className="mb-6 text-muted-foreground">
-                Create your first enterprise profile to get started
+              <p className="mb-6 text-muted-foreground max-w-sm text-center">
+                Create your first enterprise profile to showcase your company
               </p>
               <CreateProfileDialog />
             </div>
           )}
+
+          {/* Stats Footer */}
+          {profiles && profiles.length > 0 && (
+            <div className="mt-8 pt-6 border-t border-border/40">
+              <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <span className="the-dot" />
+                  <span>{profiles.length} profile{profiles.length !== 1 ? 's' : ''}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-success" />
+                  <span>{profiles.filter(p => p.status === 'published').length} published</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-warning" />
+                  <span>{profiles.filter(p => p.status === 'draft').length} drafts</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </main>
+
+      <Footer />
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
@@ -116,6 +145,6 @@ export default function DashboardPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </div>
   );
 }
