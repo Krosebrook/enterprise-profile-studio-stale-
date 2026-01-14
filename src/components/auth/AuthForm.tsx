@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Building2, Loader2, Mail, Lock, User } from 'lucide-react';
+import { Loader2, Mail, Lock, User } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface AuthFormProps {
@@ -48,28 +48,33 @@ export function AuthForm({ mode }: AuthFormProps) {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4 py-12">
-      <Card className="w-full max-w-md animate-scale-in border-border/50 shadow-xl">
-        <CardHeader className="space-y-4 text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl primary-gradient shadow-glow">
-            <Building2 className="h-7 w-7 text-primary-foreground" />
+    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
+      {/* Background pattern */}
+      <div className="fixed inset-0 halftone-pattern opacity-30 pointer-events-none" />
+      
+      <Card className="relative w-full max-w-md animate-scale-in border-border/50 shadow-xl bg-card">
+        <CardHeader className="space-y-4 text-center pb-2">
+          <div className="mx-auto flex items-center justify-center gap-1">
+            <span className="font-display text-2xl font-bold">int</span>
+            <span className="the-dot-lg animate-pulse-dot" />
+            <span className="font-display text-2xl font-bold">nc</span>
           </div>
-          <div>
-            <CardTitle className="font-display text-2xl">
+          <div className="space-y-1">
+            <CardTitle className="font-display text-xl">
               {mode === 'login' ? 'Welcome back' : 'Create your account'}
             </CardTitle>
-            <CardDescription className="mt-2">
+            <CardDescription>
               {mode === 'login'
                 ? 'Sign in to access your enterprise profiles'
-                : 'Get started with ProfileBuilder today'}
+                : 'Get started with your enterprise profiles today'}
             </CardDescription>
           </div>
         </CardHeader>
         <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-4">
             {mode === 'signup' && (
               <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
+                <Label htmlFor="fullName" className="text-sm font-medium">Full Name</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
@@ -78,13 +83,13 @@ export function AuthForm({ mode }: AuthFormProps) {
                     placeholder="John Doe"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 border-border/60 focus:border-primary"
                   />
                 </div>
               </div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-sm font-medium">Email</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
@@ -94,12 +99,12 @@ export function AuthForm({ mode }: AuthFormProps) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="pl-10"
+                  className="pl-10 border-border/60 focus:border-primary"
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-sm font-medium">Password</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
@@ -110,15 +115,15 @@ export function AuthForm({ mode }: AuthFormProps) {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={6}
-                  className="pl-10"
+                  className="pl-10 border-border/60 focus:border-primary"
                 />
               </div>
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col gap-4">
+          <CardFooter className="flex flex-col gap-4 pt-2">
             <Button 
               type="submit" 
-              className="w-full primary-gradient border-0" 
+              className="w-full accent-gradient border-0 shadow-md hover:shadow-lg transition-shadow" 
               size="lg"
               disabled={loading}
             >
@@ -129,14 +134,14 @@ export function AuthForm({ mode }: AuthFormProps) {
               {mode === 'login' ? (
                 <>
                   Don't have an account?{' '}
-                  <Link to="/signup" className="font-medium text-primary hover:underline">
+                  <Link to="/signup" className="font-medium text-accent hover:underline">
                     Sign up
                   </Link>
                 </>
               ) : (
                 <>
                   Already have an account?{' '}
-                  <Link to="/login" className="font-medium text-primary hover:underline">
+                  <Link to="/login" className="font-medium text-accent hover:underline">
                     Sign in
                   </Link>
                 </>

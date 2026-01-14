@@ -147,8 +147,11 @@ export default function AnalyticsDashboardPage() {
 
   if (authLoading || profilesLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <div className="the-dot-lg animate-pulse-dot" />
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        </div>
       </div>
     );
   }
