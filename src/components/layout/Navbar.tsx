@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 export function Navbar() {
   const { user, signOut } = useAuth();
@@ -52,7 +53,8 @@ export function Navbar() {
                   <span className="hidden sm:inline">Analytics</span>
                 </Link>
               </Button>
-              <div className="ml-2 h-6 w-px bg-border" />
+              <div className="ml-1 h-6 w-px bg-border" />
+              <ThemeToggle />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-9 w-9 rounded-full">
@@ -80,6 +82,7 @@ export function Navbar() {
             </>
           ) : (
             <>
+              <ThemeToggle />
               <Button variant="ghost" asChild className="text-muted-foreground hover:text-foreground">
                 <Link to="/login">Sign in</Link>
               </Button>
