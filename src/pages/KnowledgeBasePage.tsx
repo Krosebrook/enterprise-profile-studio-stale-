@@ -124,6 +124,7 @@ export default function KnowledgeBasePage() {
                   </div>
                 </div>
                 <div className="flex gap-2">
+                  <SeedDocumentsButton />
                   <ImportDocumentsDialog />
                   <Button asChild>
                     <Link to="/knowledge/new">
