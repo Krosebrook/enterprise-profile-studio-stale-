@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AnimatedRoutes } from "@/components/layout/AnimatedRoutes";
+import { CommandPalette } from "@/components/ui/CommandPalette";
 
 const queryClient = new QueryClient();
 
@@ -15,6 +16,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <CommandPalette />
           <AnimatedRoutes />
         </BrowserRouter>
       </TooltipProvider>

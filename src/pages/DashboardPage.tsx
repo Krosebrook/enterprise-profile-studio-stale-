@@ -7,7 +7,8 @@ import { CreateProfileDialog } from '@/components/dashboard/CreateProfileDialog'
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfiles, useDeleteProfile } from '@/hooks/useProfiles';
-import { Loader2, BarChart3, Plus, Sparkles } from 'lucide-react';
+import { Loader2, BarChart3, Sparkles, Command } from 'lucide-react';
+import { StaggerContainer, StaggerItem, FadeIn } from '@/components/ui/animations';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -57,68 +58,79 @@ export default function DashboardPage() {
       <main className="flex-1 pt-20 pb-12">
         <div className="container">
           {/* Header */}
-          <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-start gap-4">
-              <div className="pillar-border-accent pl-4">
-                <h1 className="font-display text-3xl font-bold">Dashboard</h1>
-                <p className="mt-1 text-muted-foreground">
-                  Manage your enterprise profiles
-                </p>
+          <FadeIn>
+            <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-4">
+                <div className="pillar-border-accent pl-4">
+                  <h1 className="font-display text-3xl font-bold">Dashboard</h1>
+                  <p className="mt-1 text-muted-foreground">
+                    Manage your enterprise profiles
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-md border border-border/50">
+                  <Command className="h-3 w-3" />
+                  <span>K</span>
+                </div>
+                <Button variant="outline" size="sm" asChild className="border-border/60">
+                  <Link to="/analytics">
+                    <BarChart3 className="mr-2 h-4 w-4" />
+                    Analytics
+                  </Link>
+                </Button>
+                <CreateProfileDialog />
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <Button variant="outline" size="sm" asChild className="border-border/60">
-                <Link to="/analytics">
-                  <BarChart3 className="mr-2 h-4 w-4" />
-                  Analytics
-                </Link>
-              </Button>
-              <CreateProfileDialog />
-            </div>
-          </div>
+          </FadeIn>
 
           {/* Profiles Grid */}
           {profiles && profiles.length > 0 ? (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {profiles.map((profile) => (
-                <ProfileCard
-                  key={profile.id}
-                  profile={profile}
-                  onDelete={setDeleteId}
-                />
+                <StaggerItem key={profile.id}>
+                  <ProfileCard
+                    profile={profile}
+                    onDelete={setDeleteId}
+                  />
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerContainer>
           ) : (
-            <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border bg-muted/20 py-20">
-              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent/10">
-                <Sparkles className="h-8 w-8 text-accent" />
+            <FadeIn delay={0.1}>
+              <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border bg-muted/20 py-20">
+                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent/10">
+                  <Sparkles className="h-8 w-8 text-accent" />
+                </div>
+                <h3 className="mb-2 font-display text-xl font-semibold">No profiles yet</h3>
+                <p className="mb-6 text-muted-foreground max-w-sm text-center">
+                  Create your first enterprise profile to showcase your company
+                </p>
+                <CreateProfileDialog />
               </div>
-              <h3 className="mb-2 font-display text-xl font-semibold">No profiles yet</h3>
-              <p className="mb-6 text-muted-foreground max-w-sm text-center">
-                Create your first enterprise profile to showcase your company
-              </p>
-              <CreateProfileDialog />
-            </div>
+            </FadeIn>
           )}
 
           {/* Stats Footer */}
           {profiles && profiles.length > 0 && (
-            <div className="mt-8 pt-6 border-t border-border/40">
-              <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <span className="the-dot" />
-                  <span>{profiles.length} profile{profiles.length !== 1 ? 's' : ''}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-success" />
-                  <span>{profiles.filter(p => p.status === 'published').length} published</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-warning" />
-                  <span>{profiles.filter(p => p.status === 'draft').length} drafts</span>
+            <FadeIn delay={0.2}>
+              <div className="mt-8 pt-6 border-t border-border/40">
+                <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <span className="the-dot" />
+                    <span>{profiles.length} profile{profiles.length !== 1 ? 's' : ''}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-success" />
+                    <span>{profiles.filter(p => p.status === 'published').length} published</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-warning" />
+                    <span>{profiles.filter(p => p.status === 'draft').length} drafts</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            </FadeIn>
           )}
         </div>
       </main>

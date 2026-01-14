@@ -16,7 +16,8 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
-import { Plus, Search, BookOpen, Loader2, PanelLeftClose, PanelLeft, FileText } from 'lucide-react';
+import { Plus, Search, BookOpen, Loader2, PanelLeftClose, PanelLeft, FileText, Command } from 'lucide-react';
+import { StaggerContainer, StaggerItem, FadeIn } from '@/components/ui/animations';
 import { cn } from '@/lib/utils';
 
 export default function KnowledgeBasePage() {
@@ -105,74 +106,84 @@ export default function KnowledgeBasePage() {
           <div className="flex-1 overflow-y-auto">
             <div className="container mx-auto px-6 py-8">
               {/* Header */}
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                <div className="flex items-center gap-4">
-                  {!sidebarOpen && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setSidebarOpen(true)}
-                    >
-                      <PanelLeft className="h-4 w-4" />
+              <FadeIn>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                  <div className="flex items-center gap-4">
+                    {!sidebarOpen && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setSidebarOpen(true)}
+                      >
+                        <PanelLeft className="h-4 w-4" />
+                      </Button>
+                    )}
+                    <div className="pillar-border pl-4">
+                      <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
+                        <BookOpen className="h-6 w-6 text-primary" />
+                        Knowledge Base
+                      </h1>
+                      <p className="text-muted-foreground text-sm mt-0.5">
+                        Your team's documentation and wiki
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-md border border-border/50">
+                      <Command className="h-3 w-3" />
+                      <span>K</span>
+                    </div>
+                    <SeedDocumentsButton />
+                    <ImportDocumentsDialog />
+                    <Button asChild className="accent-gradient border-0 shadow-sm hover:shadow-md transition-shadow">
+                      <Link to="/knowledge/new">
+                        <Plus className="h-4 w-4 mr-2" />
+                        New Document
+                      </Link>
                     </Button>
-                  )}
-                  <div className="pillar-border pl-4">
-                    <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
-                      <BookOpen className="h-6 w-6 text-primary" />
-                      Knowledge Base
-                    </h1>
-                    <p className="text-muted-foreground text-sm mt-0.5">
-                      Your team's documentation and wiki
-                    </p>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <SeedDocumentsButton />
-                  <ImportDocumentsDialog />
-                  <Button asChild className="accent-gradient border-0 shadow-sm hover:shadow-md transition-shadow">
-                    <Link to="/knowledge/new">
-                      <Plus className="h-4 w-4 mr-2" />
-                      New Document
-                    </Link>
-                  </Button>
-                </div>
-              </div>
+              </FadeIn>
 
               {/* Search */}
-              <div className="flex flex-col md:flex-row gap-4 mb-6">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search documents..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 border-border/60 focus:border-primary"
-                  />
+              <FadeIn delay={0.05}>
+                <div className="flex flex-col md:flex-row gap-4 mb-6">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search documents..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 border-border/60 focus:border-primary"
+                    />
+                  </div>
                 </div>
-              </div>
+              </FadeIn>
 
               {/* Category Tabs */}
-              <Tabs defaultValue="all" className="mb-6">
-                <TabsList className="flex-wrap h-auto gap-1 bg-muted/50 p-1">
-                  <TabsTrigger
-                    value="all"
-                    onClick={() => setSelectedCategory(null)}
-                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-sm"
-                  >
-                    All Documents
-                  </TabsTrigger>
-                  {categories.map((category) => (
+              <FadeIn delay={0.1}>
+                <Tabs defaultValue="all" className="mb-6">
+                  <TabsList className="flex-wrap h-auto gap-1 bg-muted/50 p-1">
                     <TabsTrigger
-                      key={category}
-                      value={category}
-                      onClick={() => setSelectedCategory(category)}
+                      value="all"
+                      onClick={() => setSelectedCategory(null)}
                       className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-sm"
                     >
-                      {category}
+                      All Documents
                     </TabsTrigger>
-                  ))}
-                </TabsList>
-              </Tabs>
+                    {categories.map((category) => (
+                      <TabsTrigger
+                        key={category}
+                        value={category}
+                        onClick={() => setSelectedCategory(category)}
+                        className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-sm"
+                      >
+                        {category}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                </Tabs>
+              </FadeIn>
 
               {/* Documents Grid */}
               {isLoading ? (
@@ -183,61 +194,71 @@ export default function KnowledgeBasePage() {
                   </div>
                 </div>
               ) : filteredDocuments?.length === 0 ? (
-                <div className="text-center py-16">
-                  <div className="mb-6 mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
-                    <FileText className="h-8 w-8 text-primary" />
+                <FadeIn delay={0.15}>
+                  <div className="text-center py-16">
+                    <div className="mb-6 mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
+                      <FileText className="h-8 w-8 text-primary" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-foreground mb-2">
+                      {searchTerm || selectedCategory || selectedFolderId ? 'No documents found' : 'No documents yet'}
+                    </h3>
+                    <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+                      {searchTerm || selectedCategory || selectedFolderId
+                        ? 'Try adjusting your search or filters'
+                        : 'Create your first document to get started'}
+                    </p>
+                    {!searchTerm && !selectedCategory && !selectedFolderId && (
+                      <Button asChild className="accent-gradient border-0">
+                        <Link to="/knowledge/new">
+                          <Plus className="h-4 w-4 mr-2" />
+                          Create Document
+                        </Link>
+                      </Button>
+                    )}
                   </div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    {searchTerm || selectedCategory || selectedFolderId ? 'No documents found' : 'No documents yet'}
-                  </h3>
-                  <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-                    {searchTerm || selectedCategory || selectedFolderId
-                      ? 'Try adjusting your search or filters'
-                      : 'Create your first document to get started'}
-                  </p>
-                  {!searchTerm && !selectedCategory && !selectedFolderId && (
-                    <Button asChild className="accent-gradient border-0">
-                      <Link to="/knowledge/new">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Create Document
-                      </Link>
-                    </Button>
-                  )}
-                </div>
+                </FadeIn>
               ) : (
-                <div 
+                <StaggerContainer
                   className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
-                  onDrop={(e) => handleDrop(e, selectedFolderId)}
-                  onDragOver={handleDragOver}
+                  staggerDelay={0.03}
                 >
                   {filteredDocuments?.map((doc) => (
-                    <DraggableDocumentCard key={doc.id} document={doc} onDelete={handleDelete} />
+                    <StaggerItem key={doc.id}>
+                      <div
+                        onDrop={(e) => handleDrop(e, selectedFolderId)}
+                        onDragOver={handleDragOver}
+                      >
+                        <DraggableDocumentCard document={doc} onDelete={handleDelete} />
+                      </div>
+                    </StaggerItem>
                   ))}
-                </div>
+                </StaggerContainer>
               )}
 
               {/* Stats */}
               {documents && documents.length > 0 && (
-                <div className="mt-8 pt-6 border-t border-border/40">
-                  <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <span className="the-dot" />
-                      <span>{documents.length} documents</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full bg-primary" />
-                      <span>{categories.length} categories</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full bg-accent" />
-                      <span>{folders.length} folders</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full bg-success" />
-                      <span>{documents.filter((d) => d.is_public).length} public</span>
+                <FadeIn delay={0.2}>
+                  <div className="mt-8 pt-6 border-t border-border/40">
+                    <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <span className="the-dot" />
+                        <span>{documents.length} documents</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="h-2 w-2 rounded-full bg-primary" />
+                        <span>{categories.length} categories</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="h-2 w-2 rounded-full bg-accent" />
+                        <span>{folders.length} folders</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="h-2 w-2 rounded-full bg-success" />
+                        <span>{documents.filter((d) => d.is_public).length} public</span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </FadeIn>
               )}
             </div>
           </div>
