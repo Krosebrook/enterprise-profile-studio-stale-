@@ -1,43 +1,61 @@
 import { Button } from '@/components/ui/button';
 import { Sparkles, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAIGeneration, type GenerationType } from '@/hooks/useAIGeneration';
 
 interface AIGenerateButtonProps {
-  onClick: () => void;
-  isGenerating?: boolean;
+  type: GenerationType;
+  context: Record<string, any>;
+  onGenerate: (value: string) => void;
+  disabled?: boolean;
   className?: string;
   size?: 'sm' | 'default' | 'lg' | 'icon';
-  label?: string;
 }
 
 export function AIGenerateButton({
-  onClick,
-  isGenerating = false,
+  type,
+  context,
+  onGenerate,
+  disabled = false,
   className,
   size = 'sm',
-  label = 'Generate with AI',
 }: AIGenerateButtonProps) {
+  const { generate, isGenerating } = useAIGeneration();
+
+  const labels: Record<GenerationType, string> = {
+    tagline: 'Generate tagline',
+    description: 'Generate description',
+    service: 'Generate description',
+  };
+
+  const handleClick = async () => {
+    const result = await generate(type, context);
+    if (result) {
+      onGenerate(result);
+    }
+  };
+
   return (
     <Button
       type="button"
-      variant="outline"
+      variant="ghost"
       size={size}
-      onClick={onClick}
-      disabled={isGenerating}
+      onClick={handleClick}
+      disabled={disabled || isGenerating}
       className={cn(
-        'gap-2 border-primary/30 text-primary hover:bg-primary/10 hover:text-primary',
+        'h-auto gap-1.5 px-2 py-1 text-xs text-primary hover:bg-primary/10 hover:text-primary',
         className
       )}
     >
       {isGenerating ? (
         <>
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <Loader2 className="h-3 w-3 animate-spin" />
           Generating...
         </>
       ) : (
         <>
-          <Sparkles className="h-4 w-4" />
-          {label}
+          <Sparkles className="h-3 w-3" />
+          {labels[type]}
         </>
       )}
     </Button>

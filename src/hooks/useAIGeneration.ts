@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-type GenerationType = 'company_description' | 'tagline' | 'service_description';
+export type GenerationType = 'description' | 'tagline' | 'service';
 
 interface GenerationContext {
   companyName?: string;

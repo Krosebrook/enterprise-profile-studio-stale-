@@ -91,7 +91,17 @@ export function ProfileWizard({ profile }: ProfileWizardProps) {
       case 1:
         return <BrandingStep data={branding} onChange={setBranding} />;
       case 2:
-        return <ServicesStep data={services} onChange={setServices} />;
+        return (
+          <ServicesStep 
+            data={services} 
+            onChange={setServices} 
+            companyContext={{
+              companyName: companyInfo.companyName,
+              industry: companyInfo.industry,
+              description: companyInfo.description,
+            }}
+          />
+        );
       case 3:
         return <TeamStep data={team} onChange={setTeam} />;
       case 4:

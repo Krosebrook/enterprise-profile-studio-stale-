@@ -1,6 +1,7 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ImageUpload } from '@/components/ui/ImageUpload';
 import { Palette, Image } from 'lucide-react';
 
 interface BrandingStepProps {
@@ -15,6 +16,43 @@ export function BrandingStep({ data, onChange }: BrandingStepProps) {
 
   return (
     <div className="space-y-6">
+      <Card className="border-border/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 font-display">
+            <Image className="h-5 w-5 text-primary" />
+            Brand Assets
+          </CardTitle>
+          <CardDescription>
+            Upload your logo and cover image
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label>Company Logo</Label>
+              <ImageUpload
+                value={data.logoUrl || ''}
+                onChange={(url) => handleChange('logoUrl', url)}
+                folder="logos"
+                aspectRatio="square"
+                placeholder="Upload company logo"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Cover Image</Label>
+              <ImageUpload
+                value={data.coverUrl || ''}
+                onChange={(url) => handleChange('coverUrl', url)}
+                folder="covers"
+                aspectRatio="landscape"
+                placeholder="Upload cover image"
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card className="border-border/50">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 font-display">
@@ -103,41 +141,6 @@ export function BrandingStep({ data, onChange }: BrandingStepProps) {
                 style={{ backgroundColor: data.accentColor || '#10B981' }}
               />
             </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="border-border/50">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 font-display">
-            <Image className="h-5 w-5 text-primary" />
-            Brand Assets
-          </CardTitle>
-          <CardDescription>
-            Add your logo and other brand assets
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="logoUrl">Logo URL</Label>
-            <Input
-              id="logoUrl"
-              type="url"
-              placeholder="https://example.com/logo.png"
-              value={data.logoUrl || ''}
-              onChange={(e) => handleChange('logoUrl', e.target.value)}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="coverUrl">Cover Image URL</Label>
-            <Input
-              id="coverUrl"
-              type="url"
-              placeholder="https://example.com/cover.jpg"
-              value={data.coverUrl || ''}
-              onChange={(e) => handleChange('coverUrl', e.target.value)}
-            />
           </div>
 
           <div className="space-y-2">
