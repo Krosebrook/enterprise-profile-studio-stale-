@@ -107,6 +107,7 @@ export function OnboardingWizard() {
           <DealSourcingStep
             data={profile.dealSourcing}
             onChange={(data) => updateSection('dealSourcing', data)}
+            welcomeData={profile.welcome}
           />
         );
       case 2:

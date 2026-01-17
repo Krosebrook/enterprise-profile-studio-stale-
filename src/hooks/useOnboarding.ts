@@ -103,6 +103,31 @@ export function useOnboarding() {
 
       if (error) throw error;
 
+      // Store the completed onboarding profile in localStorage for dashboard use
+      localStorage.setItem('onboarding_completed_profile', JSON.stringify(completedProfile));
+
+      // Send welcome email
+      try {
+        await supabase.functions.invoke('send-welcome-email', {
+          body: {
+            email: user.email,
+            name: profile.welcome.fullName,
+            profile: {
+              role: profile.welcome.role,
+              experienceLevel: profile.welcome.experienceLevel,
+              industries: profile.dealSourcing.targetIndustries,
+              investmentRange: profile.dealSourcing.investmentSizeRange,
+              riskTolerance: profile.dealSourcing.riskTolerance,
+              timeHorizon: profile.portfolioGoals.timeHorizon,
+            },
+          },
+        });
+        console.log('Welcome email sent successfully');
+      } catch (emailError) {
+        console.error('Failed to send welcome email:', emailError);
+        // Don't fail the whole flow if email fails
+      }
+
       // Clear local storage
       localStorage.removeItem(STORAGE_KEY);
       
