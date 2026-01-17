@@ -5608,4 +5608,1892 @@ Welcome aboard! 🚀
 - Learn 2-3 shortcuts per week
 `
   },
+  // ============================================
+  // CATEGORY 8: LP RELATIONS & FUNDRAISING (5 documents)
+  // ============================================
+  {
+    title: 'LP Communication Best Practices',
+    slug: 'lp-communication-best-practices',
+    description: 'Quarterly letters, annual meetings, and ad-hoc updates',
+    category: 'LP Relations & Fundraising',
+    tags: ['lp', 'communication', 'reporting', 'investor-relations'],
+    is_public: false,
+    content: `# LP Communication Best Practices
+
+**Purpose:** Guide to effective investor communications and relationship management
+
+---
+
+## Communication Framework
+
+### Frequency Matrix
+
+| Communication | Frequency | Format | Audience |
+|---------------|-----------|--------|----------|
+| Quarterly Letter | Quarterly | Written | All LPs |
+| Annual Meeting | Annual | In-person | All LPs |
+| Ad-hoc Updates | As needed | Email | All LPs |
+| Portfolio Reviews | Semi-annual | Call/Meeting | Major LPs |
+| LPAC Meetings | Quarterly | Meeting | Committee |
+
+---
+
+## Quarterly Letter Best Practices
+
+### Structure
+
+1. **Executive Summary** (1 page)
+   - Performance highlights
+   - Key activities
+   - Outlook
+
+2. **Portfolio Review** (2-3 pages)
+   - Investment activity
+   - Company updates
+   - Exits and realizations
+
+3. **Market Commentary** (1 page)
+   - Sector trends
+   - Valuation environment
+   - Strategic positioning
+
+4. **Appendix**
+   - Financial statements
+   - Portfolio company details
+   - Team updates
+
+### Writing Guidelines
+
+- **Be transparent** - Share both successes and challenges
+- **Be specific** - Use data and metrics
+- **Be timely** - Deliver within 45 days of quarter end
+- **Be consistent** - Use same format each quarter
+
+---
+
+## Annual Meeting Agenda
+
+### Day 1: Investment Review
+
+| Time | Topic | Presenter |
+|------|-------|-----------|
+| 9:00 | Welcome & Firm Update | Managing Partner |
+| 10:00 | Market Overview | Investment Team |
+| 11:00 | Portfolio Deep Dive | Deal Leads |
+| 12:30 | Lunch | |
+| 2:00 | Case Studies | Deal Leads |
+| 4:00 | Q&A Session | Full Team |
+| 6:00 | Reception Dinner | |
+
+### Preparation Checklist
+
+- [ ] Venue booked (3 months ahead)
+- [ ] Materials prepared (2 weeks ahead)
+- [ ] LP RSVPs confirmed (1 week ahead)
+- [ ] Presentation dry-run (3 days ahead)
+- [ ] Name badges and materials printed
+
+---
+
+## Ad-Hoc Communication Guidelines
+
+### When to Communicate
+
+**Immediately:**
+- Major exits or realizations
+- Significant write-downs
+- Key personnel changes
+- Legal/compliance issues
+
+**Within 1 Week:**
+- New investments
+- Portfolio company milestones
+- Market events affecting portfolio
+
+### Communication Templates
+
+**Investment Announcement:**
+- Company overview
+- Investment thesis
+- Transaction details
+- Value creation plan
+
+**Exit Announcement:**
+- Returns achieved
+- Value creation summary
+- Timeline from entry to exit
+- Lessons learned
+`
+  },
+  {
+    title: 'Fund Marketing Materials',
+    slug: 'fund-marketing-materials',
+    description: 'PPM, pitch deck, and DDQ preparation',
+    category: 'LP Relations & Fundraising',
+    tags: ['marketing', 'ppm', 'pitch', 'fundraising', 'ddq'],
+    is_public: false,
+    content: `# Fund Marketing Materials
+
+**Purpose:** Guide to preparing effective fundraising materials
+
+---
+
+## Core Marketing Documents
+
+### 1. Private Placement Memorandum (PPM)
+
+**Purpose:** Legal offering document for prospective investors
+
+**Key Sections:**
+1. Executive Summary
+2. Investment Strategy
+3. Team Biographies
+4. Track Record
+5. Terms and Conditions
+6. Risk Factors
+7. Legal Disclosures
+
+**Best Practices:**
+- Work closely with legal counsel
+- Update for each fund
+- Balance marketing with disclosure
+
+### 2. Pitch Deck
+
+**Structure (15-20 slides):**
+
+| Slide | Content | Time |
+|-------|---------|------|
+| 1 | Title & Overview | 1 min |
+| 2-3 | Market Opportunity | 3 min |
+| 4-5 | Investment Strategy | 4 min |
+| 6-7 | Team & Track Record | 5 min |
+| 8-9 | Portfolio Examples | 4 min |
+| 10-11 | Value Creation | 3 min |
+| 12 | Fund Terms | 2 min |
+| 13 | Current Portfolio | 2 min |
+| 14 | Appendix | Reference |
+
+**Design Guidelines:**
+- Clean, professional design
+- Consistent branding
+- Data-driven visuals
+- Limited text per slide
+
+### 3. Due Diligence Questionnaire (DDQ)
+
+**Standard Sections:**
+
+1. **Firm Information**
+   - History and ownership
+   - AUM and headcount
+   - Regulatory status
+
+2. **Investment Strategy**
+   - Target sectors and geographies
+   - Deal size and types
+   - Sourcing approach
+
+3. **Team**
+   - Bios and experience
+   - Compensation structure
+   - Succession planning
+
+4. **Track Record**
+   - Historical returns
+   - Attribution analysis
+   - Case studies
+
+5. **Operations**
+   - Compliance program
+   - Valuation policy
+   - ESG integration
+
+---
+
+## Fundraising Process
+
+### Timeline
+
+\`\`\`
+Month 1-2: Prepare materials
+Month 3-4: Soft outreach to existing LPs
+Month 5-8: Formal marketing period
+Month 9-10: Final close preparations
+Month 11-12: Legal documentation and closing
+\`\`\`
+
+### LP Targeting
+
+| LP Type | Characteristics | Approach |
+|---------|-----------------|----------|
+| Pension Funds | Large tickets, formal process | RFP response |
+| Endowments | Long horizon, relationship-driven | Direct outreach |
+| Family Offices | Flexible, relationship-focused | Warm introduction |
+| Fund of Funds | Professional buyers | Consultant network |
+| Sovereign Wealth | Large, selective | Senior relationships |
+`
+  },
+  {
+    title: 'Capital Call Process',
+    slug: 'capital-call-process',
+    description: 'Mechanics of calling capital and managing contributions',
+    category: 'LP Relations & Fundraising',
+    tags: ['capital-call', 'contributions', 'mechanics', 'operations'],
+    is_public: false,
+    content: `# Capital Call Process
+
+**Purpose:** Operational guide for capital calls and contribution management
+
+---
+
+## Capital Call Mechanics
+
+### Standard Timeline
+
+| Day | Action | Responsible |
+|-----|--------|-------------|
+| D-14 | Prepare capital call notice | Fund Admin |
+| D-10 | Internal review and approval | CFO |
+| D-7 | Send notices to LPs | Investor Relations |
+| D-5 | LP confirmation period | LPs |
+| D-0 | Capital due date | LPs |
+| D+1 | Reconciliation | Fund Admin |
+| D+3 | Late payment follow-up | Investor Relations |
+
+---
+
+## Capital Call Notice Requirements
+
+### Essential Information
+
+1. **Call Details**
+   - Call amount (total and per LP)
+   - Percentage of commitment
+   - Purpose of call
+   - Payment due date
+
+2. **Wire Instructions**
+   - Bank name and address
+   - Account name
+   - Account number
+   - ABA/SWIFT code
+
+3. **Cumulative Information**
+   - Total called to date
+   - Remaining commitment
+   - Cumulative contributions
+
+### Sample Notice Format
+
+\`\`\`
+CAPITAL CALL NOTICE
+
+Fund: ABC Partners Fund III, LP
+Call Date: [Date]
+Due Date: [Date]
+
+To: [LP Name]
+Commitment: $[Amount]
+This Call: $[Amount] ([X]% of commitment)
+Cumulative Called: $[Amount] ([X]% of commitment)
+Remaining: $[Amount]
+
+Purpose: Investment in [Company Name]
+
+Wire Instructions:
+Bank: [Bank Name]
+Account: [Account Number]
+Reference: [LP Name] - Fund III - Call #[X]
+\`\`\`
+
+---
+
+## Capital Call Policies
+
+### Call Frequency
+
+| Purpose | Typical Size | Frequency |
+|---------|--------------|-----------|
+| Investment | 10-15% | As needed |
+| Fees | 2-3% | Quarterly |
+| Expenses | <1% | As needed |
+
+### Overcall Provisions
+
+- Standard overcall: 5-10% buffer
+- Purpose: Cover timing differences
+- True-up: Quarterly reconciliation
+
+---
+
+## Default Procedures
+
+### LP Default Timeline
+
+| Stage | Timeline | Action |
+|-------|----------|--------|
+| Notice | Due date + 1 | Reminder sent |
+| Grace Period | + 10 days | Formal warning |
+| Default Notice | + 15 days | Default declared |
+| Remedies | + 30 days | Remedies exercised |
+
+### Default Remedies
+
+1. **Interest charges** - Typically prime + 2-4%
+2. **Loss of voting rights**
+3. **Forfeiture of commitment**
+4. **Forced sale of interest**
+
+---
+
+## Reporting Requirements
+
+### Post-Call Reporting
+
+- Confirmation of receipt
+- Updated capital account statements
+- Investment details (if investment call)
+- Quarterly reconciliation
+`
+  },
+  {
+    title: 'Distribution Waterfall Guide',
+    slug: 'distribution-waterfall-guide',
+    description: 'Understanding GP/LP economics and carried interest',
+    category: 'LP Relations & Fundraising',
+    tags: ['waterfall', 'carry', 'distribution', 'economics', 'gp-lp'],
+    is_public: false,
+    content: `# Distribution Waterfall Guide
+
+**Purpose:** Understanding GP/LP economics and distribution mechanics
+
+---
+
+## Waterfall Structure Overview
+
+### Standard Waterfall (American Style)
+
+\`\`\`
+                    DISTRIBUTIONS
+                          │
+        ┌─────────────────┼─────────────────┐
+        │                 │                 │
+   Return of        Preferred           Carried
+   Capital          Return              Interest
+      ↓                 ↓                   ↓
+   100% to LP      8% to LP         80/20 or 70/30
+                   (hurdle)          (GP/LP split)
+\`\`\`
+
+### Waterfall Tiers
+
+| Tier | Description | Split |
+|------|-------------|-------|
+| 1 | Return of capital | 100% LP |
+| 2 | Preferred return (8%) | 100% LP |
+| 3 | GP catch-up | 100% GP |
+| 4 | Carried interest | 80% LP / 20% GP |
+
+---
+
+## Key Terms Defined
+
+### Preferred Return (Hurdle Rate)
+
+- **Standard:** 8% IRR
+- **Compounding:** Annually
+- **Purpose:** Ensures LP receives minimum return before GP carry
+
+### GP Catch-up
+
+- **Standard:** 100% to GP until 20% of profits
+- **Purpose:** Allows GP to "catch up" to their carry percentage
+- **Calculation:** Continue until GP has 20% of all profits above hurdle
+
+### Carried Interest
+
+- **Standard:** 20% of profits
+- **Vesting:** Typically 3-4 years
+- **Clawback:** Required if over-distributed
+
+---
+
+## Worked Example
+
+**Fund:** $100M committed
+**Investment:** $80M invested
+**Returns:** $160M total value
+
+| Item | Amount | Calculation |
+|------|--------|-------------|
+| Contributed Capital | $80M | Actual invested |
+| Preferred Return | $20M | 8% × 2.5 years |
+| Catch-up to GP | $5M | Until GP = 20% |
+| Remaining Profit | $55M | 160 - 80 - 20 - 5 |
+| LP Share (80%) | $44M | 55M × 80% |
+| GP Share (20%) | $11M | 55M × 20% |
+
+**Final Distribution:**
+- LP Total: $80M + $20M + $44M = $144M
+- GP Total (Carry): $5M + $11M = $16M
+
+---
+
+## European vs. American Waterfall
+
+### American (Deal-by-Deal)
+
+**Advantages:**
+- GP receives carry earlier
+- Incentivizes quick wins
+
+**Disadvantages:**
+- Higher clawback risk
+- Complex true-ups
+
+### European (Whole Fund)
+
+**Advantages:**
+- LP-friendly
+- Simple calculation
+- Lower clawback risk
+
+**Disadvantages:**
+- GP carry delayed
+- Cash flow timing
+
+---
+
+## Clawback Provisions
+
+### GP Clawback
+
+**Trigger:** If GP received excess carry due to later losses
+
+**Mechanism:**
+1. Calculate what carry should have been
+2. Compare to actual carry received
+3. GP returns excess amount
+
+**Protection:** 
+- Escrow accounts (typically 20-30% of carry)
+- Joint and several liability
+- Tax gross-up provisions
+`
+  },
+  {
+    title: 'LP Advisory Committee Guide',
+    slug: 'lp-advisory-committee-guide',
+    description: 'LPAC formation, responsibilities, and meeting management',
+    category: 'LP Relations & Fundraising',
+    tags: ['lpac', 'advisory', 'governance', 'committee'],
+    is_public: false,
+    content: `# LP Advisory Committee Guide
+
+**Purpose:** Guide to LPAC formation and effective committee management
+
+---
+
+## LPAC Overview
+
+### Purpose
+
+The LP Advisory Committee (LPAC) provides oversight and guidance on:
+- Conflicts of interest
+- Valuation matters
+- Partnership term extensions
+- Key person events
+- Other specified matters
+
+### Typical Composition
+
+| Member Type | Number | Selection |
+|-------------|--------|-----------|
+| Large LPs | 3-5 | Largest commitments |
+| Diverse LPs | 2-3 | Different LP types |
+| Total | 5-8 | GP recommendation |
+
+---
+
+## LPAC Responsibilities
+
+### Core Duties
+
+1. **Conflict Review**
+   - Co-investments
+   - Related party transactions
+   - GP affiliate dealings
+
+2. **Valuation Oversight**
+   - Review valuation policies
+   - Approve valuation changes
+   - Assess third-party valuations
+
+3. **Fund Term Matters**
+   - Extension requests
+   - Investment period changes
+   - Fee modifications
+
+4. **Key Person Events**
+   - Assess impact
+   - Approve remediation plans
+   - Monitor resolution
+
+---
+
+## Meeting Management
+
+### Meeting Schedule
+
+| Meeting | Frequency | Duration | Format |
+|---------|-----------|----------|--------|
+| Regular | Quarterly | 1-2 hours | Video/Phone |
+| Annual | Annual | Half day | In-person |
+| Ad-hoc | As needed | 30-60 min | Video/Phone |
+
+### Standard Agenda
+
+**Quarterly Meeting (90 minutes)**
+
+| Time | Topic | Lead |
+|------|-------|------|
+| 0:00 | Roll call & minutes | Legal |
+| 0:10 | Fund update | Managing Partner |
+| 0:25 | Conflict matters | CFO |
+| 0:45 | Valuation update | Finance |
+| 1:00 | Other business | Chair |
+| 1:15 | Executive session | LPAC only |
+| 1:30 | Adjourn | |
+
+### Documentation
+
+**Required Records:**
+- Meeting notices (10 days advance)
+- Agenda and materials
+- Attendance record
+- Minutes and resolutions
+- Voting records
+
+---
+
+## Best Practices
+
+### For GPs
+
+1. **Be proactive** - Raise issues early
+2. **Provide context** - Full information for decisions
+3. **Respect the process** - Don't pressure for outcomes
+4. **Document thoroughly** - Detailed records
+5. **Follow through** - Implement approved actions
+
+### For LPAC Members
+
+1. **Prepare** - Review materials in advance
+2. **Engage** - Ask questions, share perspectives
+3. **Balance** - Consider all LP interests
+4. **Commit** - Attend meetings consistently
+5. **Maintain confidentiality** - Protect sensitive information
+
+---
+
+## Common Conflict Scenarios
+
+### Scenario 1: Co-Investment Allocation
+
+**Issue:** Limited capacity, multiple interested LPs
+**Process:** LPAC review of allocation methodology
+**Resolution:** Approve policy, monitor compliance
+
+### Scenario 2: Cross-Fund Investment
+
+**Issue:** Two funds investing in same company
+**Process:** Disclose terms, seek LPAC consent
+**Resolution:** Approve with conditions (arms-length terms)
+
+### Scenario 3: GP Affiliate Transaction
+
+**Issue:** Portfolio company using GP-affiliated service
+**Process:** Full disclosure, market rate verification
+**Resolution:** Approve or decline based on review
+`
+  },
+  // ============================================
+  // CATEGORY 9: COMPLIANCE & LEGAL (5 documents)
+  // ============================================
+  {
+    title: 'Investment Advisor Compliance',
+    slug: 'investment-advisor-compliance',
+    description: 'SEC/regulatory requirements for investment advisors',
+    category: 'Compliance & Legal',
+    tags: ['compliance', 'sec', 'regulatory', 'advisor'],
+    is_public: false,
+    content: `# Investment Advisor Compliance
+
+**Purpose:** Overview of regulatory requirements for investment advisors
+
+---
+
+## Regulatory Framework
+
+### SEC Registration Requirements
+
+| Criteria | Requirement |
+|----------|-------------|
+| AUM > $150M | SEC registration required |
+| AUM $100-150M | May register with SEC or state |
+| AUM < $100M | State registration (most states) |
+| Exempt Reporting | 3(c)(1) or 3(c)(7) funds only |
+
+### Key Regulations
+
+1. **Investment Advisers Act of 1940**
+   - Fiduciary duty
+   - Registration requirements
+   - Recordkeeping
+   - Custody rules
+
+2. **Form ADV**
+   - Part 1: Firm information
+   - Part 2A: Brochure
+   - Part 2B: Brochure supplement
+   - Annual updating amendment
+
+3. **Form PF**
+   - Private fund reporting
+   - Systemic risk monitoring
+   - Quarterly or annual filing
+
+---
+
+## Compliance Program Requirements
+
+### Written Policies
+
+| Area | Key Policies |
+|------|--------------|
+| Code of Ethics | Personal trading, gifts, outside activities |
+| Proxy Voting | Voting procedures, conflict management |
+| Insider Trading | MNPI handling, restricted lists |
+| Valuation | Methodologies, oversight, documentation |
+| Custody | Safeguarding, verification, surprise exams |
+
+### Annual Requirements
+
+| Item | Timing | Responsibility |
+|------|--------|----------------|
+| ADV Amendment | Within 90 days of FYE | CCO |
+| Form PF | Quarterly or annual | CFO/CCO |
+| Brochure Delivery | Annual offer to clients | CCO |
+| Compliance Review | Annual | CCO |
+| Code of Ethics | Annual certification | All employees |
+
+---
+
+## Examination Readiness
+
+### Common Exam Focus Areas
+
+1. **Fees and Expenses**
+   - Proper disclosure
+   - Accurate calculation
+   - Consistent application
+
+2. **Conflicts of Interest**
+   - Disclosure adequacy
+   - Mitigation procedures
+   - LPAC process
+
+3. **Valuation**
+   - Policy adherence
+   - Documentation
+   - Independence
+
+4. **Marketing**
+   - Performance claims
+   - Testimonials
+   - Track record
+
+---
+
+## Documentation Requirements
+
+### Books and Records
+
+| Category | Retention | Examples |
+|----------|-----------|----------|
+| Firm Records | Permanent | Formation docs, policies |
+| Financial | 5 years | Ledgers, statements |
+| Communications | 5 years | Emails, letters |
+| Trade Records | 5 years | Orders, confirmations |
+| Client Files | 5 years | Agreements, correspondence |
+
+### Best Practices
+
+- Central document repository
+- Clear naming conventions
+- Regular backup procedures
+- Access controls
+- Destruction schedules
+`
+  },
+  {
+    title: 'Conflicts of Interest Policy',
+    slug: 'conflicts-of-interest-policy',
+    description: 'Managing and disclosing conflicts in fund management',
+    category: 'Compliance & Legal',
+    tags: ['conflicts', 'policy', 'disclosure', 'governance'],
+    is_public: false,
+    content: `# Conflicts of Interest Policy
+
+**Purpose:** Framework for identifying, managing, and disclosing conflicts of interest
+
+---
+
+## Conflict Categories
+
+### Investment-Related Conflicts
+
+| Conflict | Example | Mitigation |
+|----------|---------|------------|
+| Allocation | Limited capacity deals | Pre-defined allocation policy |
+| Cross-fund | Same company, different funds | LPAC approval, independent terms |
+| Co-investment | LP participation rights | Transparent offering process |
+| Competing funds | Multiple strategies | Information barriers |
+
+### Fee-Related Conflicts
+
+| Conflict | Example | Mitigation |
+|----------|---------|------------|
+| Transaction fees | Deal fees from portfolio | Offset against management fee |
+| Monitoring fees | Ongoing portfolio fees | Disclosure, fee sharing |
+| Broken deal expenses | Allocation of failed deals | Policy on expense sharing |
+
+### Personal Conflicts
+
+| Conflict | Example | Mitigation |
+|----------|---------|------------|
+| Personal investments | Co-investing with fund | Pre-clearance, disclosure |
+| Outside activities | Board seats, consulting | Approval required |
+| Family relationships | Relatives at portfolio cos | Disclosure, recusal |
+
+---
+
+## Identification Process
+
+### Ongoing Monitoring
+
+1. **Deal review** - Assess conflicts at entry
+2. **Quarterly review** - Update conflict register
+3. **Annual certification** - Employee disclosure
+4. **Ad-hoc review** - New situations
+
+### Conflict Register
+
+| Date | Conflict | Parties | Status | Resolution |
+|------|----------|---------|--------|------------|
+| [Date] | [Description] | [Names] | Active/Resolved | [Action taken] |
+
+---
+
+## Disclosure Requirements
+
+### To Investors
+
+**In Offering Documents:**
+- All material conflicts
+- Mitigation procedures
+- LPAC role
+
+**Ongoing:**
+- New conflicts as they arise
+- LPAC resolutions
+- Annual conflict summary
+
+### To Regulators
+
+- Form ADV Part 2A
+- SEC examination responses
+- Annual review documentation
+
+---
+
+## LPAC Process
+
+### Matters Requiring LPAC Review
+
+1. All cross-fund transactions
+2. Material affiliate transactions
+3. Co-investment allocations
+4. Fee and expense matters
+5. Valuation disputes
+
+### Approval Process
+
+1. **Identify conflict** → Document and assess
+2. **Prepare materials** → Full disclosure package
+3. **LPAC review** → Present to committee
+4. **Resolution** → Document decision
+5. **Implementation** → Execute approved action
+6. **Monitor** → Ongoing compliance
+
+---
+
+## Training Requirements
+
+### All Employees
+
+- Annual conflicts training
+- Code of Ethics certification
+- New hire orientation
+
+### Investment Professionals
+
+- Deal-specific conflict review
+- Allocation policy training
+- LPAC process overview
+`
+  },
+  {
+    title: 'AML/KYC Requirements',
+    slug: 'aml-kyc-requirements',
+    description: 'Anti-money laundering and know-your-customer procedures',
+    category: 'Compliance & Legal',
+    tags: ['aml', 'kyc', 'compliance', 'onboarding'],
+    is_public: false,
+    content: `# AML/KYC Requirements
+
+**Purpose:** Anti-money laundering and know-your-customer compliance procedures
+
+---
+
+## Regulatory Framework
+
+### Key Regulations
+
+| Regulation | Requirement |
+|------------|-------------|
+| Bank Secrecy Act | AML program, SAR filing |
+| USA PATRIOT Act | Enhanced due diligence |
+| OFAC | Sanctions compliance |
+| FinCEN | Beneficial ownership |
+
+### Applicability
+
+- All new investor onboarding
+- Ongoing monitoring of existing investors
+- Transaction monitoring
+- Periodic refresh (typically every 3 years)
+
+---
+
+## KYC Requirements
+
+### Individual Investors
+
+**Required Information:**
+- Full legal name
+- Date of birth
+- Residential address
+- Government-issued ID
+- Social Security Number
+- Source of wealth
+
+**Documentation:**
+- Passport or driver's license
+- Utility bill or bank statement
+- W-9 form
+- Subscription documents
+
+### Institutional Investors
+
+**Required Information:**
+- Legal entity name
+- Formation documents
+- Authorized signers
+- Beneficial owners (>25%)
+- Source of funds
+
+**Documentation:**
+- Certificate of incorporation
+- Operating agreement
+- Board resolution
+- Beneficial ownership form
+- W-8/W-9 forms
+
+---
+
+## Due Diligence Levels
+
+### Standard Due Diligence
+
+| Check | Source | Frequency |
+|-------|--------|-----------|
+| Identity verification | ID documents | Onboarding |
+| OFAC screening | Sanctions lists | Onboarding + ongoing |
+| PEP screening | PEP databases | Onboarding + ongoing |
+| Adverse media | News sources | Onboarding + ongoing |
+
+### Enhanced Due Diligence
+
+**Triggers:**
+- High-risk jurisdictions
+- Politically exposed persons
+- Complex ownership structures
+- Unusual transaction patterns
+
+**Additional Steps:**
+- Senior management approval
+- Enhanced source of funds verification
+- Ongoing monitoring
+- Periodic refresh
+
+---
+
+## OFAC Compliance
+
+### Screening Requirements
+
+| List | Screening Frequency |
+|------|-------------------|
+| SDN List | Every transaction |
+| Sectoral Sanctions | Quarterly |
+| Country Lists | As updated |
+
+### Positive Match Process
+
+1. **Flag** - System identifies potential match
+2. **Review** - Compliance investigates
+3. **Escalate** - Senior review if confirmed
+4. **Action** - Block/report as required
+5. **Document** - Maintain records
+
+---
+
+## Record Retention
+
+### AML Records
+
+| Document | Retention |
+|----------|-----------|
+| Customer identification | 5 years after relationship |
+| Transaction records | 5 years from transaction |
+| SAR filings | 5 years from filing |
+| OFAC screening | 5 years from screening |
+
+---
+
+## Red Flags
+
+### Warning Signs
+
+- Reluctance to provide information
+- Unusual transaction patterns
+- Complex ownership structures
+- High-risk jurisdictions
+- Adverse media findings
+- Inconsistent information
+- Rush to complete transactions
+`
+  },
+  {
+    title: 'Insider Trading Policy',
+    slug: 'insider-trading-policy',
+    description: 'Guidelines for material non-public information handling',
+    category: 'Compliance & Legal',
+    tags: ['insider', 'mnpi', 'trading', 'compliance'],
+    is_public: false,
+    content: `# Insider Trading Policy
+
+**Purpose:** Guidelines for handling material non-public information (MNPI)
+
+---
+
+## Policy Overview
+
+### Prohibition
+
+**No employee may:**
+- Trade securities while in possession of MNPI
+- Tip MNPI to others who may trade
+- Recommend trades based on MNPI
+- Assist others in trading on MNPI
+
+### Definition of MNPI
+
+**Material:** Information a reasonable investor would consider important
+**Non-Public:** Not disseminated to the general public
+
+---
+
+## Common MNPI Examples
+
+### From Portfolio Companies
+
+| Information Type | Likely Material |
+|------------------|-----------------|
+| Earnings results | Yes |
+| M&A discussions | Yes |
+| Major contracts | Depends on size |
+| Management changes | Key executives only |
+| Regulatory actions | Significant only |
+| Product developments | Major products only |
+
+### From Deal Process
+
+| Stage | MNPI Risk |
+|-------|-----------|
+| Initial contact | Low |
+| Signed NDA | Moderate |
+| Due diligence | High |
+| Term sheet | High |
+| Signed definitive | Very High |
+| Announced | Cleared |
+
+---
+
+## Information Barriers
+
+### Wall Procedures
+
+1. **Restricted list** - Securities under active review
+2. **Watch list** - Securities requiring monitoring
+3. **Information barriers** - Limit information flow
+4. **Need-to-know** - Minimum necessary access
+
+### Restricted List Management
+
+| Action | Process |
+|--------|---------|
+| Add to list | Deal team notifies compliance |
+| Remove from list | Compliance reviews and clears |
+| Trading restriction | No personal or firm trading |
+| Duration | Until public announcement or deal end |
+
+---
+
+## Personal Trading
+
+### Pre-Clearance Requirements
+
+| Security Type | Pre-Clearance Required |
+|---------------|----------------------|
+| Individual stocks | Yes |
+| Bonds | Yes |
+| Options/derivatives | Yes |
+| Mutual funds | No |
+| ETFs (broad-based) | No |
+| Government securities | No |
+
+### Holding Periods
+
+- Minimum 30-day hold
+- No short-term trading
+- No short selling
+
+---
+
+## Reporting Requirements
+
+### Quarterly Reporting
+
+All employees must report:
+- Brokerage accounts
+- Securities transactions
+- New accounts opened
+
+### Annual Certification
+
+- Acknowledgment of policy
+- Confirmation of compliance
+- Disclosure of violations
+
+---
+
+## Violations
+
+### Consequences
+
+| Severity | Action |
+|----------|--------|
+| Minor | Warning, training |
+| Moderate | Disgorgement, suspension |
+| Serious | Termination, regulatory referral |
+
+### Reporting Violations
+
+- Report to Chief Compliance Officer
+- Anonymous hotline available
+- No retaliation for good faith reports
+`
+  },
+  {
+    title: 'Data Privacy & Security',
+    slug: 'data-privacy-security',
+    description: 'GDPR, CCPA, and data protection requirements',
+    category: 'Compliance & Legal',
+    tags: ['privacy', 'gdpr', 'ccpa', 'security', 'data-protection'],
+    is_public: false,
+    content: `# Data Privacy & Security
+
+**Purpose:** Data protection compliance and security practices
+
+---
+
+## Regulatory Framework
+
+### Key Regulations
+
+| Regulation | Scope | Key Requirements |
+|------------|-------|------------------|
+| GDPR | EU residents | Consent, rights, breach notification |
+| CCPA/CPRA | CA residents | Disclosure, opt-out, deletion |
+| SOC 2 | Service organizations | Security controls |
+| SEC Reg S-P | Investment advisors | Privacy notices, safeguards |
+
+---
+
+## Data Classification
+
+### Categories
+
+| Level | Examples | Handling |
+|-------|----------|----------|
+| Public | Marketing materials | No restrictions |
+| Internal | Policies, org charts | Internal access only |
+| Confidential | Deal data, financials | Need-to-know access |
+| Restricted | PII, credentials | Encrypted, logged access |
+
+### Personal Data Types
+
+**Sensitive PII:**
+- Social Security numbers
+- Financial account numbers
+- Government IDs
+- Health information
+
+**Standard PII:**
+- Names and contact info
+- Employment information
+- Investment preferences
+
+---
+
+## Data Subject Rights
+
+### GDPR Rights
+
+| Right | Description | Response Time |
+|-------|-------------|---------------|
+| Access | Copy of personal data | 30 days |
+| Rectification | Correct inaccurate data | 30 days |
+| Erasure | Delete personal data | 30 days |
+| Portability | Transfer data | 30 days |
+| Objection | Stop processing | 30 days |
+
+### CCPA Rights
+
+| Right | Description | Response Time |
+|-------|-------------|---------------|
+| Know | What data collected | 45 days |
+| Delete | Request deletion | 45 days |
+| Opt-out | No sale of data | Immediate |
+| Non-discrimination | Equal service | N/A |
+
+---
+
+## Security Controls
+
+### Technical Controls
+
+| Control | Implementation |
+|---------|----------------|
+| Encryption | AES-256 at rest, TLS in transit |
+| Access control | Role-based, MFA required |
+| Logging | All access logged, 1-year retention |
+| Backup | Daily backup, encrypted, off-site |
+
+### Administrative Controls
+
+| Control | Implementation |
+|---------|----------------|
+| Training | Annual security awareness |
+| Background checks | All employees |
+| Vendor management | Security assessments |
+| Incident response | Documented procedures |
+
+---
+
+## Breach Response
+
+### Response Timeline
+
+| Phase | Actions | Timeline |
+|-------|---------|----------|
+| Detection | Identify and contain | Immediate |
+| Assessment | Evaluate scope and impact | 24-48 hours |
+| Notification | Regulators and individuals | 72 hours (GDPR) |
+| Remediation | Fix vulnerabilities | As needed |
+| Post-mortem | Review and improve | 30 days |
+
+### Notification Requirements
+
+**GDPR:** 72 hours to supervisory authority
+**CCPA:** "Expedient" notification
+**SEC:** Material breach disclosure
+
+---
+
+## Vendor Management
+
+### Security Assessment
+
+| Factor | Evaluation |
+|--------|------------|
+| SOC reports | SOC 2 Type II preferred |
+| Encryption | Data protection standards |
+| Access controls | Authentication methods |
+| Incident response | Breach notification terms |
+
+### Contractual Requirements
+
+- Data processing agreement
+- Security obligations
+- Breach notification
+- Audit rights
+- Subprocessor restrictions
+`
+  },
+  // ============================================
+  // CATEGORY 10: ADDITIONAL PLATFORM GUIDES (5 documents)
+  // ============================================
+  {
+    title: 'Pipeline Dashboard Guide',
+    slug: 'pipeline-dashboard-guide',
+    description: 'How to use the deal pipeline tracker effectively',
+    category: 'Platform User Guides',
+    tags: ['pipeline', 'dashboard', 'tutorial', 'workflow'],
+    is_public: false,
+    content: `# Pipeline Dashboard Guide
+
+**Purpose:** Master the deal pipeline tracker for efficient deal management
+
+---
+
+## Dashboard Overview
+
+### Pipeline Stages
+
+| Stage | Description | Actions |
+|-------|-------------|---------|
+| Sourced | New opportunities | Initial screen |
+| Initial Review | First look analysis | Deep dive decision |
+| Deep Dive | Detailed analysis | IC recommendation |
+| IC Review | Committee presentation | Proceed/pass |
+| LOI | Term negotiation | Sign LOI |
+| Due Diligence | Full DD process | Final approval |
+| Closed | Completed investments | Portfolio management |
+
+---
+
+## Creating Deals
+
+### Quick Create
+
+1. Click **+ New Deal** button
+2. Enter company name
+3. Select initial stage
+4. Add key details
+5. Assign team members
+
+### Required Fields
+
+| Field | Description | Required |
+|-------|-------------|----------|
+| Company Name | Legal entity name | Yes |
+| Stage | Current pipeline stage | Yes |
+| Source | How deal was sourced | Yes |
+| Deal Lead | Primary owner | Yes |
+| Target Close | Expected timing | No |
+
+### Optional Enrichment
+
+- Industry sector
+- Geographic focus
+- Deal size range
+- Key contacts
+- Documents/files
+- Meeting notes
+
+---
+
+## Managing Pipeline
+
+### Moving Deals
+
+**Drag and Drop:**
+- Click and hold deal card
+- Drag to new stage column
+- Release to move
+
+**Quick Actions:**
+- Use arrow buttons on deal card
+- Keyboard shortcut: Ctrl+Arrow
+
+### Filtering and Sorting
+
+| Filter | Options |
+|--------|---------|
+| Stage | Any or specific stage |
+| Team Member | Assigned deals only |
+| Date Range | Created, updated, close date |
+| Sector | Industry filter |
+| Size | Deal size range |
+
+---
+
+## Deal Analytics
+
+### Key Metrics
+
+| Metric | Calculation | Target |
+|--------|-------------|--------|
+| Conversion Rate | Moved to next stage / Total | Varies by stage |
+| Time in Stage | Average days per stage | <30 days |
+| Win Rate | Closed / Total reviewed | >5% |
+| Volume | Deals per period | 50+/month |
+
+### Reports
+
+- Weekly pipeline snapshot
+- Monthly conversion analysis
+- Quarterly source attribution
+- Annual performance review
+
+---
+
+## Best Practices
+
+### Data Hygiene
+
+- Update deal status within 24 hours
+- Add notes after every meeting
+- Upload documents promptly
+- Tag deals consistently
+
+### Team Collaboration
+
+- Assign clear ownership
+- Use comments for updates
+- Share analysis documents
+- Schedule pipeline reviews
+`
+  },
+  {
+    title: 'Analytics Dashboard Guide',
+    slug: 'analytics-dashboard-guide',
+    description: 'Understanding metrics and generating insights from platform data',
+    category: 'Platform User Guides',
+    tags: ['analytics', 'dashboard', 'metrics', 'insights'],
+    is_public: false,
+    content: `# Analytics Dashboard Guide
+
+**Purpose:** Extract insights from your deal and portfolio data
+
+---
+
+## Dashboard Sections
+
+### Deal Flow Analytics
+
+| Metric | Description | Use Case |
+|--------|-------------|----------|
+| Volume by Period | Deals reviewed over time | Trend analysis |
+| Source Attribution | Origin of opportunities | Channel optimization |
+| Conversion Funnel | Stage-by-stage conversion | Process improvement |
+| Time to Close | Duration from source to close | Efficiency tracking |
+
+### Portfolio Analytics
+
+| Metric | Description | Use Case |
+|--------|-------------|----------|
+| Portfolio Value | Current NAV by company | Allocation review |
+| Return Attribution | IRR contribution by deal | Performance analysis |
+| Sector Exposure | Industry diversification | Risk management |
+| Vintage Analysis | Performance by year | Trend identification |
+
+---
+
+## Key Performance Indicators
+
+### Investment Activity
+
+| KPI | Formula | Benchmark |
+|-----|---------|-----------|
+| Deals Reviewed | Count per period | 50/month |
+| IC Hit Rate | IC presentations / Reviewed | 20% |
+| Close Rate | Closed / IC presented | 30% |
+| Deployment Pace | Capital deployed / Period | Per fund plan |
+
+### Portfolio Performance
+
+| KPI | Formula | Benchmark |
+|-----|---------|-----------|
+| IRR | Internal rate of return | >20% net |
+| MOIC | Total value / Invested | >2.0x |
+| DPI | Distributions / Invested | Fund age dependent |
+| RVPI | Remaining value / Invested | Fund age dependent |
+
+---
+
+## Custom Reports
+
+### Building Reports
+
+1. **Select data source** - Deals, portfolio, or combined
+2. **Choose metrics** - Select KPIs to include
+3. **Set filters** - Time period, segments
+4. **Configure visualization** - Chart type, grouping
+5. **Save and share** - Name and set permissions
+
+### Report Types
+
+| Type | Best For | Refresh |
+|------|----------|---------|
+| Snapshot | Point-in-time status | Manual |
+| Trend | Performance over time | Weekly |
+| Comparison | Period-over-period | Monthly |
+| Alert | Threshold-based | Real-time |
+
+---
+
+## Data Export
+
+### Export Options
+
+| Format | Use Case |
+|--------|----------|
+| Excel | Analysis, manipulation |
+| PDF | Presentations, sharing |
+| CSV | Data integration |
+| API | Automated workflows |
+
+### Scheduled Reports
+
+- Set up recurring exports
+- Choose recipients
+- Define delivery schedule
+- Configure format preferences
+
+---
+
+## Best Practices
+
+### Effective Analysis
+
+1. **Start with questions** - What are you trying to learn?
+2. **Choose right metrics** - Match metrics to questions
+3. **Consider context** - Market conditions, fund stage
+4. **Act on insights** - Turn data into decisions
+`
+  },
+  {
+    title: 'Collaboration Features Guide',
+    slug: 'collaboration-features-guide',
+    description: 'Team sharing, permissions, and collaborative workflow tools',
+    category: 'Platform User Guides',
+    tags: ['collaboration', 'team', 'permissions', 'sharing'],
+    is_public: false,
+    content: `# Collaboration Features Guide
+
+**Purpose:** Work effectively with your team using collaboration tools
+
+---
+
+## User Roles
+
+### Role Permissions
+
+| Role | View | Edit | Admin | Use Case |
+|------|------|------|-------|----------|
+| Admin | All | All | Yes | Platform administrators |
+| Manager | All | Team | No | Team leads, partners |
+| Analyst | Assigned | Assigned | No | Deal team members |
+| Viewer | Limited | None | No | External stakeholders |
+
+### Role Assignment
+
+1. Navigate to Settings → Team
+2. Click on user profile
+3. Select role from dropdown
+4. Save changes
+
+---
+
+## Sharing Documents
+
+### Share Options
+
+| Level | Access | Notification |
+|-------|--------|--------------|
+| Private | Creator only | None |
+| Team | All team members | Optional |
+| Specific | Selected users | Required |
+| Public | Anyone with link | None |
+
+### Sharing Workflow
+
+1. Open document or deal
+2. Click **Share** button
+3. Add users or groups
+4. Set permission level
+5. Add optional message
+6. Click **Share**
+
+---
+
+## Comments and Notes
+
+### Comment Types
+
+| Type | Visibility | Use Case |
+|------|------------|----------|
+| Public | All with access | General discussion |
+| Private | You only | Personal notes |
+| Mention | Tagged users notified | Direct attention |
+
+### @Mentions
+
+- Type @ followed by username
+- Select from dropdown
+- User receives notification
+- Creates audit trail
+
+---
+
+## Activity Tracking
+
+### Activity Feed
+
+| Event | Tracked | Visible To |
+|-------|---------|------------|
+| Document views | Yes | Admins |
+| Edits | Yes | Team |
+| Comments | Yes | Team |
+| Stage changes | Yes | Team |
+| Assignments | Yes | Team |
+
+### Notifications
+
+**Configure in Settings:**
+- Email frequency (real-time, daily, weekly)
+- Event types (all, mentions only, none)
+- Channels (email, in-app, both)
+
+---
+
+## Real-time Collaboration
+
+### Simultaneous Editing
+
+- Multiple users can edit
+- Changes sync in real-time
+- Presence indicators show active users
+- Conflict resolution automatic
+
+### Live Updates
+
+- Deal status changes update instantly
+- Comments appear in real-time
+- Notifications delivered immediately
+- Dashboard reflects current state
+
+---
+
+## Best Practices
+
+### Effective Collaboration
+
+1. **Use mentions** - Direct attention appropriately
+2. **Comment context** - Add context to changes
+3. **Regular updates** - Keep team informed
+4. **Clear ownership** - Assign responsibility
+5. **Review permissions** - Audit access regularly
+`
+  },
+  {
+    title: 'Document Management Guide',
+    slug: 'document-management-guide',
+    description: 'Organizing, versioning, and managing documents in the knowledge base',
+    category: 'Platform User Guides',
+    tags: ['documents', 'management', 'organization', 'versioning'],
+    is_public: false,
+    content: `# Document Management Guide
+
+**Purpose:** Organize and manage your knowledge base effectively
+
+---
+
+## Document Organization
+
+### Folder Structure
+
+\`\`\`
+Knowledge Base/
+├── Deal Sourcing/
+│   ├── Templates/
+│   ├── Guides/
+│   └── Market Research/
+├── Due Diligence/
+│   ├── Checklists/
+│   ├── Frameworks/
+│   └── Templates/
+├── Portfolio/
+│   ├── Company Files/
+│   ├── Reporting/
+│   └── Board Materials/
+└── Operations/
+    ├── Policies/
+    ├── Procedures/
+    └── Training/
+\`\`\`
+
+### Naming Conventions
+
+| Type | Format | Example |
+|------|--------|---------|
+| Templates | [Type] Template | Investment Memo Template |
+| Guides | [Topic] Guide | Due Diligence Guide |
+| Reports | [Company] [Type] [Date] | Acme Q4 Report 2024 |
+| Policies | [Topic] Policy | Conflicts of Interest Policy |
+
+---
+
+## Creating Documents
+
+### From Scratch
+
+1. Click **+ New Document**
+2. Enter title
+3. Select category
+4. Add tags
+5. Write content
+6. Save
+
+### From Template
+
+1. Click **+ New from Template**
+2. Browse templates
+3. Select template
+4. Customize content
+5. Save as new document
+
+---
+
+## Document Metadata
+
+### Core Fields
+
+| Field | Purpose | Required |
+|-------|---------|----------|
+| Title | Document name | Yes |
+| Slug | URL identifier | Auto-generated |
+| Category | Classification | Yes |
+| Tags | Search keywords | Recommended |
+| Description | Brief summary | Recommended |
+
+### Visibility Settings
+
+| Setting | Access |
+|---------|--------|
+| Private | Creator only |
+| Team | All team members |
+| Public | Anyone with link |
+
+---
+
+## Version Control
+
+### Automatic Versioning
+
+- Every save creates a version
+- View version history
+- Compare versions
+- Restore previous versions
+
+### Version History
+
+| Action | Information |
+|--------|-------------|
+| View | See past versions |
+| Compare | Diff between versions |
+| Restore | Revert to version |
+| Download | Export specific version |
+
+---
+
+## Search and Discovery
+
+### Search Features
+
+| Feature | Usage |
+|---------|-------|
+| Full text | Search document content |
+| Title | Search by document name |
+| Tags | Filter by tags |
+| Category | Filter by category |
+| Date | Filter by date range |
+
+### Advanced Search
+
+\`\`\`
+title:"Investment Memo" AND category:"Due Diligence"
+tags:template AND updated:>2024-01-01
+\`\`\`
+
+---
+
+## Best Practices
+
+### Organization
+
+1. **Consistent naming** - Follow conventions
+2. **Appropriate tags** - Aid discoverability
+3. **Regular cleanup** - Archive outdated docs
+4. **Clear ownership** - Assign maintainers
+
+### Content Quality
+
+1. **Keep updated** - Review quarterly
+2. **Link related** - Cross-reference documents
+3. **Version major changes** - Track evolution
+4. **Get feedback** - Improve over time
+`
+  },
+  {
+    title: 'Mobile App Guide',
+    slug: 'mobile-app-guide',
+    description: 'Using the platform on mobile devices and tablets',
+    category: 'Platform User Guides',
+    tags: ['mobile', 'app', 'responsive', 'tablet'],
+    is_public: false,
+    content: `# Mobile App Guide
+
+**Purpose:** Access and use the platform on mobile devices
+
+---
+
+## Getting Started
+
+### Supported Devices
+
+| Platform | Minimum Version | Recommended |
+|----------|-----------------|-------------|
+| iOS | 14.0+ | Latest |
+| Android | 10.0+ | Latest |
+| Tablets | iPad OS 14+, Android 10+ | Latest |
+
+### Installation
+
+**iOS:**
+1. Open Safari
+2. Navigate to platform URL
+3. Tap Share → Add to Home Screen
+4. Name the app
+5. Tap Add
+
+**Android:**
+1. Open Chrome
+2. Navigate to platform URL
+3. Tap menu → Install app
+4. Confirm installation
+
+---
+
+## Mobile Features
+
+### Optimized Views
+
+| Feature | Mobile Experience |
+|---------|-------------------|
+| Dashboard | Simplified metrics |
+| Pipeline | Swipeable cards |
+| Documents | Reading mode |
+| Search | Voice-enabled |
+
+### Touch Gestures
+
+| Gesture | Action |
+|---------|--------|
+| Tap | Select/open |
+| Long press | Context menu |
+| Swipe left/right | Stage navigation |
+| Pull down | Refresh |
+| Pinch | Zoom (documents) |
+
+---
+
+## Key Functions
+
+### Quick Actions
+
+| Action | How To |
+|--------|--------|
+| New deal | Tap + button |
+| Search | Tap search icon |
+| Notifications | Tap bell icon |
+| Profile | Tap avatar |
+
+### Offline Mode
+
+**Available Offline:**
+- Recently viewed documents
+- Cached deal information
+- Saved searches
+
+**Requires Connection:**
+- New deal creation
+- Document editing
+- Real-time updates
+
+---
+
+## Notifications
+
+### Push Notifications
+
+| Type | Default |
+|------|---------|
+| Mentions | On |
+| Assignments | On |
+| Stage changes | Off |
+| Comments | Off |
+
+### Configuration
+
+1. Open Settings
+2. Tap Notifications
+3. Toggle preferences
+4. Save changes
+
+---
+
+## Best Practices
+
+### Mobile Usage
+
+1. **Enable notifications** - Stay informed
+2. **Use favorites** - Quick access
+3. **Sync before travel** - Cache important docs
+4. **Secure device** - Use biometrics
+5. **Update regularly** - Get latest features
+
+### Battery and Data
+
+- Enable data saver mode
+- Limit background sync
+- Use WiFi when available
+- Close app when not in use
+`
+  },
 ];

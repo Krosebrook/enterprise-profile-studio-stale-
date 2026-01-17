@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { seedDocuments } from '@/data/seedDocuments';
+import { seedDocumentsExtended } from '@/data/seedDocumentsExtended';
 import { useBulkImportDocuments, useKnowledgeDocuments } from '@/hooks/useKnowledgeBase';
 import { Database, Loader2, Check } from 'lucide-react';
 import {
@@ -18,9 +19,12 @@ export function SeedDocumentsButton() {
   const { data: existingDocs } = useKnowledgeDocuments();
   const bulkImport = useBulkImportDocuments();
 
+  // Combine all seed documents from both files
+  const allSeedDocuments = [...seedDocuments, ...seedDocumentsExtended];
+  
   // Filter out documents that already exist (by slug)
   const existingSlugs = new Set(existingDocs?.map((d) => d.slug) || []);
-  const newDocuments = seedDocuments.filter((d) => !existingSlugs.has(d.slug));
+  const newDocuments = allSeedDocuments.filter((d) => !existingSlugs.has(d.slug));
 
   const handleImport = async () => {
     if (newDocuments.length > 0) {
@@ -55,6 +59,15 @@ export function SeedDocumentsButton() {
               <li>Claude Code Standards (6 docs)</li>
               <li>Platform Documentation (5 docs)</li>
               <li>Phase Status Reports (4 docs)</li>
+              <li>Deal Sourcing Guides (6 docs)</li>
+              <li>Due Diligence Frameworks (7 docs)</li>
+              <li>Investment Analysis (6 docs)</li>
+              <li>Deal Structures (5 docs)</li>
+              <li>Portfolio Management (6 docs)</li>
+              <li>Exit Strategies (5 docs)</li>
+              <li>LP Relations & Fundraising (5 docs)</li>
+              <li>Compliance & Legal (5 docs)</li>
+              <li>Platform User Guides (10 docs)</li>
             </ul>
           </DialogDescription>
         </DialogHeader>
