@@ -1,16 +1,21 @@
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
 import { OnboardingTooltip } from '../OnboardingTooltip';
+import { AISuggestionsPanel } from '../AISuggestionsPanel';
+import { useAISuggestions } from '@/hooks/useAISuggestions';
 import { OnboardingUserProfile, INDUSTRIES, DEAL_STRUCTURES, REGIONS, DEAL_STAGES } from '@/types/onboarding';
-import { Target, DollarSign, Globe2, Shield, Layers } from 'lucide-react';
+import { Target, DollarSign, Globe2, Shield, Layers, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface DealSourcingStepProps {
   data: OnboardingUserProfile['dealSourcing'];
   onChange: (data: Partial<OnboardingUserProfile['dealSourcing']>) => void;
+  welcomeData?: OnboardingUserProfile['welcome'];
 }
 
 const riskLevels = [
@@ -26,11 +31,67 @@ const formatCurrency = (value: number) => {
   return `$${value}`;
 };
 
-export function DealSourcingStep({ data, onChange }: DealSourcingStepProps) {
+export function DealSourcingStep({ data, onChange, welcomeData }: DealSourcingStepProps) {
+  const { suggestions, isLoading, generateSuggestions } = useAISuggestions();
+  const [appliedFields, setAppliedFields] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // Generate AI suggestions when the step loads
+  useEffect(() => {
+    if (welcomeData?.role && welcomeData?.experienceLevel && !suggestions && !isLoading) {
+      generateSuggestions(welcomeData.role, welcomeData.experienceLevel, {
+        targetIndustries: data.targetIndustries,
+        riskTolerance: data.riskTolerance,
+      });
+      setShowSuggestions(true);
+    }
+  }, [welcomeData, generateSuggestions, suggestions, isLoading, data.targetIndustries, data.riskTolerance]);
+
   const toggleArrayItem = <T extends string>(array: T[], item: T): T[] => {
     return array.includes(item)
       ? array.filter(i => i !== item)
       : [...array, item];
+  };
+
+  const handleApplySuggestion = (field: string, values: any) => {
+    switch (field) {
+      case 'industries':
+        onChange({ targetIndustries: values as string[] });
+        break;
+      case 'dealStructures':
+        onChange({ preferredDealStructures: values as string[] });
+        break;
+      case 'stages':
+        onChange({ dealStages: values as string[] });
+        break;
+      case 'regions':
+        onChange({ geoPreferences: { ...data.geoPreferences, regions: values as string[] } });
+        break;
+      case 'riskTolerance':
+        onChange({ riskTolerance: values as typeof data.riskTolerance });
+        break;
+      case 'investmentRange':
+        onChange({ investmentSizeRange: { ...data.investmentSizeRange, ...values } });
+        break;
+    }
+    setAppliedFields(prev => [...prev, field]);
+  };
+
+  const handleApplyAll = () => {
+    if (!suggestions) return;
+    
+    onChange({
+      targetIndustries: suggestions.industries.filter(i => INDUSTRIES.includes(i as any)) as string[],
+      preferredDealStructures: suggestions.dealStructures.filter(s => DEAL_STRUCTURES.includes(s as any)) as string[],
+      dealStages: suggestions.stages.filter(s => DEAL_STAGES.includes(s as any)) as string[],
+      geoPreferences: { 
+        ...data.geoPreferences, 
+        regions: suggestions.regions.filter(r => REGIONS.includes(r as any)) as string[]
+      },
+      riskTolerance: suggestions.riskTolerance as typeof data.riskTolerance,
+      investmentSizeRange: { ...data.investmentSizeRange, ...suggestions.investmentRange },
+    });
+    setAppliedFields(['industries', 'dealStructures', 'stages', 'regions', 'riskTolerance', 'investmentRange']);
   };
 
   return (
@@ -39,16 +100,43 @@ export function DealSourcingStep({ data, onChange }: DealSourcingStepProps) {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center gap-3"
+        className="flex items-center justify-between"
       >
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <Target className="h-6 w-6 text-primary" />
+        <div className="flex items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+            <Target className="h-6 w-6 text-primary" />
+          </div>
+          <div>
+            <h2 className="font-display text-xl font-bold">Deal Sourcing Criteria</h2>
+            <p className="text-sm text-muted-foreground">Define the types of deals you're looking for</p>
+          </div>
         </div>
-        <div>
-          <h2 className="font-display text-xl font-bold">Deal Sourcing Criteria</h2>
-          <p className="text-sm text-muted-foreground">Define the types of deals you're looking for</p>
-        </div>
+        {!showSuggestions && welcomeData && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              generateSuggestions(welcomeData.role, welcomeData.experienceLevel);
+              setShowSuggestions(true);
+            }}
+            className="gap-2"
+          >
+            <Sparkles className="h-4 w-4" />
+            Get AI Suggestions
+          </Button>
+        )}
       </motion.div>
+
+      {/* AI Suggestions Panel */}
+      {showSuggestions && (
+        <AISuggestionsPanel
+          suggestions={suggestions}
+          isLoading={isLoading}
+          onApplySuggestion={handleApplySuggestion}
+          onApplyAll={handleApplyAll}
+          appliedFields={appliedFields}
+        />
+      )}
 
       {/* Target Industries */}
       <Card className="border-border/50">
