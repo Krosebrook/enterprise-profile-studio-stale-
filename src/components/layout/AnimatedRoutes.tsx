@@ -13,6 +13,7 @@ import KnowledgeBasePage from '@/pages/KnowledgeBasePage';
 import KnowledgeDocumentPage from '@/pages/KnowledgeDocumentPage';
 import KnowledgeEditorPage from '@/pages/KnowledgeEditorPage';
 import OnboardingPage from '@/pages/OnboardingPage';
+import DealComparisonPage from '@/pages/DealComparisonPage';
 import NotFound from '@/pages/NotFound';
 
 export function AnimatedRoutes() {
@@ -58,6 +59,14 @@ export function AnimatedRoutes() {
           element={
             <PageTransition>
               <DashboardPage />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/deals/compare"
+          element={
+            <PageTransition>
+              <DealComparisonPage />
             </PageTransition>
           }
         />

@@ -216,15 +216,22 @@ export function PersonalizedDashboard({ profile, userName }: PersonalizedDashboa
                   <Sparkles className="h-5 w-5 text-primary" />
                   Recommended Deals
                 </CardTitle>
-                <CardDescription>
-                  Based on your investment criteria and preferences
-                </CardDescription>
-              </div>
+              <CardDescription>
+                Based on your investment criteria and preferences
+              </CardDescription>
+            </div>
+            <div className="flex items-center gap-2">
+              <Link to="/deals/compare">
+                <Button variant="outline" size="sm">
+                  Compare Deals
+                </Button>
+              </Link>
               <Button variant="outline" size="sm">
                 View All
                 <ChevronRight className="ml-1 h-4 w-4" />
               </Button>
             </div>
+          </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
