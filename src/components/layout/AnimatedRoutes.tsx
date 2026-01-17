@@ -12,6 +12,7 @@ import AnalyticsDashboardPage from '@/pages/AnalyticsDashboardPage';
 import KnowledgeBasePage from '@/pages/KnowledgeBasePage';
 import KnowledgeDocumentPage from '@/pages/KnowledgeDocumentPage';
 import KnowledgeEditorPage from '@/pages/KnowledgeEditorPage';
+import OnboardingPage from '@/pages/OnboardingPage';
 import NotFound from '@/pages/NotFound';
 
 export function AnimatedRoutes() {
@@ -41,6 +42,14 @@ export function AnimatedRoutes() {
           element={
             <PageTransition>
               <SignupPage />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/onboarding"
+          element={
+            <PageTransition>
+              <OnboardingPage />
             </PageTransition>
           }
         />
