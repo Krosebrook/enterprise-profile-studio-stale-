@@ -13,6 +13,7 @@ import { ImportDocumentsDialog } from '@/components/knowledge/ImportDocumentsDia
 import { SeedDocumentsButton } from '@/components/knowledge/SeedDocumentsButton';
 import { TagManager } from '@/components/knowledge/TagManager';
 import { DocumentTemplateDialog } from '@/components/knowledge/DocumentTemplateDialog';
+import { DocumentSearch } from '@/components/knowledge/DocumentSearch';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -34,6 +35,7 @@ export default function KnowledgeBasePage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [searchDialogOpen, setSearchDialogOpen] = useState(false);
   
   // Enable keyboard shortcuts
   useKeyboardShortcuts();
@@ -44,6 +46,18 @@ export default function KnowledgeBasePage() {
     window.addEventListener('shortcut:new-profile', handleNewDocument);
     return () => window.removeEventListener('shortcut:new-profile', handleNewDocument);
   }, [navigate]);
+
+  // Keyboard shortcut for search dialog (Cmd/Ctrl + K)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setSearchDialogOpen(true);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const filteredDocuments = documents?.filter((doc) => {
     const matchesSearch =
@@ -167,15 +181,31 @@ export default function KnowledgeBasePage() {
                   <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
-                      placeholder="Search documents... (press /)"
+                      placeholder="Quick filter..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 border-border/60 focus:border-primary"
+                      className="pl-10 pr-32 border-border/60 focus:border-primary"
                       data-search-input
                     />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 text-xs text-muted-foreground hover:text-foreground gap-1.5"
+                      onClick={() => setSearchDialogOpen(true)}
+                    >
+                      <Search className="h-3.5 w-3.5" />
+                      Full Search
+                      <kbd className="ml-1 px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono">⌘K</kbd>
+                    </Button>
                   </div>
                 </div>
               </FadeIn>
+
+              {/* Search Dialog */}
+              <DocumentSearch 
+                isOpen={searchDialogOpen} 
+                onClose={() => setSearchDialogOpen(false)} 
+              />
 
               {/* Category Tabs */}
               <FadeIn delay={0.1}>
