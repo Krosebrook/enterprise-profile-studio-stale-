@@ -11,6 +11,8 @@ import { DraggableDocumentCard } from '@/components/knowledge/DraggableDocumentC
 import { FolderTree } from '@/components/knowledge/FolderTree';
 import { ImportDocumentsDialog } from '@/components/knowledge/ImportDocumentsDialog';
 import { SeedDocumentsButton } from '@/components/knowledge/SeedDocumentsButton';
+import { TagManager } from '@/components/knowledge/TagManager';
+import { DocumentTemplateDialog } from '@/components/knowledge/DocumentTemplateDialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -145,8 +147,10 @@ export default function KnowledgeBasePage() {
                       <Command className="h-3 w-3" />
                       <span>K</span>
                     </div>
+                    <TagManager />
                     <SeedDocumentsButton />
                     <ImportDocumentsDialog />
+                    <DocumentTemplateDialog />
                     <Button asChild className="accent-gradient border-0 shadow-sm hover:shadow-md transition-shadow">
                       <Link to="/knowledge/new">
                         <Plus className="h-4 w-4 mr-2" />

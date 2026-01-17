@@ -5,10 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MarkdownRenderer } from './MarkdownRenderer';
+import { TagInput } from './TagInput';
+import { useAllTags } from './TagManager';
 import { 
   KnowledgeDocument, 
   CreateDocumentData, 
@@ -16,7 +17,7 @@ import {
   useCreateDocument,
   useUpdateDocument 
 } from '@/hooks/useKnowledgeBase';
-import { Save, Eye, Edit, X, Plus } from 'lucide-react';
+import { Save, Eye, Edit } from 'lucide-react';
 
 interface DocumentEditorProps {
   document?: KnowledgeDocument;
@@ -35,25 +36,27 @@ export function DocumentEditor({ document, onSave }: DocumentEditorProps) {
   const [category, setCategory] = useState(document?.category || 'General');
   const [tags, setTags] = useState<string[]>(document?.tags || []);
   const [isPublic, setIsPublic] = useState(document?.is_public || false);
-  const [newTag, setNewTag] = useState('');
   const [autoSlug, setAutoSlug] = useState(!document);
+  const allTags = useAllTags();
+
+  // Load template data from sessionStorage if available
+  useEffect(() => {
+    const templateData = sessionStorage.getItem('documentTemplate');
+    if (templateData && !document) {
+      const template = JSON.parse(templateData);
+      setTitle(template.title || '');
+      setContent(template.content || '');
+      setCategory(template.category || 'General');
+      setTags(template.tags || []);
+      sessionStorage.removeItem('documentTemplate');
+    }
+  }, [document]);
 
   useEffect(() => {
     if (autoSlug && title) {
       setSlug(generateSlug(title));
     }
   }, [title, autoSlug]);
-
-  const handleAddTag = () => {
-    if (newTag.trim() && !tags.includes(newTag.trim())) {
-      setTags([...tags, newTag.trim()]);
-      setNewTag('');
-    }
-  };
-
-  const handleRemoveTag = (tagToRemove: string) => {
-    setTags(tags.filter((tag) => tag !== tagToRemove));
-  };
 
   const handleSubmit = async () => {
     const data: CreateDocumentData = {
@@ -135,29 +138,12 @@ export function DocumentEditor({ document, onSave }: DocumentEditorProps) {
         </div>
         <div className="space-y-2">
           <Label>Tags</Label>
-          <div className="flex gap-2">
-            <Input
-              value={newTag}
-              onChange={(e) => setNewTag(e.target.value)}
-              placeholder="Add a tag"
-              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
-            />
-            <Button type="button" variant="outline" size="icon" onClick={handleAddTag}>
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
-          {tags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mt-2">
-              {tags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="gap-1">
-                  {tag}
-                  <button onClick={() => handleRemoveTag(tag)}>
-                    <X className="h-3 w-3" />
-                  </button>
-                </Badge>
-              ))}
-            </div>
-          )}
+          <TagInput
+            tags={tags}
+            onTagsChange={setTags}
+            suggestions={allTags}
+            placeholder="Add tags..."
+          />
         </div>
       </div>
 
