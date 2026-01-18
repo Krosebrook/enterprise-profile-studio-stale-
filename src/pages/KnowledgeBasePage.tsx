@@ -12,6 +12,7 @@ import { FolderTree } from '@/components/knowledge/FolderTree';
 import { ImportDocumentsDialog } from '@/components/knowledge/ImportDocumentsDialog';
 import { SeedDocumentsButton } from '@/components/knowledge/SeedDocumentsButton';
 import { TagManager } from '@/components/knowledge/TagManager';
+import { MultiTagFilter } from '@/components/knowledge/MultiTagFilter';
 import { DocumentTemplateDialog } from '@/components/knowledge/DocumentTemplateDialog';
 import { DocumentSearch } from '@/components/knowledge/DocumentSearch';
 import { Button } from '@/components/ui/button';
@@ -34,6 +35,7 @@ export default function KnowledgeBasePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [searchDialogOpen, setSearchDialogOpen] = useState(false);
   
@@ -70,7 +72,11 @@ export default function KnowledgeBasePage() {
     
     const matchesFolder = selectedFolderId === null || doc.folder_id === selectedFolderId;
 
-    return matchesSearch && matchesCategory && matchesFolder;
+    // Multi-tag filtering - document must have ALL selected tags
+    const matchesTags = selectedTags.length === 0 || 
+      selectedTags.every(tag => doc.tags?.includes(tag));
+
+    return matchesSearch && matchesCategory && matchesFolder && matchesTags;
   });
 
   const handleDelete = async (id: string) => {
@@ -175,29 +181,37 @@ export default function KnowledgeBasePage() {
                 </div>
               </FadeIn>
 
-              {/* Search */}
+              {/* Search and Tag Filter */}
               <FadeIn delay={0.05}>
-                <div className="flex flex-col md:flex-row gap-4 mb-6">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Quick filter..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 pr-32 border-border/60 focus:border-primary"
-                      data-search-input
-                    />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 text-xs text-muted-foreground hover:text-foreground gap-1.5"
-                      onClick={() => setSearchDialogOpen(true)}
-                    >
-                      <Search className="h-3.5 w-3.5" />
-                      Full Search
-                      <kbd className="ml-1 px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono">⌘K</kbd>
-                    </Button>
+                <div className="flex flex-col gap-4 mb-6">
+                  <div className="flex flex-col md:flex-row gap-4">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Quick filter..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10 pr-32 border-border/60 focus:border-primary"
+                        data-search-input
+                      />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 text-xs text-muted-foreground hover:text-foreground gap-1.5"
+                        onClick={() => setSearchDialogOpen(true)}
+                      >
+                        <Search className="h-3.5 w-3.5" />
+                        Full Search
+                        <kbd className="ml-1 px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono">⌘K</kbd>
+                      </Button>
+                    </div>
                   </div>
+                  
+                  {/* Multi-Tag Filter */}
+                  <MultiTagFilter 
+                    selectedTags={selectedTags} 
+                    onTagsChange={setSelectedTags} 
+                  />
                 </div>
               </FadeIn>
 
@@ -247,14 +261,14 @@ export default function KnowledgeBasePage() {
                       <FileText className="h-8 w-8 text-primary" />
                     </div>
                     <h3 className="text-lg font-semibold text-foreground mb-2">
-                      {searchTerm || selectedCategory || selectedFolderId ? 'No documents found' : 'No documents yet'}
+                      {searchTerm || selectedCategory || selectedFolderId || selectedTags.length > 0 ? 'No documents found' : 'No documents yet'}
                     </h3>
                     <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-                      {searchTerm || selectedCategory || selectedFolderId
+                      {searchTerm || selectedCategory || selectedFolderId || selectedTags.length > 0
                         ? 'Try adjusting your search or filters'
                         : 'Create your first document to get started'}
                     </p>
-                    {!searchTerm && !selectedCategory && !selectedFolderId && (
+                    {!searchTerm && !selectedCategory && !selectedFolderId && selectedTags.length === 0 && (
                       <Button asChild className="accent-gradient border-0">
                         <Link to="/knowledge/new">
                           <Plus className="h-4 w-4 mr-2" />
