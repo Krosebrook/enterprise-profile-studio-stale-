@@ -1,73 +1,188 @@
-# Welcome to your Lovable project
+# Enterprise Profile Studio
 
-## Project info
+A powerful platform for creating, managing, and sharing professional enterprise profiles. Build stunning company profiles with ease using our intuitive wizard-based interface, showcase your team and services, manage deals and analytics, and maintain a comprehensive knowledge base.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 🌟 Features
 
-## How can I edit this code?
+### Profile Management
+- **Guided Profile Creation**: Step-by-step wizard for building comprehensive enterprise profiles
+- **Multiple Templates**: Pre-configured templates for various industries (Tech, Consulting, Healthcare, Legal, etc.)
+- **Real-time Preview**: See your profile as you build it
+- **Public Sharing**: Share profiles via unique URLs
+- **PDF Export**: Generate professional PDF versions of your profiles
 
-There are several ways of editing your application.
+### Deal Pipeline Management
+- **Deal Tracking**: Manage deals through customizable pipeline stages
+- **Deal Comparison**: Compare multiple deals side-by-side
+- **Analytics Dashboard**: Track deal metrics and performance
+- **Investment Memos**: Document deal analysis and decisions
 
-**Use Lovable**
+### Knowledge Base
+- **Document Management**: Organize documents in folders
+- **Search & Tagging**: Powerful search with tag-based organization
+- **Templates**: Document templates for common use cases
+- **Markdown Support**: Rich text editing with markdown
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### Analytics & Insights
+- **Profile Analytics**: Track views, shares, and engagement
+- **Dashboard Metrics**: Comprehensive analytics dashboard
+- **Real-time Updates**: Live data refresh every 30 seconds
 
-Changes made via Lovable will be committed automatically to this repo.
+### Additional Features
+- **Authentication**: Secure user authentication with Supabase
+- **Onboarding**: Personalized onboarding flow for new users
+- **AI Suggestions**: AI-powered content suggestions (via Supabase Edge Functions)
+- **Keyboard Shortcuts**: Power user shortcuts for common actions
+- **Command Palette**: Quick access to all features (Cmd/Ctrl+K)
+- **Dark Mode**: Built-in theme support
 
-**Use your preferred IDE**
+## 🚀 Getting Started
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Prerequisites
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- Node.js 18+ and npm
+- Supabase account (for backend services)
 
-Follow these steps:
+### Installation
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Clone the repository
+git clone https://github.com/Krosebrook/enterprise-profile-studio.git
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Navigate to the project directory
+cd enterprise-profile-studio
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Install dependencies
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Set up environment variables (see .env file)
+# Update VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY
+
+# Start the development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The application will be available at `http://localhost:5173`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Environment Variables
 
-**Use GitHub Codespaces**
+Create a `.env` file in the root directory with:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```env
+VITE_SUPABASE_PROJECT_ID=your_project_id
+VITE_SUPABASE_PUBLISHABLE_KEY=your_publishable_key
+VITE_SUPABASE_URL=your_supabase_url
+```
 
-## What technologies are used for this project?
+## 🛠️ Development
 
-This project is built with:
+### Available Scripts
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```sh
+# Start development server with hot reload
+npm run dev
 
-## How can I deploy this project?
+# Build for production
+npm run build
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+# Build for development (includes source maps)
+npm run build:dev
 
-## Can I connect a custom domain to my Lovable project?
+# Run linter
+npm run lint
 
-Yes, you can!
+# Run tests
+npm run test
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+# Run tests in watch mode
+npm run test:watch
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+# Preview production build
+npm run preview
+```
+
+### Project Structure
+
+```
+src/
+├── components/        # React components
+│   ├── auth/         # Authentication components
+│   ├── dashboard/    # Dashboard components
+│   ├── deals/        # Deal management components
+│   ├── knowledge/    # Knowledge base components
+│   ├── layout/       # Layout components
+│   ├── onboarding/   # Onboarding flow components
+│   ├── ui/           # Reusable UI components (shadcn-ui)
+│   └── wizard/       # Profile wizard components
+├── contexts/         # React contexts (Auth, etc.)
+├── data/             # Static data and templates
+├── hooks/            # Custom React hooks
+├── integrations/     # External integrations (Supabase)
+├── lib/              # Utility libraries
+├── pages/            # Page components
+├── types/            # TypeScript type definitions
+└── test/             # Test files
+
+supabase/
+├── functions/        # Edge Functions
+└── migrations/       # Database migrations
+```
+
+## 🏗️ Tech Stack
+
+### Frontend
+- **React 18**: UI library
+- **TypeScript**: Type safety and better DX
+- **Vite**: Fast build tool and dev server
+- **Tailwind CSS**: Utility-first CSS framework
+- **shadcn/ui**: High-quality React components
+- **Radix UI**: Unstyled, accessible components
+- **TanStack Query**: Data fetching and caching
+- **React Router**: Client-side routing
+- **Framer Motion**: Animations
+- **Lucide React**: Icon library
+
+### Backend & Services
+- **Supabase**: Backend-as-a-Service
+  - PostgreSQL database
+  - Authentication
+  - Real-time subscriptions
+  - Edge Functions
+  - Storage
+
+### Development Tools
+- **ESLint**: Code linting
+- **Vitest**: Unit testing
+- **Testing Library**: React component testing
+
+## 🧪 Testing
+
+```sh
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+```
+
+## 📝 License
+
+This project is private and proprietary.
+
+## 🤝 Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for development guidelines and best practices.
+
+## 📚 Additional Documentation
+
+- [Architecture Documentation](./ARCHITECTURE.md) - System architecture and design patterns
+- [API Documentation](./docs/API.md) - API endpoints and integrations
+- [Deployment Guide](./docs/DEPLOYMENT.md) - How to deploy the application
+
+## 🔒 Security
+
+If you discover a security vulnerability, please email security@example.com.
+
+## 📞 Support
+
+For support, please open an issue in the GitHub repository or contact the development team.
