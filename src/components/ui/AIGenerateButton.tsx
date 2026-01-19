@@ -5,7 +5,7 @@ import { useAIGeneration, type GenerationType } from '@/hooks/useAIGeneration';
 
 interface AIGenerateButtonProps {
   type: GenerationType;
-  context: Record<string, any>;
+  context: Record<string, string | number | boolean | undefined>;
   onGenerate: (value: string) => void;
   disabled?: boolean;
   className?: string;

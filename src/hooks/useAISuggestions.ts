@@ -13,11 +13,22 @@ interface AISuggestions {
   tips: string[];
 }
 
+interface OnboardingPreferences {
+  targetIndustries?: string[];
+  preferredDealStructures?: string[];
+  dealStages?: string[];
+  geoPreferences?: {
+    regions?: string[];
+  };
+  riskTolerance?: 'low' | 'moderate' | 'high';
+  investmentSizeRange?: { min?: number; max?: number };
+}
+
 interface UseAISuggestionsReturn {
   suggestions: AISuggestions | null;
   isLoading: boolean;
   error: string | null;
-  generateSuggestions: (role: string, experienceLevel: string, existingPreferences?: any) => Promise<void>;
+  generateSuggestions: (role: string, experienceLevel: string, existingPreferences?: OnboardingPreferences) => Promise<void>;
   clearSuggestions: () => void;
 }
 
@@ -29,7 +40,7 @@ export function useAISuggestions(): UseAISuggestionsReturn {
   const generateSuggestions = useCallback(async (
     role: string,
     experienceLevel: string,
-    existingPreferences?: any
+    existingPreferences?: OnboardingPreferences
   ) => {
     setIsLoading(true);
     setError(null);
@@ -51,12 +62,13 @@ export function useAISuggestions(): UseAISuggestionsReturn {
           toast.success('AI suggestions generated based on your profile!');
         }
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to generate suggestions:', err);
-      setError(err.message || 'Failed to generate suggestions');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to generate suggestions';
+      setError(errorMessage);
       
       // Don't show error toast for rate limiting - we have fallback
-      if (!err.message?.includes('Rate')) {
+      if (!errorMessage.includes('Rate')) {
         toast.error('Could not generate AI suggestions. Using defaults.');
       }
     } finally {

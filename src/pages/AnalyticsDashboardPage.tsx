@@ -107,7 +107,7 @@ function useComparisonAnalytics(profileIds: string[]) {
     };
 
     fetchAll();
-  }, [profileIds.join(',')]);
+  }, [profileIds]);
 
   return { data, isLoading };
 }
@@ -180,7 +180,7 @@ export default function AnalyticsDashboardPage() {
     Object.values(comparisonData).forEach(d => d.viewsByDate.forEach(v => dates.add(v.date)));
     
     return Array.from(dates).sort().map(date => {
-      const point: Record<string, any> = { 
+      const point: Record<string, string | number> = { 
         date, 
         formattedDate: format(parseISO(date), 'MMM d') 
       };

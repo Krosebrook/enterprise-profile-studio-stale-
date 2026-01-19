@@ -9,7 +9,7 @@ const corsHeaders = {
 interface AnalyticsEvent {
   profile_id: string;
   event_type: 'view' | 'share' | 'contact_click' | 'service_view';
-  event_data?: Record<string, any>;
+  event_data?: Record<string, string | number | boolean>;
 }
 
 serve(async (req) => {

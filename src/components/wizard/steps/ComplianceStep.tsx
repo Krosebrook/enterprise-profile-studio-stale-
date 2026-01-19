@@ -3,11 +3,21 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ComplianceInfo } from '@/types/profile';
 import { Shield, FileCheck, Award } from 'lucide-react';
 
 interface ComplianceStepProps {
-  data: Record<string, any>;
-  onChange: (data: Record<string, any>) => void;
+  data: ComplianceInfo;
+  onChange: (data: ComplianceInfo) => void;
+}
+
+interface ComplianceStepData extends ComplianceInfo {
+  certifications?: string[];
+  otherCertifications?: string;
+  awards?: string;
+  registrationNumber?: string;
+  taxId?: string;
+  insuranceInfo?: string;
 }
 
 const commonCertifications = [
@@ -20,12 +30,14 @@ const commonCertifications = [
 ];
 
 export function ComplianceStep({ data, onChange }: ComplianceStepProps) {
-  const handleChange = (field: string, value: any) => {
+  const stepData = data as ComplianceStepData;
+  
+  const handleChange = (field: string, value: string | string[]) => {
     onChange({ ...data, [field]: value });
   };
 
   const toggleCertification = (id: string) => {
-    const current = data.certifications || [];
+    const current = stepData.certifications || [];
     const updated = current.includes(id)
       ? current.filter((c: string) => c !== id)
       : [...current, id];
@@ -53,7 +65,7 @@ export function ComplianceStep({ data, onChange }: ComplianceStepProps) {
               >
                 <Checkbox
                   id={cert.id}
-                  checked={(data.certifications || []).includes(cert.id)}
+                  checked={(stepData.certifications || []).includes(cert.id)}
                   onCheckedChange={() => toggleCertification(cert.id)}
                 />
                 <div className="flex-1">
@@ -87,7 +99,7 @@ export function ComplianceStep({ data, onChange }: ComplianceStepProps) {
             <Input
               id="otherCerts"
               placeholder="e.g., AWS Partner, Microsoft Gold Partner..."
-              value={data.otherCertifications || ''}
+              value={stepData.otherCertifications || ''}
               onChange={(e) => handleChange('otherCertifications', e.target.value)}
             />
           </div>
@@ -97,7 +109,7 @@ export function ComplianceStep({ data, onChange }: ComplianceStepProps) {
             <Textarea
               id="awards"
               placeholder="List notable awards, recognition, or industry accolades..."
-              value={data.awards || ''}
+              value={stepData.awards || ''}
               onChange={(e) => handleChange('awards', e.target.value)}
               rows={3}
             />
@@ -122,7 +134,7 @@ export function ComplianceStep({ data, onChange }: ComplianceStepProps) {
               <Input
                 id="registrationNumber"
                 placeholder="Company registration ID"
-                value={data.registrationNumber || ''}
+                value={stepData.registrationNumber || ''}
                 onChange={(e) => handleChange('registrationNumber', e.target.value)}
               />
             </div>
@@ -131,7 +143,7 @@ export function ComplianceStep({ data, onChange }: ComplianceStepProps) {
               <Input
                 id="taxId"
                 placeholder="Tax identification number"
-                value={data.taxId || ''}
+                value={stepData.taxId || ''}
                 onChange={(e) => handleChange('taxId', e.target.value)}
               />
             </div>
@@ -142,7 +154,7 @@ export function ComplianceStep({ data, onChange }: ComplianceStepProps) {
             <Input
               id="insuranceInfo"
               placeholder="Professional liability, E&O insurance details..."
-              value={data.insuranceInfo || ''}
+              value={stepData.insuranceInfo || ''}
               onChange={(e) => handleChange('insuranceInfo', e.target.value)}
             />
           </div>

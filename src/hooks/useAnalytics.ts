@@ -7,7 +7,7 @@ export function useAnalytics() {
   const trackEvent = useCallback(async (
     profileId: string,
     eventType: EventType,
-    eventData?: Record<string, any>
+    eventData?: Record<string, string | number | boolean>
   ) => {
     try {
       await supabase.functions.invoke('track-analytics', {

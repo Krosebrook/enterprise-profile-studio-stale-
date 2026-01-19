@@ -202,19 +202,6 @@ export function DocumentSearch({ isOpen, onClose }: DocumentSearchProps) {
     setSelectedIndex(0);
   }, [results]);
   
-  // Keyboard navigation
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setSelectedIndex(i => Math.min(i + 1, results.length - 1));
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setSelectedIndex(i => Math.max(i - 1, 0));
-    } else if (e.key === 'Enter' && results[selectedIndex]) {
-      handleResultClick(results[selectedIndex].document);
-    }
-  }, [results, selectedIndex]);
-  
   // Handle result click - track history and recent
   const handleResultClick = useCallback((doc: KnowledgeDocument) => {
     addToHistory(query);
@@ -227,6 +214,19 @@ export function DocumentSearch({ isOpen, onClose }: DocumentSearchProps) {
     navigate(`/knowledge/${doc.slug}`);
     onClose();
   }, [query, addToHistory, addToRecentDocs, navigate, onClose]);
+  
+  // Keyboard navigation
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedIndex(i => Math.min(i + 1, results.length - 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex(i => Math.max(i - 1, 0));
+    } else if (e.key === 'Enter' && results[selectedIndex]) {
+      handleResultClick(results[selectedIndex].document);
+    }
+  }, [results, selectedIndex, handleResultClick]);
 
   // Handle history item click
   const handleHistoryClick = useCallback((searchQuery: string) => {

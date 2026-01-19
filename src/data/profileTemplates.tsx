@@ -1,18 +1,5 @@
 import { Building2, Briefcase, Code, Stethoscope, Scale, Rocket, GraduationCap, ShoppingBag } from 'lucide-react';
-
-export interface ProfileTemplate {
-  id: string;
-  name: string;
-  description: string;
-  icon: React.ComponentType<{ className?: string }>;
-  color: string;
-  data: {
-    company_info: Record<string, any>;
-    branding: Record<string, any>;
-    services: any[];
-    compliance: Record<string, any>;
-  };
-}
+import type { ProfileTemplate } from '@/types/profile';
 
 export const profileTemplates: ProfileTemplate[] = [
   {
@@ -24,8 +11,10 @@ export const profileTemplates: ProfileTemplate[] = [
     data: {
       company_info: {},
       branding: { primaryColor: '#3B82F6', secondaryColor: '#8B5CF6', accentColor: '#10B981' },
-      services: [],
+      services: { services: [] },
+      team: {},
       compliance: {},
+      metadata: {},
     },
   },
   {
@@ -40,12 +29,21 @@ export const profileTemplates: ProfileTemplate[] = [
         tagline: 'Innovating for a better tomorrow',
       },
       branding: { primaryColor: '#8B5CF6', secondaryColor: '#06B6D4', accentColor: '#F59E0B' },
-      services: [
-        { id: '1', name: 'Software Development', description: 'Custom software solutions tailored to your business needs' },
-        { id: '2', name: 'Cloud Infrastructure', description: 'Scalable and secure cloud solutions' },
-        { id: '3', name: 'Technical Consulting', description: 'Expert guidance for digital transformation' },
-      ],
-      compliance: { certifications: ['iso27001', 'soc2'] },
+      services: {
+        services: [
+          { id: '1', title: 'Software Development', description: 'Custom software solutions tailored to your business needs' },
+          { id: '2', title: 'Cloud Infrastructure', description: 'Scalable and secure cloud solutions' },
+          { id: '3', title: 'Technical Consulting', description: 'Expert guidance for digital transformation' },
+        ],
+      },
+      team: {},
+      compliance: { 
+        certifications: [
+          { id: '1', name: 'ISO 27001', issuer: 'ISO' },
+          { id: '2', name: 'SOC 2', issuer: 'AICPA' },
+        ] 
+      },
+      metadata: {},
     },
   },
   {
@@ -60,12 +58,20 @@ export const profileTemplates: ProfileTemplate[] = [
         tagline: 'Strategic insights for sustainable growth',
       },
       branding: { primaryColor: '#1E40AF', secondaryColor: '#3B82F6', accentColor: '#059669' },
-      services: [
-        { id: '1', name: 'Strategy Consulting', description: 'Transform your business with data-driven strategies' },
-        { id: '2', name: 'Operations Excellence', description: 'Optimize processes for maximum efficiency' },
-        { id: '3', name: 'Digital Transformation', description: 'Navigate the digital landscape with confidence' },
-      ],
-      compliance: { certifications: ['iso27001'] },
+      services: {
+        services: [
+          { id: '1', title: 'Strategy Consulting', description: 'Transform your business with data-driven strategies' },
+          { id: '2', title: 'Operations Excellence', description: 'Optimize processes for maximum efficiency' },
+          { id: '3', title: 'Digital Transformation', description: 'Navigate the digital landscape with confidence' },
+        ],
+      },
+      team: {},
+      compliance: { 
+        certifications: [
+          { id: '1', name: 'ISO 27001', issuer: 'ISO' },
+        ] 
+      },
+      metadata: {},
     },
   },
   {
@@ -80,12 +86,21 @@ export const profileTemplates: ProfileTemplate[] = [
         tagline: 'Compassionate care, exceptional outcomes',
       },
       branding: { primaryColor: '#059669', secondaryColor: '#10B981', accentColor: '#3B82F6' },
-      services: [
-        { id: '1', name: 'Patient Care', description: 'Comprehensive healthcare services for all ages' },
-        { id: '2', name: 'Specialized Treatment', description: 'Expert care from board-certified specialists' },
-        { id: '3', name: 'Preventive Medicine', description: 'Proactive health management and wellness programs' },
-      ],
-      compliance: { certifications: ['hipaa', 'iso27001'] },
+      services: {
+        services: [
+          { id: '1', title: 'Patient Care', description: 'Comprehensive healthcare services for all ages' },
+          { id: '2', title: 'Specialized Treatment', description: 'Expert care from board-certified specialists' },
+          { id: '3', title: 'Preventive Medicine', description: 'Proactive health management and wellness programs' },
+        ],
+      },
+      team: {},
+      compliance: { 
+        certifications: [
+          { id: '1', name: 'HIPAA', issuer: 'HHS' },
+          { id: '2', name: 'ISO 27001', issuer: 'ISO' },
+        ] 
+      },
+      metadata: {},
     },
   },
   {
@@ -100,12 +115,16 @@ export const profileTemplates: ProfileTemplate[] = [
         tagline: 'Trusted counsel for complex challenges',
       },
       branding: { primaryColor: '#92400E', secondaryColor: '#D97706', accentColor: '#1E40AF' },
-      services: [
-        { id: '1', name: 'Corporate Law', description: 'Comprehensive legal solutions for businesses' },
-        { id: '2', name: 'Litigation', description: 'Skilled representation in complex disputes' },
-        { id: '3', name: 'Regulatory Compliance', description: 'Navigate regulations with confidence' },
-      ],
+      services: {
+        services: [
+          { id: '1', title: 'Corporate Law', description: 'Comprehensive legal solutions for businesses' },
+          { id: '2', title: 'Litigation', description: 'Skilled representation in complex disputes' },
+          { id: '3', title: 'Regulatory Compliance', description: 'Navigate regulations with confidence' },
+        ],
+      },
+      team: {},
       compliance: {},
+      metadata: {},
     },
   },
   {
@@ -120,12 +139,20 @@ export const profileTemplates: ProfileTemplate[] = [
         tagline: 'Where creativity meets strategy',
       },
       branding: { primaryColor: '#EC4899', secondaryColor: '#8B5CF6', accentColor: '#F59E0B' },
-      services: [
-        { id: '1', name: 'Brand Strategy', description: 'Build memorable brands that resonate' },
-        { id: '2', name: 'Digital Marketing', description: 'Data-driven campaigns that deliver results' },
-        { id: '3', name: 'Creative Design', description: 'Stunning visuals that tell your story' },
-      ],
-      compliance: { certifications: ['gdpr'] },
+      services: {
+        services: [
+          { id: '1', title: 'Brand Strategy', description: 'Build memorable brands that resonate' },
+          { id: '2', title: 'Digital Marketing', description: 'Data-driven campaigns that deliver results' },
+          { id: '3', title: 'Creative Design', description: 'Stunning visuals that tell your story' },
+        ],
+      },
+      team: {},
+      compliance: { 
+        certifications: [
+          { id: '1', name: 'GDPR Compliant', issuer: 'EU' },
+        ] 
+      },
+      metadata: {},
     },
   },
   {
@@ -140,12 +167,16 @@ export const profileTemplates: ProfileTemplate[] = [
         tagline: 'Empowering minds, shaping futures',
       },
       branding: { primaryColor: '#4F46E5', secondaryColor: '#6366F1', accentColor: '#10B981' },
-      services: [
-        { id: '1', name: 'Academic Programs', description: 'Comprehensive curriculum for all levels' },
-        { id: '2', name: 'Professional Development', description: 'Skills training for career advancement' },
-        { id: '3', name: 'Research & Innovation', description: 'Cutting-edge research initiatives' },
-      ],
+      services: {
+        services: [
+          { id: '1', title: 'Academic Programs', description: 'Comprehensive curriculum for all levels' },
+          { id: '2', title: 'Professional Development', description: 'Skills training for career advancement' },
+          { id: '3', title: 'Research & Innovation', description: 'Cutting-edge research initiatives' },
+        ],
+      },
+      team: {},
       compliance: {},
+      metadata: {},
     },
   },
   {
@@ -160,12 +191,21 @@ export const profileTemplates: ProfileTemplate[] = [
         tagline: 'Your one-stop shop for quality products',
       },
       branding: { primaryColor: '#EA580C', secondaryColor: '#F97316', accentColor: '#059669' },
-      services: [
-        { id: '1', name: 'Product Catalog', description: 'Wide selection of quality products' },
-        { id: '2', name: 'Fast Shipping', description: 'Quick and reliable delivery worldwide' },
-        { id: '3', name: 'Customer Support', description: '24/7 assistance for all your needs' },
-      ],
-      compliance: { certifications: ['pciDss', 'gdpr'] },
+      services: {
+        services: [
+          { id: '1', title: 'Product Catalog', description: 'Wide selection of quality products' },
+          { id: '2', title: 'Fast Shipping', description: 'Quick and reliable delivery worldwide' },
+          { id: '3', title: 'Customer Support', description: '24/7 assistance for all your needs' },
+        ],
+      },
+      team: {},
+      compliance: { 
+        certifications: [
+          { id: '1', name: 'PCI DSS', issuer: 'PCI SSC' },
+          { id: '2', name: 'GDPR Compliant', issuer: 'EU' },
+        ] 
+      },
+      metadata: {},
     },
   },
 ];

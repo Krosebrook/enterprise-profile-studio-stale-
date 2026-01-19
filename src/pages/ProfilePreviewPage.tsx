@@ -9,6 +9,13 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useProfile, usePublishProfile } from '@/hooks/useProfiles';
 import { generateProfilePDF } from '@/lib/pdf-generator';
 import { 
+  CompanyInfo, 
+  BrandingInfo, 
+  ServicesInfo, 
+  TeamInfo, 
+  ComplianceInfo 
+} from '@/types/profile';
+import { 
   Loader2, 
   ArrowLeft, 
   Globe, 
@@ -92,11 +99,11 @@ export default function ProfilePreviewPage() {
     return null;
   }
 
-  const companyInfo = profile.company_info || {};
-  const branding = profile.branding || {};
-  const services = profile.services || [];
-  const team = profile.team || [];
-  const compliance = profile.compliance || {};
+  const companyInfo: CompanyInfo = profile.company_info || {};
+  const branding: BrandingInfo = profile.branding || {};
+  const services: ServicesInfo = profile.services || {};
+  const team: TeamInfo = profile.team || {};
+  const compliance: ComplianceInfo = profile.compliance || {};
 
   const certificationLabels: Record<string, string> = {
     iso27001: 'ISO 27001',
@@ -163,15 +170,15 @@ export default function ProfilePreviewPage() {
           >
             <div className="relative flex items-start gap-6">
               <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-white/20 backdrop-blur">
-                {branding.logoUrl ? (
-                  <img src={branding.logoUrl} alt="Logo" className="h-16 w-16 object-contain" />
+                {branding.logo ? (
+                  <img src={branding.logo} alt="Logo" className="h-16 w-16 object-contain" />
                 ) : (
                   <Building2 className="h-10 w-10 text-white" />
                 )}
               </div>
               <div className="flex-1">
                 <h1 className="font-display text-3xl font-bold text-white">
-                  {companyInfo.companyName || profile.name}
+                  {companyInfo.name || profile.name}
                 </h1>
                 {companyInfo.tagline && (
                   <p className="mt-1 text-lg text-white/80">{companyInfo.tagline}</p>
@@ -208,7 +215,7 @@ export default function ProfilePreviewPage() {
           )}
 
           {/* Contact Info */}
-          {(companyInfo.website || companyInfo.email || companyInfo.phone || companyInfo.address) && (
+          {(companyInfo.website || companyInfo.email || companyInfo.phone || companyInfo.headquarters) && (
             <Card className="mb-6 border-border/50">
               <CardContent className="pt-6">
                 <h2 className="mb-4 font-display text-xl font-semibold">Contact</h2>
@@ -243,10 +250,10 @@ export default function ProfilePreviewPage() {
                       <span className="text-sm">{companyInfo.phone}</span>
                     </a>
                   )}
-                  {companyInfo.address && (
+                  {companyInfo.headquarters && (
                     <div className="flex items-center gap-3 rounded-lg p-3">
                       <MapPin className="h-5 w-5 text-primary" />
-                      <span className="text-sm">{companyInfo.address}</span>
+                      <span className="text-sm">{companyInfo.headquarters}</span>
                     </div>
                   )}
                 </div>
@@ -255,7 +262,7 @@ export default function ProfilePreviewPage() {
           )}
 
           {/* Services */}
-          {services.length > 0 && (
+          {services.services && services.services.length > 0 && (
             <Card className="mb-6 border-border/50">
               <CardContent className="pt-6">
                 <h2 className="mb-4 flex items-center gap-2 font-display text-xl font-semibold">
@@ -263,12 +270,12 @@ export default function ProfilePreviewPage() {
                   Services
                 </h2>
                 <div className="grid gap-4 sm:grid-cols-2">
-                  {services.map((service: any) => (
+                  {services.services.map((service) => (
                     <div 
                       key={service.id}
                       className="rounded-lg border border-border p-4 transition-colors hover:border-primary/50"
                     >
-                      <h3 className="font-semibold">{service.name}</h3>
+                      <h3 className="font-semibold">{service.title}</h3>
                       {service.description && (
                         <p className="mt-1 text-sm text-muted-foreground">
                           {service.description}
@@ -282,7 +289,7 @@ export default function ProfilePreviewPage() {
           )}
 
           {/* Team */}
-          {team.length > 0 && (
+          {team.members && team.members.length > 0 && (
             <Card className="mb-6 border-border/50">
               <CardContent className="pt-6">
                 <h2 className="mb-4 flex items-center gap-2 font-display text-xl font-semibold">
@@ -290,20 +297,20 @@ export default function ProfilePreviewPage() {
                   Team
                 </h2>
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {team.map((member: any) => (
+                  {team.members.map((member) => (
                     <div 
                       key={member.id}
                       className="flex items-center gap-4 rounded-lg border border-border p-4"
                     >
                       <Avatar className="h-12 w-12">
-                        <AvatarImage src={member.avatarUrl} alt={member.name} />
+                        <AvatarImage src={member.image} alt={member.name} />
                         <AvatarFallback className="bg-primary/10 text-primary">
                           {member.name.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div>
                         <h3 className="font-semibold">{member.name}</h3>
-                        <p className="text-sm text-muted-foreground">{member.role}</p>
+                        <p className="text-sm text-muted-foreground">{member.title}</p>
                       </div>
                     </div>
                   ))}

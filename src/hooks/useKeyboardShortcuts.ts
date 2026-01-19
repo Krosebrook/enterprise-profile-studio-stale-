@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -25,7 +25,7 @@ export function useKeyboardShortcuts() {
     return isInput || isEditable;
   }, []);
 
-  const shortcuts: ShortcutConfig[] = [
+  const shortcuts: ShortcutConfig[] = useMemo(() => [
     {
       key: 'n',
       action: () => {
@@ -113,7 +113,7 @@ export function useKeyboardShortcuts() {
       description: 'Show keyboard shortcuts',
       requiresAuth: false,
     },
-  ];
+  ], [navigate, location.pathname]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -136,7 +136,7 @@ export function useKeyboardShortcuts() {
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [user, location.pathname, isInputFocused, navigate]);
+  }, [user, shortcuts, isInputFocused]);
 
   return { shortcuts };
 }

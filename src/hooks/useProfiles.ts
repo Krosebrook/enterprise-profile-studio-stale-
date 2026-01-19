@@ -2,23 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-
-export interface EnterpriseProfile {
-  id: string;
-  user_id: string;
-  name: string;
-  slug: string | null;
-  status: 'draft' | 'published' | 'archived';
-  company_info: Record<string, any>;
-  branding: Record<string, any>;
-  services: any[];
-  team: any[];
-  compliance: Record<string, any>;
-  metadata: Record<string, any>;
-  published_at: string | null;
-  created_at: string;
-  updated_at: string;
-}
+import type { EnterpriseProfile } from '@/types/profile';
 
 export function useProfiles() {
   const { user } = useAuth();

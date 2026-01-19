@@ -41,7 +41,7 @@ export function CommunityStep({ data, onChange }: CommunityStepProps) {
       : [...array, item];
   };
 
-  const updatePrivacy = (key: keyof typeof data.privacySettings, value: any) => {
+  const updatePrivacy = (key: keyof typeof data.privacySettings, value: boolean | string) => {
     onChange({
       privacySettings: { ...data.privacySettings, [key]: value }
     });

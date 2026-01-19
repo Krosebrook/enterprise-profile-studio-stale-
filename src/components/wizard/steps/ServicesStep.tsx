@@ -5,14 +5,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AIGenerateButton } from '@/components/ui/AIGenerateButton';
+import { Service } from '@/types/profile';
 import { Briefcase, Plus, Trash2, GripVertical } from 'lucide-react';
-
-interface Service {
-  id: string;
-  name: string;
-  description: string;
-  icon?: string;
-}
 
 interface ServicesStepProps {
   data: Service[];
@@ -32,7 +26,7 @@ export function ServicesStep({ data, onChange, companyContext }: ServicesStepPro
     
     const service: Service = {
       id: Date.now().toString(),
-      name: newService.name,
+      title: newService.name,
       description: newService.description,
     };
     
@@ -44,7 +38,7 @@ export function ServicesStep({ data, onChange, companyContext }: ServicesStepPro
     onChange(data.filter(s => s.id !== id));
   };
 
-  const updateService = (id: string, field: keyof Service, value: string) => {
+  const updateService = (id: string, field: 'title' | 'description', value: string) => {
     onChange(data.map(s => s.id === id ? { ...s, [field]: value } : s));
   };
 
@@ -78,8 +72,8 @@ export function ServicesStep({ data, onChange, companyContext }: ServicesStepPro
                     <div className="flex-1 space-y-3">
                       <Input
                         placeholder="Service name"
-                        value={service.name}
-                        onChange={(e) => updateService(service.id, 'name', e.target.value)}
+                        value={service.title}
+                        onChange={(e) => updateService(service.id, 'title', e.target.value)}
                         className="font-medium"
                       />
                       <div className="space-y-1">
@@ -87,11 +81,11 @@ export function ServicesStep({ data, onChange, companyContext }: ServicesStepPro
                           <AIGenerateButton
                             type="service"
                             context={{
-                              serviceName: service.name,
+                              serviceName: service.title,
                               ...companyContext,
                             }}
-                            onGenerate={(value) => handleAIGenerateDescription(service.id, service.name, value)}
-                            disabled={!service.name}
+                            onGenerate={(value) => handleAIGenerateDescription(service.id, service.title, value)}
+                            disabled={!service.title}
                           />
                         </div>
                         <Textarea

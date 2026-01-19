@@ -1,19 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-
-export interface AnalyticsData {
-  totalViews: number;
-  totalShares: number;
-  totalContactClicks: number;
-  totalServiceViews: number;
-  viewsByDate: { date: string; count: number }[];
-  recentEvents: Array<{
-    id: string;
-    event_type: string;
-    created_at: string;
-    event_data: any;
-  }>;
-}
+import type { AnalyticsData, AnalyticsEvent } from '@/types/profile';
 
 export function useProfileAnalytics(profileId: string | undefined) {
   return useQuery({
@@ -74,7 +61,13 @@ export function useProfileAnalytics(profileId: string | undefined) {
         totalContactClicks,
         totalServiceViews,
         viewsByDate,
-        recentEvents: events?.slice(0, 20) || [],
+        recentEvents: (events?.slice(0, 20) || []).map(e => ({
+          id: e.id,
+          profile_id: e.profile_id,
+          event_type: e.event_type as 'view' | 'share' | 'contact' | 'download' | 'export',
+          event_data: e.event_data as Record<string, string | number | boolean> | undefined,
+          created_at: e.created_at,
+        })),
       };
     },
     enabled: !!profileId,

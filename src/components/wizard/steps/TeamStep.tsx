@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ImageUpload } from '@/components/ui/ImageUpload';
+import { TeamMember } from '@/types/profile';
 import { Users, Plus, Trash2, UserCircle, Camera } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -15,15 +16,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
-interface TeamMember {
-  id: string;
-  name: string;
-  role: string;
-  bio: string;
-  avatarUrl?: string;
-  linkedin?: string;
-}
-
 interface TeamStepProps {
   data: TeamMember[];
   onChange: (data: TeamMember[]) => void;
@@ -32,15 +24,15 @@ interface TeamStepProps {
 export function TeamStep({ data, onChange }: TeamStepProps) {
   const [newMember, setNewMember] = useState<Omit<TeamMember, 'id'>>({
     name: '',
-    role: '',
+    title: '',
     bio: '',
-    avatarUrl: '',
+    image: '',
     linkedin: '',
   });
   const [editingPhotoId, setEditingPhotoId] = useState<string | null>(null);
 
   const addMember = () => {
-    if (!newMember.name.trim() || !newMember.role.trim()) return;
+    if (!newMember.name.trim() || !newMember.title.trim()) return;
     
     const member: TeamMember = {
       id: Date.now().toString(),
@@ -48,7 +40,7 @@ export function TeamStep({ data, onChange }: TeamStepProps) {
     };
     
     onChange([...data, member]);
-    setNewMember({ name: '', role: '', bio: '', avatarUrl: '', linkedin: '' });
+    setNewMember({ name: '', title: '', bio: '', image: '', linkedin: '' });
   };
 
   const removeMember = (id: string) => {
@@ -94,7 +86,7 @@ export function TeamStep({ data, onChange }: TeamStepProps) {
                       <DialogTrigger asChild>
                         <button className="group/avatar relative">
                           <Avatar className="h-14 w-14">
-                            <AvatarImage src={member.avatarUrl} alt={member.name} />
+                            <AvatarImage src={member.image} alt={member.name} />
                             <AvatarFallback className="bg-primary/10 text-primary">
                               {member.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                             </AvatarFallback>
@@ -109,9 +101,9 @@ export function TeamStep({ data, onChange }: TeamStepProps) {
                           <DialogTitle>Upload Photo for {member.name}</DialogTitle>
                         </DialogHeader>
                         <ImageUpload
-                          value={member.avatarUrl || ''}
+                          value={member.image || ''}
                           onChange={(url) => {
-                            updateMember(member.id, { avatarUrl: url });
+                            updateMember(member.id, { image: url });
                             setEditingPhotoId(null);
                           }}
                           folder="team-photos"
@@ -129,8 +121,8 @@ export function TeamStep({ data, onChange }: TeamStepProps) {
                       />
                       <Input
                         placeholder="Role / Title"
-                        value={member.role}
-                        onChange={(e) => updateMember(member.id, { role: e.target.value })}
+                        value={member.title}
+                        onChange={(e) => updateMember(member.id, { title: e.target.value })}
                         className="text-sm"
                       />
                       <Input
@@ -156,8 +148,8 @@ export function TeamStep({ data, onChange }: TeamStepProps) {
               <div className="flex items-start gap-4">
                 <div className="shrink-0">
                   <ImageUpload
-                    value={newMember.avatarUrl || ''}
-                    onChange={(url) => setNewMember({ ...newMember, avatarUrl: url })}
+                    value={newMember.image || ''}
+                    onChange={(url) => setNewMember({ ...newMember, image: url })}
                     folder="team-photos"
                     aspectRatio="square"
                     placeholder="Photo"
@@ -180,8 +172,8 @@ export function TeamStep({ data, onChange }: TeamStepProps) {
                       <Input
                         id="memberRole"
                         placeholder="CEO, CTO, etc."
-                        value={newMember.role}
-                        onChange={(e) => setNewMember({ ...newMember, role: e.target.value })}
+                        value={newMember.title}
+                        onChange={(e) => setNewMember({ ...newMember, title: e.target.value })}
                       />
                     </div>
                   </div>

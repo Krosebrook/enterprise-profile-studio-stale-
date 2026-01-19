@@ -22,22 +22,25 @@ interface DealComparisonToolProps {
   profile: OnboardingUserProfile | null;
 }
 
-const formatValue = (value: any, format: ComparisonCriteria['format']): string => {
+const formatValue = (value: string | number | boolean | undefined | null, format: ComparisonCriteria['format']): string => {
   if (value === undefined || value === null) return '—';
   
   switch (format) {
     case 'currency':
-      if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
-      if (value >= 1000) return `$${(value / 1000).toFixed(0)}K`;
-      return `$${value}`;
+      if (typeof value === 'number') {
+        if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
+        if (value >= 1000) return `$${(value / 1000).toFixed(0)}K`;
+        return `$${value}`;
+      }
+      return String(value);
     case 'percentage':
       return `${value}%`;
     case 'number':
-      return value.toLocaleString();
+      return typeof value === 'number' ? value.toLocaleString() : String(value);
     case 'boolean':
       return value ? 'Yes' : 'No';
     case 'date':
-      return new Date(value).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+      return new Date(String(value)).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
     case 'match':
       return `${value}%`;
     default:
@@ -45,8 +48,13 @@ const formatValue = (value: any, format: ComparisonCriteria['format']): string =
   }
 };
 
-const getNestedValue = (obj: any, path: string): any => {
-  return path.split('.').reduce((acc, part) => acc?.[part], obj);
+const getNestedValue = (obj: Record<string, unknown>, path: string): string | number | boolean | undefined | null => {
+  return path.split('.').reduce<unknown>((acc, part) => {
+    if (acc && typeof acc === 'object' && part in acc) {
+      return (acc as Record<string, unknown>)[part];
+    }
+    return undefined;
+  }, obj) as string | number | boolean | undefined | null;
 };
 
 const getCategoryIcon = (category: string) => {

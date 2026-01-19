@@ -3,19 +3,20 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AIGenerateButton } from '@/components/ui/AIGenerateButton';
+import { CompanyInfo } from '@/types/profile';
 import { Building2, Globe, MapPin, Phone, Mail } from 'lucide-react';
 
 interface CompanyInfoStepProps {
-  data: Record<string, any>;
-  onChange: (data: Record<string, any>) => void;
+  data: CompanyInfo;
+  onChange: (data: CompanyInfo) => void;
 }
 
 export function CompanyInfoStep({ data, onChange }: CompanyInfoStepProps) {
-  const handleChange = (field: string, value: string) => {
+  const handleChange = (field: keyof CompanyInfo, value: string) => {
     onChange({ ...data, [field]: value });
   };
 
-  const handleAIGenerate = (field: string, value: string) => {
+  const handleAIGenerate = (field: keyof CompanyInfo, value: string) => {
     handleChange(field, value);
   };
 
@@ -38,8 +39,8 @@ export function CompanyInfoStep({ data, onChange }: CompanyInfoStepProps) {
               <Input
                 id="companyName"
                 placeholder="Acme Corporation"
-                value={data.companyName || ''}
-                onChange={(e) => handleChange('companyName', e.target.value)}
+                value={data.name || ''}
+                onChange={(e) => handleChange('name', e.target.value)}
               />
             </div>
             <div className="space-y-2">
@@ -48,12 +49,12 @@ export function CompanyInfoStep({ data, onChange }: CompanyInfoStepProps) {
                 <AIGenerateButton
                   type="tagline"
                   context={{
-                    companyName: data.companyName,
+                    companyName: data.name,
                     industry: data.industry,
                     description: data.description,
                   }}
                   onGenerate={(value) => handleAIGenerate('tagline', value)}
-                  disabled={!data.companyName}
+                  disabled={!data.name}
                 />
               </div>
               <Input
@@ -71,12 +72,12 @@ export function CompanyInfoStep({ data, onChange }: CompanyInfoStepProps) {
               <AIGenerateButton
                 type="description"
                 context={{
-                  companyName: data.companyName,
+                  companyName: data.name,
                   industry: data.industry,
                   tagline: data.tagline,
                 }}
                 onGenerate={(value) => handleAIGenerate('description', value)}
-                disabled={!data.companyName}
+                disabled={!data.name}
               />
             </div>
             <Textarea
@@ -174,8 +175,8 @@ export function CompanyInfoStep({ data, onChange }: CompanyInfoStepProps) {
               <Input
                 id="address"
                 placeholder="123 Business Ave, City, State"
-                value={data.address || ''}
-                onChange={(e) => handleChange('address', e.target.value)}
+                value={data.headquarters || ''}
+                onChange={(e) => handleChange('headquarters', e.target.value)}
               />
             </div>
           </div>

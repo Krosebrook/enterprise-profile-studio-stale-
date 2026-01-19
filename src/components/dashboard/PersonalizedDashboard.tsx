@@ -20,8 +20,22 @@ interface PersonalizedDashboardProps {
   userName: string;
 }
 
+interface MockDeal {
+  id: string;
+  title: string;
+  company: string;
+  industry: string;
+  stage: string;
+  dealSize: number;
+  matchScore: number;
+  riskLevel: string;
+  description: string;
+  daysRemaining: number;
+  tags: string[];
+}
+
 // Mock deal data - in production, this would come from an API
-const generateMockDeals = (profile: OnboardingUserProfile | null) => {
+const generateMockDeals = (profile: OnboardingUserProfile | null): MockDeal[] => {
   if (!profile) return [];
   
   const { targetIndustries, riskTolerance, investmentSizeRange, dealStages } = profile.dealSourcing;
@@ -98,7 +112,7 @@ const formatCurrency = (value: number) => {
 };
 
 export function PersonalizedDashboard({ profile, userName }: PersonalizedDashboardProps) {
-  const [deals, setDeals] = useState<any[]>([]);
+  const [deals, setDeals] = useState<MockDeal[]>([]);
   
   useEffect(() => {
     setDeals(generateMockDeals(profile));

@@ -2,15 +2,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ImageUpload } from '@/components/ui/ImageUpload';
+import { BrandingInfo } from '@/types/profile';
 import { Palette, Image } from 'lucide-react';
 
 interface BrandingStepProps {
-  data: Record<string, any>;
-  onChange: (data: Record<string, any>) => void;
+  data: BrandingInfo;
+  onChange: (data: BrandingInfo) => void;
 }
 
 export function BrandingStep({ data, onChange }: BrandingStepProps) {
-  const handleChange = (field: string, value: string) => {
+  const handleChange = (field: keyof BrandingInfo, value: string) => {
     onChange({ ...data, [field]: value });
   };
 
@@ -31,8 +32,8 @@ export function BrandingStep({ data, onChange }: BrandingStepProps) {
             <div className="space-y-2">
               <Label>Company Logo</Label>
               <ImageUpload
-                value={data.logoUrl || ''}
-                onChange={(url) => handleChange('logoUrl', url)}
+                value={data.logo || ''}
+                onChange={(url) => handleChange('logo', url)}
                 folder="logos"
                 aspectRatio="square"
                 placeholder="Upload company logo"
@@ -42,8 +43,8 @@ export function BrandingStep({ data, onChange }: BrandingStepProps) {
             <div className="space-y-2">
               <Label>Cover Image</Label>
               <ImageUpload
-                value={data.coverUrl || ''}
-                onChange={(url) => handleChange('coverUrl', url)}
+                value={data.logo || ''}
+                onChange={(url) => handleChange('logo', url)}
                 folder="covers"
                 aspectRatio="landscape"
                 placeholder="Upload cover image"
@@ -148,8 +149,8 @@ export function BrandingStep({ data, onChange }: BrandingStepProps) {
             <Input
               id="brandFonts"
               placeholder="Inter, Roboto, Open Sans..."
-              value={data.brandFonts || ''}
-              onChange={(e) => handleChange('brandFonts', e.target.value)}
+              value={data.fontFamily || ''}
+              onChange={(e) => handleChange('fontFamily', e.target.value)}
             />
           </div>
         </CardContent>

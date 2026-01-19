@@ -7,7 +7,8 @@ import { BrandingStep } from './steps/BrandingStep';
 import { ServicesStep } from './steps/ServicesStep';
 import { TeamStep } from './steps/TeamStep';
 import { ComplianceStep } from './steps/ComplianceStep';
-import { EnterpriseProfile, useUpdateProfile } from '@/hooks/useProfiles';
+import { useUpdateProfile } from '@/hooks/useProfiles';
+import { EnterpriseProfile, CompanyInfo, BrandingInfo, ServicesInfo, TeamInfo, ComplianceInfo } from '@/types/profile';
 import { Building2, Palette, Briefcase, Users, Shield, ArrowLeft, ArrowRight, Save, Eye, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -30,18 +31,18 @@ export function ProfileWizard({ profile }: ProfileWizardProps) {
   const [saving, setSaving] = useState(false);
 
   // Local state for each section
-  const [companyInfo, setCompanyInfo] = useState<Record<string, any>>(profile.company_info || {});
-  const [branding, setBranding] = useState<Record<string, any>>(profile.branding || {});
-  const [services, setServices] = useState<any[]>(profile.services || []);
-  const [team, setTeam] = useState<any[]>(profile.team || []);
-  const [compliance, setCompliance] = useState<Record<string, any>>(profile.compliance || {});
+  const [companyInfo, setCompanyInfo] = useState<CompanyInfo>(profile.company_info || {});
+  const [branding, setBranding] = useState<BrandingInfo>(profile.branding || {});
+  const [services, setServices] = useState<ServicesInfo>(profile.services || {});
+  const [team, setTeam] = useState<TeamInfo>(profile.team || {});
+  const [compliance, setCompliance] = useState<ComplianceInfo>(profile.compliance || {});
 
   // Update local state when profile changes
   useEffect(() => {
     setCompanyInfo(profile.company_info || {});
     setBranding(profile.branding || {});
-    setServices(profile.services || []);
-    setTeam(profile.team || []);
+    setServices(profile.services || {});
+    setTeam(profile.team || {});
     setCompliance(profile.compliance || {});
   }, [profile]);
 
@@ -93,17 +94,17 @@ export function ProfileWizard({ profile }: ProfileWizardProps) {
       case 2:
         return (
           <ServicesStep 
-            data={services} 
-            onChange={setServices} 
+            data={services.services || []} 
+            onChange={(newServices) => setServices({ ...services, services: newServices })} 
             companyContext={{
-              companyName: companyInfo.companyName,
+              companyName: companyInfo.name,
               industry: companyInfo.industry,
               description: companyInfo.description,
             }}
           />
         );
       case 3:
-        return <TeamStep data={team} onChange={setTeam} />;
+        return <TeamStep data={team.members || []} onChange={(newMembers) => setTeam({ ...team, members: newMembers })} />;
       case 4:
         return <ComplianceStep data={compliance} onChange={setCompliance} />;
       default:

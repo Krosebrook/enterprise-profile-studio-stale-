@@ -19,7 +19,7 @@ interface AISuggestion {
 interface AISuggestionsPanelProps {
   suggestions: AISuggestion | null;
   isLoading: boolean;
-  onApplySuggestion: (field: string, values: any) => void;
+  onApplySuggestion: (field: string, values: string[] | string | { min: number; max: number }) => void;
   onApplyAll: () => void;
   appliedFields: string[];
 }

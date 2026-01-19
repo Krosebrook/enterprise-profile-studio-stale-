@@ -53,7 +53,7 @@ export function DealSourcingStep({ data, onChange, welcomeData }: DealSourcingSt
       : [...array, item];
   };
 
-  const handleApplySuggestion = (field: string, values: any) => {
+  const handleApplySuggestion = (field: string, values: string[] | string | { min: number; max: number }) => {
     switch (field) {
       case 'industries':
         onChange({ targetIndustries: values as string[] });
@@ -71,7 +71,7 @@ export function DealSourcingStep({ data, onChange, welcomeData }: DealSourcingSt
         onChange({ riskTolerance: values as typeof data.riskTolerance });
         break;
       case 'investmentRange':
-        onChange({ investmentSizeRange: { ...data.investmentSizeRange, ...values } });
+        onChange({ investmentSizeRange: { ...data.investmentSizeRange, ...(values as { min: number; max: number }) } });
         break;
     }
     setAppliedFields(prev => [...prev, field]);
@@ -81,12 +81,12 @@ export function DealSourcingStep({ data, onChange, welcomeData }: DealSourcingSt
     if (!suggestions) return;
     
     onChange({
-      targetIndustries: suggestions.industries.filter(i => INDUSTRIES.includes(i as any)) as string[],
-      preferredDealStructures: suggestions.dealStructures.filter(s => DEAL_STRUCTURES.includes(s as any)) as string[],
-      dealStages: suggestions.stages.filter(s => DEAL_STAGES.includes(s as any)) as string[],
+      targetIndustries: suggestions.industries.filter(i => INDUSTRIES.includes(i)) as string[],
+      preferredDealStructures: suggestions.dealStructures.filter(s => DEAL_STRUCTURES.includes(s)) as string[],
+      dealStages: suggestions.stages.filter(s => DEAL_STAGES.includes(s)) as string[],
       geoPreferences: { 
         ...data.geoPreferences, 
-        regions: suggestions.regions.filter(r => REGIONS.includes(r as any)) as string[]
+        regions: suggestions.regions.filter(r => REGIONS.includes(r)) as string[]
       },
       riskTolerance: suggestions.riskTolerance as typeof data.riskTolerance,
       investmentSizeRange: { ...data.investmentSizeRange, ...suggestions.investmentRange },

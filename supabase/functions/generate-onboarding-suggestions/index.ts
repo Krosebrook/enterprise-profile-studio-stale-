@@ -14,7 +14,15 @@ interface SuggestRequest {
   };
 }
 
-const roleProfiles: Record<string, any> = {
+interface RoleProfile {
+  industries: string[];
+  dealStructures: string[];
+  stages: string[];
+  riskProfile: string;
+  investmentRange: { min: number; max: number };
+}
+
+const roleProfiles: Record<string, RoleProfile> = {
   individual_investor: {
     industries: ["Technology", "Healthcare & Life Sciences", "Consumer & Retail"],
     dealStructures: ["Equity", "SAFE", "Convertible Notes"],
@@ -52,7 +60,13 @@ const roleProfiles: Record<string, any> = {
   },
 };
 
-const experienceModifiers: Record<string, any> = {
+interface ExperienceModifier {
+  riskAdjustment: number;
+  stagePreference: string[] | null;
+  diversificationAdvice: string;
+}
+
+const experienceModifiers: Record<string, ExperienceModifier> = {
   novice: {
     riskAdjustment: -1, // More conservative
     stagePreference: ["Seed", "Series A"],

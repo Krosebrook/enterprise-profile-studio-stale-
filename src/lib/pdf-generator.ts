@@ -1,10 +1,12 @@
+import type { EnterpriseProfile } from '@/types/profile';
+
 interface ProfileData {
   name: string;
-  companyInfo: Record<string, any>;
-  branding: Record<string, any>;
-  services: any[];
-  team: any[];
-  compliance: Record<string, any>;
+  companyInfo: EnterpriseProfile['company_info'];
+  branding: EnterpriseProfile['branding'];
+  services: EnterpriseProfile['services'];
+  team: EnterpriseProfile['team'];
+  compliance: EnterpriseProfile['compliance'];
 }
 
 interface CertificationLabels {
@@ -244,13 +246,13 @@ export function generateProfilePDF(profileData: ProfileData): void {
     </div>
     ` : ''}
 
-    ${services.length > 0 ? `
+    ${services.services && services.services.length > 0 ? `
     <div class="section">
       <div class="section-title">Our Services</div>
       <div class="services-grid">
-        ${services.map((service: any) => `
+        ${services.services.map((service) => `
           <div class="service-card">
-            <div class="service-name">${service.name}</div>
+            <div class="service-name">${service.title}</div>
             ${service.description ? `<div class="service-description">${service.description}</div>` : ''}
           </div>
         `).join('')}
@@ -258,32 +260,31 @@ export function generateProfilePDF(profileData: ProfileData): void {
     </div>
     ` : ''}
 
-    ${team.length > 0 ? `
+    ${team.members && team.members.length > 0 ? `
     <div class="section">
       <div class="section-title">Our Team</div>
       <div class="team-grid">
-        ${team.map((member: any) => `
+        ${team.members.map((member) => `
           <div class="team-member">
             <div class="member-avatar">${member.name.split(' ').map((n: string) => n[0]).join('').toUpperCase()}</div>
             <div class="member-name">${member.name}</div>
-            <div class="member-role">${member.role}</div>
+            <div class="member-role">${member.title}</div>
           </div>
         `).join('')}
       </div>
     </div>
     ` : ''}
 
-    ${(compliance.certifications?.length > 0 || compliance.awards) ? `
+    ${(compliance.certifications && compliance.certifications.length > 0) ? `
     <div class="section">
       <div class="section-title">Compliance & Certifications</div>
-      ${compliance.certifications?.length > 0 ? `
+      ${compliance.certifications.length > 0 ? `
       <div class="certifications">
-        ${compliance.certifications.map((cert: string) => `
-          <span class="cert-badge">${certificationLabels[cert] || cert}</span>
+        ${compliance.certifications.map((cert) => `
+          <span class="cert-badge">${cert.name}</span>
         `).join('')}
       </div>
       ` : ''}
-      ${compliance.awards ? `<p class="description" style="margin-top: 16px;"><strong>Awards:</strong> ${compliance.awards}</p>` : ''}
     </div>
     ` : ''}
 
