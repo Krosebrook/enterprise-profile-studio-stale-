@@ -43,8 +43,8 @@ export function BrandingStep({ data, onChange }: BrandingStepProps) {
             <div className="space-y-2">
               <Label>Cover Image</Label>
               <ImageUpload
-                value={data.logo || ''}
-                onChange={(url) => handleChange('logo', url)}
+                value={data.coverImage || ''}
+                onChange={(url) => handleChange('coverImage', url)}
                 folder="covers"
                 aspectRatio="landscape"
                 placeholder="Upload cover image"

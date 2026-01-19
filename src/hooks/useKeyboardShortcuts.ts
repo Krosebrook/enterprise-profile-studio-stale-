@@ -25,13 +25,15 @@ export function useKeyboardShortcuts() {
     return isInput || isEditable;
   }, []);
 
+  const pathname = location.pathname;
+  
   const shortcuts: ShortcutConfig[] = useMemo(() => [
     {
       key: 'n',
       action: () => {
-        if (location.pathname.includes('/knowledge')) {
+        if (pathname.includes('/knowledge')) {
           navigate('/knowledge/new');
-        } else if (location.pathname.includes('/dashboard')) {
+        } else if (pathname.includes('/dashboard')) {
           // Trigger new profile dialog - dispatch custom event
           window.dispatchEvent(new CustomEvent('shortcut:new-profile'));
         } else {
@@ -113,7 +115,7 @@ export function useKeyboardShortcuts() {
       description: 'Show keyboard shortcuts',
       requiresAuth: false,
     },
-  ], [navigate, location.pathname]);
+  ], [navigate, pathname]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

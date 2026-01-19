@@ -20,6 +20,7 @@ export interface CompanyInfo {
 
 export interface BrandingInfo {
   logo?: string;
+  coverImage?: string;
   primaryColor?: string;
   secondaryColor?: string;
   accentColor?: string;
