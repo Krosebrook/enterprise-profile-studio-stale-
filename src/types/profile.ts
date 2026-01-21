@@ -21,6 +21,7 @@ export interface CompanyInfo {
 export interface BrandingInfo {
   logo?: string;
   coverImage?: string;
+  coverUrl?: string;
   primaryColor?: string;
   secondaryColor?: string;
   accentColor?: string;
@@ -74,6 +75,8 @@ export interface ComplianceInfo {
   privacyPolicy?: string;
   termsOfService?: string;
   dataProtection?: string[];
+  otherCertifications?: string;
+  awards?: string;
 }
 
 export interface ProfileMetadata {

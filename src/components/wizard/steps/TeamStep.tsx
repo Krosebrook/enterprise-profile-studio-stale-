@@ -205,7 +205,7 @@ export function TeamStep({ data, onChange }: TeamStepProps) {
               <Button
                 type="button"
                 onClick={addMember}
-                disabled={!newMember.name.trim() || !newMember.role.trim()}
+                disabled={!newMember.name.trim() || !newMember.title.trim()}
                 className="w-full primary-gradient border-0"
               >
                 <Plus className="mr-2 h-4 w-4" />

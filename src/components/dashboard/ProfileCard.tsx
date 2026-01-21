@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { EnterpriseProfile } from '@/hooks/useProfiles';
+import type { EnterpriseProfile } from '@/types/profile';
 import { Edit, Eye, ExternalLink, Trash2, MoreVertical, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import {

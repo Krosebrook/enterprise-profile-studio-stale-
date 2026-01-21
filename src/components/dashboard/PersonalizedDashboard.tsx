@@ -22,16 +22,13 @@ interface PersonalizedDashboardProps {
 
 interface MockDeal {
   id: string;
-  title: string;
-  company: string;
+  name: string;
   industry: string;
   stage: string;
-  dealSize: number;
-  matchScore: number;
-  riskLevel: string;
+  amount: number;
+  match: number;
+  trending: boolean;
   description: string;
-  daysRemaining: number;
-  tags: string[];
 }
 
 // Mock deal data - in production, this would come from an API

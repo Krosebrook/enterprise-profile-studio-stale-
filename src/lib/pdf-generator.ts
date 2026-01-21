@@ -31,7 +31,7 @@ export function generateProfilePDF(profileData: ProfileData): void {
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>${companyInfo.companyName || name} - Enterprise Profile</title>
+  <title>${companyInfo.name || name} - Enterprise Profile</title>
   <style>
     * {
       margin: 0;
@@ -214,10 +214,10 @@ export function generateProfilePDF(profileData: ProfileData): void {
     <div class="header">
       <div class="header-content">
         <div class="logo-container">
-          ${branding.logoUrl ? `<img src="${branding.logoUrl}" alt="Logo">` : '🏢'}
+          ${branding.logo ? `<img src="${branding.logo}" alt="Logo">` : '🏢'}
         </div>
         <div>
-          <div class="company-name">${companyInfo.companyName || name}</div>
+          <div class="company-name">${companyInfo.name || name}</div>
           ${companyInfo.tagline ? `<div class="tagline">${companyInfo.tagline}</div>` : ''}
           <div class="badges">
             ${companyInfo.industry ? `<span class="badge">${companyInfo.industry}</span>` : ''}
@@ -234,14 +234,14 @@ export function generateProfilePDF(profileData: ProfileData): void {
     </div>
     ` : ''}
 
-    ${(companyInfo.website || companyInfo.email || companyInfo.phone || companyInfo.address) ? `
+    ${(companyInfo.website || companyInfo.email || companyInfo.phone || companyInfo.headquarters) ? `
     <div class="section">
       <div class="section-title">Contact Information</div>
       <div class="contact-grid">
         ${companyInfo.website ? `<div class="contact-item">🌐 ${companyInfo.website}</div>` : ''}
         ${companyInfo.email ? `<div class="contact-item">✉️ ${companyInfo.email}</div>` : ''}
         ${companyInfo.phone ? `<div class="contact-item">📞 ${companyInfo.phone}</div>` : ''}
-        ${companyInfo.address ? `<div class="contact-item">📍 ${companyInfo.address}</div>` : ''}
+        ${companyInfo.headquarters ? `<div class="contact-item">📍 ${companyInfo.headquarters}</div>` : ''}
       </div>
     </div>
     ` : ''}

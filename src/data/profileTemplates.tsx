@@ -1,6 +1,8 @@
 import { Building2, Briefcase, Code, Stethoscope, Scale, Rocket, GraduationCap, ShoppingBag } from 'lucide-react';
 import type { ProfileTemplate } from '@/types/profile';
 
+export type { ProfileTemplate };
+
 export const profileTemplates: ProfileTemplate[] = [
   {
     id: 'blank',

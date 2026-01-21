@@ -69,11 +69,11 @@ export default function ProfilePreviewPage() {
   const handleExportPDF = () => {
     if (!profile || !contentRef.current) return;
     
-    const companyInfo = profile.company_info || {};
-    const branding = profile.branding || {};
-    const services = profile.services || [];
-    const team = profile.team || [];
-    const compliance = profile.compliance || {};
+    const companyInfo = (profile.company_info || {}) as CompanyInfo;
+    const branding = (profile.branding || {}) as BrandingInfo;
+    const services = (Array.isArray(profile.services) ? { services: [] } : profile.services || {}) as ServicesInfo;
+    const team = (Array.isArray(profile.team) ? { members: [] } : profile.team || {}) as TeamInfo;
+    const compliance = (profile.compliance || {}) as ComplianceInfo;
 
     generateProfilePDF({
       name: profile.name,
@@ -99,11 +99,11 @@ export default function ProfilePreviewPage() {
     return null;
   }
 
-  const companyInfo: CompanyInfo = profile.company_info || {};
-  const branding: BrandingInfo = profile.branding || {};
-  const services: ServicesInfo = profile.services || {};
-  const team: TeamInfo = profile.team || {};
-  const compliance: ComplianceInfo = profile.compliance || {};
+  const companyInfo: CompanyInfo = (profile.company_info || {}) as CompanyInfo;
+  const branding: BrandingInfo = (profile.branding || {}) as BrandingInfo;
+  const services: ServicesInfo = (Array.isArray(profile.services) ? { services: [] } : profile.services || {}) as ServicesInfo;
+  const team: TeamInfo = (Array.isArray(profile.team) ? { members: [] } : profile.team || {}) as TeamInfo;
+  const compliance: ComplianceInfo = (profile.compliance || {}) as ComplianceInfo;
 
   const certificationLabels: Record<string, string> = {
     iso27001: 'ISO 27001',
@@ -320,21 +320,21 @@ export default function ProfilePreviewPage() {
           )}
 
           {/* Compliance */}
-          {(compliance.certifications?.length > 0 || compliance.awards) && (
+          {((compliance.certifications && compliance.certifications.length > 0) || compliance.awards) && (
             <Card className="border-border/50">
               <CardContent className="pt-6">
                 <h2 className="mb-4 flex items-center gap-2 font-display text-xl font-semibold">
                   <Shield className="h-5 w-5 text-primary" />
                   Compliance & Certifications
                 </h2>
-                {compliance.certifications?.length > 0 && (
+                {compliance.certifications && compliance.certifications.length > 0 && (
                   <div className="flex flex-wrap gap-2">
-                    {compliance.certifications.map((cert: string) => (
+                    {compliance.certifications.map((cert) => (
                       <Badge 
-                        key={cert}
+                        key={cert.id}
                         className="bg-success/10 text-success hover:bg-success/20"
                       >
-                        {certificationLabels[cert] || cert}
+                        {cert.name}
                       </Badge>
                     ))}
                   </div>

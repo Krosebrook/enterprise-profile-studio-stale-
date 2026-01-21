@@ -3,7 +3,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ComplianceInfo } from '@/types/profile';
+import { ComplianceInfo, Certification } from '@/types/profile';
 import { Shield, FileCheck, Award } from 'lucide-react';
 
 interface ComplianceStepProps {
@@ -11,8 +11,10 @@ interface ComplianceStepProps {
   onChange: (data: ComplianceInfo) => void;
 }
 
-interface ComplianceStepData extends ComplianceInfo {
-  certifications?: string[];
+// Extended data with additional fields used by the UI
+interface ExtendedComplianceData extends Omit<ComplianceInfo, 'certifications'> {
+  certifications?: Certification[];
+  selectedCertIds?: string[];
   otherCertifications?: string;
   awards?: string;
   registrationNumber?: string;
@@ -30,18 +32,29 @@ const commonCertifications = [
 ];
 
 export function ComplianceStep({ data, onChange }: ComplianceStepProps) {
-  const stepData = data as ComplianceStepData;
+  // Extract selected cert IDs from the certifications array
+  const selectedCertIds = (data.certifications || []).map(c => c.id);
+  const extendedData = data as unknown as ExtendedComplianceData;
   
   const handleChange = (field: string, value: string | string[]) => {
-    onChange({ ...data, [field]: value });
+    onChange({ ...data, [field]: value } as ComplianceInfo);
   };
 
-  const toggleCertification = (id: string) => {
-    const current = stepData.certifications || [];
-    const updated = current.includes(id)
-      ? current.filter((c: string) => c !== id)
-      : [...current, id];
-    handleChange('certifications', updated);
+  const toggleCertification = (certId: string) => {
+    const cert = commonCertifications.find(c => c.id === certId);
+    if (!cert) return;
+    
+    const currentCerts = data.certifications || [];
+    const isSelected = currentCerts.some(c => c.id === certId);
+    
+    let updatedCerts: Certification[];
+    if (isSelected) {
+      updatedCerts = currentCerts.filter(c => c.id !== certId);
+    } else {
+      updatedCerts = [...currentCerts, { id: certId, name: cert.label, issuer: 'Standard' }];
+    }
+    
+    onChange({ ...data, certifications: updatedCerts });
   };
 
   return (
@@ -65,7 +78,7 @@ export function ComplianceStep({ data, onChange }: ComplianceStepProps) {
               >
                 <Checkbox
                   id={cert.id}
-                  checked={(stepData.certifications || []).includes(cert.id)}
+                  checked={selectedCertIds.includes(cert.id)}
                   onCheckedChange={() => toggleCertification(cert.id)}
                 />
                 <div className="flex-1">
@@ -99,7 +112,7 @@ export function ComplianceStep({ data, onChange }: ComplianceStepProps) {
             <Input
               id="otherCerts"
               placeholder="e.g., AWS Partner, Microsoft Gold Partner..."
-              value={stepData.otherCertifications || ''}
+              value={extendedData.otherCertifications || ''}
               onChange={(e) => handleChange('otherCertifications', e.target.value)}
             />
           </div>
@@ -109,7 +122,7 @@ export function ComplianceStep({ data, onChange }: ComplianceStepProps) {
             <Textarea
               id="awards"
               placeholder="List notable awards, recognition, or industry accolades..."
-              value={stepData.awards || ''}
+              value={extendedData.awards || ''}
               onChange={(e) => handleChange('awards', e.target.value)}
               rows={3}
             />
@@ -134,7 +147,7 @@ export function ComplianceStep({ data, onChange }: ComplianceStepProps) {
               <Input
                 id="registrationNumber"
                 placeholder="Company registration ID"
-                value={stepData.registrationNumber || ''}
+                value={extendedData.registrationNumber || ''}
                 onChange={(e) => handleChange('registrationNumber', e.target.value)}
               />
             </div>
@@ -143,7 +156,7 @@ export function ComplianceStep({ data, onChange }: ComplianceStepProps) {
               <Input
                 id="taxId"
                 placeholder="Tax identification number"
-                value={stepData.taxId || ''}
+                value={extendedData.taxId || ''}
                 onChange={(e) => handleChange('taxId', e.target.value)}
               />
             </div>
@@ -154,7 +167,7 @@ export function ComplianceStep({ data, onChange }: ComplianceStepProps) {
             <Input
               id="insuranceInfo"
               placeholder="Professional liability, E&O insurance details..."
-              value={stepData.insuranceInfo || ''}
+              value={extendedData.insuranceInfo || ''}
               onChange={(e) => handleChange('insuranceInfo', e.target.value)}
             />
           </div>

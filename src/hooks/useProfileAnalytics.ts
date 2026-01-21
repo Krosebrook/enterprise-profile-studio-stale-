@@ -2,6 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { AnalyticsData, AnalyticsEvent } from '@/types/profile';
 
+export type { AnalyticsData, AnalyticsEvent };
+
 export function useProfileAnalytics(profileId: string | undefined) {
   return useQuery({
     queryKey: ['profile-analytics', profileId],
@@ -64,7 +66,7 @@ export function useProfileAnalytics(profileId: string | undefined) {
         recentEvents: (events?.slice(0, 20) || []).map(e => ({
           id: e.id,
           profile_id: e.profile_id,
-          event_type: e.event_type as 'view' | 'share' | 'contact' | 'download' | 'export',
+          event_type: e.event_type as AnalyticsEvent['event_type'],
           event_data: e.event_data as Record<string, string | number | boolean> | undefined,
           created_at: e.created_at,
         })),

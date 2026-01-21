@@ -14,8 +14,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useAuth } from '@/contexts/AuthContext';
-import { useProfiles, EnterpriseProfile } from '@/hooks/useProfiles';
-import { useProfileAnalytics, AnalyticsData } from '@/hooks/useProfileAnalytics';
+import { useProfiles } from '@/hooks/useProfiles';
+import { useProfileAnalytics } from '@/hooks/useProfileAnalytics';
+import type { AnalyticsData } from '@/types/profile';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import {
   LineChart,
@@ -98,7 +99,13 @@ function useComparisonAnalytics(profileIds: string[]) {
           totalContactClicks,
           totalServiceViews,
           viewsByDate: Array.from(viewsByDateMap.entries()).map(([date, count]) => ({ date, count })),
-          recentEvents: events?.slice(0, 20) || [],
+          recentEvents: (events?.slice(0, 20) || []).map(e => ({
+            id: e.id,
+            profile_id: e.profile_id,
+            event_type: e.event_type as AnalyticsData['recentEvents'][0]['event_type'],
+            event_data: e.event_data as Record<string, string | number | boolean> | undefined,
+            created_at: e.created_at,
+          })),
         };
       }
 

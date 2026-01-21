@@ -81,12 +81,12 @@ export function DealSourcingStep({ data, onChange, welcomeData }: DealSourcingSt
     if (!suggestions) return;
     
     onChange({
-      targetIndustries: suggestions.industries.filter(i => INDUSTRIES.includes(i)) as string[],
-      preferredDealStructures: suggestions.dealStructures.filter(s => DEAL_STRUCTURES.includes(s)) as string[],
-      dealStages: suggestions.stages.filter(s => DEAL_STAGES.includes(s)) as string[],
+      targetIndustries: suggestions.industries.filter(i => (INDUSTRIES as readonly string[]).includes(i)),
+      preferredDealStructures: suggestions.dealStructures.filter(s => (DEAL_STRUCTURES as readonly string[]).includes(s)),
+      dealStages: suggestions.stages.filter(s => (DEAL_STAGES as readonly string[]).includes(s)),
       geoPreferences: { 
         ...data.geoPreferences, 
-        regions: suggestions.regions.filter(r => REGIONS.includes(r)) as string[]
+        regions: suggestions.regions.filter(r => (REGIONS as readonly string[]).includes(r))
       },
       riskTolerance: suggestions.riskTolerance as typeof data.riskTolerance,
       investmentSizeRange: { ...data.investmentSizeRange, ...suggestions.investmentRange },

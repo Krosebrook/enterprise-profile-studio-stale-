@@ -5,18 +5,17 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { 
-  Scale, X, Plus, ChevronRight, TrendingUp, TrendingDown, 
-  Minus, Check, AlertCircle, Briefcase, Target, Users,
-  Calendar, DollarSign, BarChart3, Clock, Sparkles
+  Scale, X, Plus, ChevronRight, TrendingUp, 
+  Briefcase, Target, Users,
+  Calendar, BarChart3, Sparkles
 } from 'lucide-react';
 import { Deal, COMPARISON_CRITERIA, generateFullMockDeals, ComparisonCriteria } from '@/types/deals';
 import { OnboardingUserProfile } from '@/types/onboarding';
 import { cn } from '@/lib/utils';
-import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/animations';
+import { FadeIn } from '@/components/ui/animations';
 
 interface DealComparisonToolProps {
   profile: OnboardingUserProfile | null;
@@ -48,13 +47,19 @@ const formatValue = (value: string | number | boolean | undefined | null, format
   }
 };
 
-const getNestedValue = (obj: Record<string, unknown>, path: string): string | number | boolean | undefined | null => {
-  return path.split('.').reduce<unknown>((acc, part) => {
-    if (acc && typeof acc === 'object' && part in acc) {
-      return (acc as Record<string, unknown>)[part];
+const getNestedValue = (obj: Deal, path: string): string | number | boolean | undefined | null => {
+  const parts = path.split('.');
+  let current: unknown = obj;
+  
+  for (const part of parts) {
+    if (current && typeof current === 'object' && part in current) {
+      current = (current as Record<string, unknown>)[part];
+    } else {
+      return undefined;
     }
-    return undefined;
-  }, obj) as string | number | boolean | undefined | null;
+  }
+  
+  return current as string | number | boolean | undefined | null;
 };
 
 const getCategoryIcon = (category: string) => {
@@ -107,13 +112,15 @@ export function DealComparisonTool({ profile }: DealComparisonToolProps) {
     const values = selectedDealData.map(deal => ({
       id: deal.id,
       value: getNestedValue(deal, criteria.key)
-    })).filter(v => v.value !== undefined && v.value !== null);
+    })).filter(v => v.value !== undefined && v.value !== null && typeof v.value === 'number');
     
     if (values.length === 0) return null;
     
-    const sorted = values.sort((a, b) => 
-      criteria.higherIsBetter ? b.value - a.value : a.value - b.value
-    );
+    const sorted = [...values].sort((a, b) => {
+      const aVal = a.value as number;
+      const bVal = b.value as number;
+      return criteria.higherIsBetter ? bVal - aVal : aVal - bVal;
+    });
     
     return sorted[0]?.id;
   };
@@ -322,6 +329,7 @@ export function DealComparisonTool({ profile }: DealComparisonToolProps) {
                           {selectedDealData.map((deal) => {
                             const value = getNestedValue(deal, criteria.key);
                             const isBest = bestDealId === deal.id;
+                            const numValue = typeof value === 'number' ? value : 0;
                             
                             return (
                               <div 
@@ -333,8 +341,8 @@ export function DealComparisonTool({ profile }: DealComparisonToolProps) {
                               >
                                 <span className={cn(
                                   'font-medium',
-                                  criteria.format === 'match' && value >= 90 && 'text-green-500',
-                                  criteria.format === 'match' && value >= 80 && value < 90 && 'text-primary',
+                                  criteria.format === 'match' && numValue >= 90 && 'text-green-500',
+                                  criteria.format === 'match' && numValue >= 80 && numValue < 90 && 'text-primary',
                                   criteria.format === 'boolean' && value && 'text-green-500',
                                   criteria.format === 'boolean' && !value && 'text-muted-foreground'
                                 )}>
@@ -406,29 +414,29 @@ export function DealComparisonTool({ profile }: DealComparisonToolProps) {
                     { label: 'Risk', fit: riskFit },
                   ];
 
-                  const overallFit = fitItems.filter(i => i.fit).length;
+                  const fitScore = fitItems.filter(item => item.fit).length;
+                  const fitPercentage = (fitScore / fitItems.length) * 100;
 
                   return (
-                    <Card key={deal.id} className="bg-muted/30">
+                    <Card key={deal.id} className="border-border/50">
                       <CardContent className="pt-4">
                         <div className="mb-3 flex items-center justify-between">
-                          <span className="font-medium">{deal.name}</span>
-                          <Badge variant={overallFit >= 3 ? 'default' : overallFit >= 2 ? 'secondary' : 'outline'}>
-                            {overallFit}/4
+                          <p className="font-medium">{deal.name}</p>
+                          <Badge variant={fitPercentage >= 75 ? 'default' : 'secondary'}>
+                            {fitScore}/{fitItems.length}
                           </Badge>
                         </div>
                         <div className="space-y-2">
-                          {fitItems.map(item => (
+                          {fitItems.map((item) => (
                             <div key={item.label} className="flex items-center justify-between text-sm">
                               <span className="text-muted-foreground">{item.label}</span>
-                              {item.fit ? (
-                                <Check className="h-4 w-4 text-green-500" />
-                              ) : (
-                                <X className="h-4 w-4 text-muted-foreground" />
-                              )}
+                              <span className={item.fit ? 'text-green-500' : 'text-red-500'}>
+                                {item.fit ? '✓' : '✗'}
+                              </span>
                             </div>
                           ))}
                         </div>
+                        <Progress value={fitPercentage} className="mt-3 h-1.5" />
                       </CardContent>
                     </Card>
                   );
@@ -437,22 +445,6 @@ export function DealComparisonTool({ profile }: DealComparisonToolProps) {
             </CardContent>
           </Card>
         </FadeIn>
-      )}
-
-      {/* Empty State */}
-      {selectedDeals.length < 2 && !showSelector && (
-        <Card className="border-dashed">
-          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <AlertCircle className="mb-4 h-12 w-12 text-muted-foreground" />
-            <p className="text-lg font-medium">Select at least 2 deals</p>
-            <p className="text-sm text-muted-foreground">
-              Choose deals from the selector above to start comparing
-            </p>
-            <Button className="mt-4" onClick={() => setShowSelector(true)}>
-              Select Deals
-            </Button>
-          </CardContent>
-        </Card>
       )}
     </div>
   );

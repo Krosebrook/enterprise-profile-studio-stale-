@@ -75,11 +75,11 @@ export default function PublicProfilePage() {
     );
   }
 
-  const companyInfo: CompanyInfo = (profile.company_info || {});
-  const branding: BrandingInfo = (profile.branding || {});
-  const services: ServicesInfo = (profile.services || {});
-  const team: TeamInfo = (profile.team || {});
-  const compliance: ComplianceInfo = (profile.compliance || {});
+  const companyInfo: CompanyInfo = (profile.company_info || {}) as CompanyInfo;
+  const branding: BrandingInfo = (profile.branding || {}) as BrandingInfo;
+  const services: ServicesInfo = (Array.isArray(profile.services) ? { services: [] } : profile.services || {}) as ServicesInfo;
+  const team: TeamInfo = (Array.isArray(profile.team) ? { members: [] } : profile.team || {}) as TeamInfo;
+  const compliance: ComplianceInfo = (profile.compliance || {}) as ComplianceInfo;
 
   const certificationLabels: Record<string, string> = {
     iso27001: 'ISO 27001',
@@ -96,14 +96,14 @@ export default function PublicProfilePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {branding.coverUrl && (
+      {branding.coverImage && (
         <div className="relative h-48 md:h-64">
-          <img src={branding.coverUrl} alt="Cover" className="h-full w-full object-cover" />
+          <img src={branding.coverImage} alt="Cover" className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
         </div>
       )}
 
-      <div className={`relative ${branding.coverUrl ? '-mt-20' : 'pt-8'}`}>
+      <div className={`relative ${branding.coverImage ? '-mt-20' : 'pt-8'}`}>
         <div className="container max-w-4xl">
           <div 
             className="overflow-hidden rounded-2xl p-8"

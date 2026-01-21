@@ -54,7 +54,7 @@ export function CreateProfileDialog({ open: controlledOpen, onOpenChange }: Crea
         id: profile.id,
         updates: {
           company_info: {
-            companyName: name,
+            name: name,
             ...selectedTemplate.data.company_info,
           },
           branding: selectedTemplate.data.branding,

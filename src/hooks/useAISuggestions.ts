@@ -20,7 +20,7 @@ interface OnboardingPreferences {
   geoPreferences?: {
     regions?: string[];
   };
-  riskTolerance?: 'low' | 'moderate' | 'high';
+  riskTolerance?: 'conservative' | 'moderate' | 'aggressive' | 'very_aggressive';
   investmentSizeRange?: { min?: number; max?: number };
 }
 
