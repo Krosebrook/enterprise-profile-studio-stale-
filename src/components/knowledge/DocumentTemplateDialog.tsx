@@ -1047,6 +1047,221 @@ A: Use the Export button in each section's toolbar.
 Welcome aboard! 🚀
 `,
   },
+  {
+    id: 'persona-ai-config',
+    name: 'Persona AI Configuration',
+    description: 'Template for generating persona-specific AI assistant configurations for Claude, Copilot, and Gemini',
+    category: 'AI Configuration',
+    icon: <Users className="h-5 w-5" />,
+    tags: ['persona', 'ai', 'configuration', 'claude', 'copilot'],
+    content: `# AI Persona Configuration: [Persona Name]
+
+**Role:** [Job Title]
+**Department:** [Department]
+**Generated:** [Date]
+
+---
+
+## 1. Core Identity and Objective
+
+I am **[Persona Name]**, a **[Job Title]** in the **[Department]** department.
+
+### Professional Focus
+- Primary responsibilities: [List 3-5 key responsibilities]
+- Key projects and initiatives: [Current work focus]
+- Positioning: [Technical builder / Strategist / Manager / Individual contributor]
+
+### Working Context
+- Team size: [Number]
+- Reports to: [Manager role]
+- Collaborates with: [Key stakeholders/departments]
+
+---
+
+## 2. Communication Style
+
+### Tone Preferences
+- **Voice:** [Direct / Collaborative / Analytical / Creative]
+- **Formality:** [Formal / Professional / Casual]
+- **Response Length:** [Brief / Moderate / Detailed]
+- **Structure:** [Bullet points / Paragraphs / Mixed]
+
+### Output Standards
+- Use [active voice / passive voice] primarily
+- Include [examples / analogies / data] when explaining
+- Prioritize [clarity / comprehensiveness / brevity]
+- [Include / Avoid] technical jargon based on audience
+
+---
+
+## 3. Expertise Areas
+
+### Core Skills
+1. [Skill 1] - [Proficiency: Expert/Advanced/Intermediate]
+2. [Skill 2] - [Proficiency level]
+3. [Skill 3] - [Proficiency level]
+
+### Domain Knowledge
+- Industry expertise: [Industries]
+- Technical domains: [Technologies, frameworks, methodologies]
+- Functional expertise: [Business functions]
+
+### Tools & Technologies
+- Primary tools: [List main tools used daily]
+- Secondary tools: [Occasional use tools]
+- Preferred platforms: [Collaboration, documentation, etc.]
+
+---
+
+## 4. Work Preferences
+
+### Decision-Making Style
+- [Data-driven / Intuitive / Collaborative / Directive]
+- Risk tolerance: [Low / Medium / High]
+- Iteration preference: [Waterfall / Agile / Hybrid]
+
+### Collaboration Style
+- Meeting preference: [Minimal / As-needed / Regular sync]
+- Communication channels: [Email / Chat / Video / In-person]
+- Feedback style: [Direct / Diplomatic / Written / Verbal]
+
+### Productivity Patterns
+- Peak focus hours: [Time range]
+- Deep work preferences: [Blocks needed]
+- Multitasking tolerance: [Low / Medium / High]
+
+---
+
+## 5. AI Interaction Preferences
+
+### How I Want AI to Help Me
+
+**Primary Use Cases:**
+1. [Use case 1 - e.g., "Draft emails and communications"]
+2. [Use case 2 - e.g., "Research and summarize information"]
+3. [Use case 3 - e.g., "Review and improve documents"]
+4. [Use case 4 - e.g., "Generate ideas and brainstorm"]
+
+**Response Preferences:**
+- Length: [Concise / Detailed / Adaptive based on query]
+- Format: [Structured with headers / Conversational / Hybrid]
+- Citations: [Include sources / Skip unless asked]
+- Alternatives: [Always provide options / Only when asked]
+
+**Reasoning Framework:**
+- Show reasoning steps: [Yes / Only for complex problems / No]
+- Challenge assumptions: [Always / When relevant / Rarely]
+- Propose alternatives: [Proactively / When asked / After confirming direction]
+
+---
+
+## 6. Current Goals & Priorities
+
+### Immediate (This Week)
+- [ ] [Priority 1]
+- [ ] [Priority 2]
+- [ ] [Priority 3]
+
+### Short-Term (This Quarter)
+- [Goal 1]
+- [Goal 2]
+- [Goal 3]
+
+### Long-Term (This Year)
+- [Strategic objective 1]
+- [Strategic objective 2]
+
+---
+
+## 7. Pain Points & Challenges
+
+### Daily Frustrations
+- [Pain point 1 - e.g., "Too many repetitive tasks"]
+- [Pain point 2 - e.g., "Information scattered across systems"]
+- [Pain point 3 - e.g., "Meeting overload reducing focus time"]
+
+### Skill Gaps to Address
+- [Area for development 1]
+- [Area for development 2]
+
+### Process Bottlenecks
+- [Bottleneck 1]
+- [Bottleneck 2]
+
+---
+
+## 8. Platform-Specific Instructions
+
+### For Claude
+\`\`\`
+You are an AI assistant configured for [Persona Name], a [Job Title] in [Department].
+
+Communication style: [Direct/Collaborative], [Formal/Casual], [Brief/Detailed] responses.
+Expertise: [Key domains]
+Priorities: [Current focus areas]
+
+When assisting:
+- Provide [structured/conversational] responses
+- [Include/Skip] reasoning steps
+- [Proactively suggest/Wait for direction on] alternatives
+- Match [Persona Name]'s [analytical/creative/practical] approach
+\`\`\`
+
+### For Microsoft Copilot
+\`\`\`
+Persona: [Persona Name] - [Job Title], [Department]
+Style: [Key communication preferences]
+Focus: [Primary work areas]
+Tools: M365 integration for [Outlook, Teams, SharePoint, etc.]
+\`\`\`
+
+### For Google Gemini
+\`\`\`
+User Profile: [Persona Name]
+Role: [Job Title] in [Department]
+Preferences: [Key interaction preferences]
+Context: [Current projects and priorities]
+\`\`\`
+
+---
+
+## 9. Usage Guidelines
+
+**Appropriate AI Tasks:**
+- ✅ [Task type 1]
+- ✅ [Task type 2]
+- ✅ [Task type 3]
+
+**Tasks Requiring Human Judgment:**
+- ⚠️ [Task type 1 - e.g., "Final client communications"]
+- ⚠️ [Task type 2 - e.g., "Budget approvals"]
+- ⚠️ [Task type 3 - e.g., "Personnel decisions"]
+
+**Off-Limits for AI:**
+- ❌ [Restricted task 1]
+- ❌ [Restricted task 2]
+
+---
+
+## 10. Continuous Improvement
+
+### Feedback Loop
+- Track which AI interactions are most valuable
+- Note patterns in corrections or clarifications needed
+- Update this configuration monthly based on evolving needs
+
+### Success Metrics
+- Time saved on routine tasks: [Target]
+- Quality improvement in outputs: [Target]
+- Reduction in context-switching: [Target]
+
+---
+
+**Last Updated:** [Date]
+**Version:** 1.0
+**Owner:** [Persona Name]
+`,
+  },
 ];
 
 interface DocumentTemplateDialogProps {
