@@ -106,8 +106,8 @@ export function useROICalculator() {
         .insert([{
           user_id: user.id,
           name,
-          inputs: inputs as unknown as Record<string, unknown>,
-          outputs: outputs as unknown as Record<string, unknown>,
+          inputs: JSON.parse(JSON.stringify(inputs)),
+          outputs: JSON.parse(JSON.stringify(outputs)),
           platform_ids: platformIds,
         }])
         .select()

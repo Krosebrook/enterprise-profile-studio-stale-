@@ -216,12 +216,12 @@ export function useAIAssessment() {
         .from('ai_assessments')
         .insert([{
           user_id: user.id,
-          organization_profile: organizationProfile as unknown as Record<string, unknown>,
-          current_ai_usage: currentAiUsage as unknown as Record<string, unknown>,
-          technical_readiness: technicalReadiness as unknown as Record<string, unknown>,
-          budget_timeline: budgetTimeline as unknown as Record<string, unknown>,
+          organization_profile: JSON.parse(JSON.stringify(organizationProfile)),
+          current_ai_usage: JSON.parse(JSON.stringify(currentAiUsage)),
+          technical_readiness: JSON.parse(JSON.stringify(technicalReadiness)),
+          budget_timeline: JSON.parse(JSON.stringify(budgetTimeline)),
           readiness_score: readinessScore,
-          recommendations: recommendations as unknown as Record<string, unknown>,
+          recommendations: JSON.parse(JSON.stringify(recommendations)),
         }])
         .select()
         .single();
