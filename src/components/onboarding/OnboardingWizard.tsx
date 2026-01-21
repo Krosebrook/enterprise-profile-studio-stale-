@@ -1,84 +1,151 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { OnboardingProgress } from './OnboardingProgress';
-import { WelcomeStep } from './steps/WelcomeStep';
-import { DealSourcingStep } from './steps/DealSourcingStep';
-import { PortfolioGoalsStep } from './steps/PortfolioGoalsStep';
-import { CommunityStep } from './steps/CommunityStep';
-import { ReviewStep } from './steps/ReviewStep';
+import { ArrowLeft } from 'lucide-react';
 import { useOnboarding } from '@/hooks/useOnboarding';
-import { OnboardingStep } from '@/types/onboarding';
-import { 
-  ArrowLeft, ArrowRight, Check, Loader2, SkipForward,
-  Rocket, Target, Briefcase, Users, CheckCircle2
-} from 'lucide-react';
+import { SplashStep } from './steps/SplashStep';
+import { AIEcosystemStep } from './steps/AIEcosystemStep';
+import { PersonaSelectionStep } from './steps/PersonaSelectionStep';
+import { APIIntegrationStep } from './steps/APIIntegrationStep';
 import { cn } from '@/lib/utils';
 
-const wizardSteps: OnboardingStep[] = [
-  { 
-    id: 'welcome', 
-    title: 'Welcome', 
-    description: 'About you',
-    icon: <Rocket className="h-5 w-5" />
-  },
-  { 
-    id: 'deal-sourcing', 
-    title: 'Deal Sourcing', 
-    description: 'Investment criteria',
-    icon: <Target className="h-5 w-5" />
-  },
-  { 
-    id: 'portfolio', 
-    title: 'Portfolio Goals', 
-    description: 'Your objectives',
-    icon: <Briefcase className="h-5 w-5" />
-  },
-  { 
-    id: 'community', 
-    title: 'Community', 
-    description: 'Preferences',
-    icon: <Users className="h-5 w-5" />,
-    isOptional: true
-  },
-  { 
-    id: 'review', 
-    title: 'Review', 
-    description: 'Confirm & go',
-    icon: <CheckCircle2 className="h-5 w-5" />
-  },
-];
+type OnboardingStep = 'splash' | 'ecosystem' | 'persona' | 'api';
+
+interface AIEcosystem {
+  id: string;
+  name: string;
+  description: string;
+  icon: React.ReactNode;
+  iconBg: string;
+  glowColor: string;
+  enabled: boolean;
+}
+
+interface APIKey {
+  id: string;
+  name: string;
+  icon: React.ReactNode;
+  iconBg: string;
+  value: string;
+  status: 'empty' | 'pending' | 'validated' | 'error';
+  helpUrl?: string;
+  lastUpdated?: string;
+}
 
 export function OnboardingWizard() {
   const navigate = useNavigate();
-  const {
-    profile,
-    currentStep,
-    isSaving,
-    updateSection,
-    nextStep,
-    prevStep,
-    skipStep,
-    completeOnboarding,
-    setCurrentStep,
-  } = useOnboarding();
-
+  const { completeOnboarding, isSaving } = useOnboarding();
+  const [currentStep, setCurrentStep] = useState<OnboardingStep>('splash');
   const [direction, setDirection] = useState(1);
+  
+  // AI Ecosystem state
+  const [ecosystems, setEcosystems] = useState<AIEcosystem[]>([
+    {
+      id: 'openai',
+      name: 'OpenAI',
+      description: 'Sync ChatGPT history & GPTs.',
+      icon: <span className="text-emerald-400">⚡</span>,
+      iconBg: 'bg-emerald-500/20',
+      glowColor: 'shadow-emerald-500/30',
+      enabled: true,
+    },
+    {
+      id: 'gemini',
+      name: 'Google Gemini',
+      description: 'Link Workspace AI & Pro data.',
+      icon: <span className="text-purple-400">→→</span>,
+      iconBg: 'bg-purple-500/20',
+      glowColor: 'shadow-purple-500/30',
+      enabled: false,
+    },
+    {
+      id: 'copilot',
+      name: 'MS Copilot',
+      description: 'Integrate 365 business context.',
+      icon: <span className="text-cyan-400">☁</span>,
+      iconBg: 'bg-cyan-500/20',
+      glowColor: 'shadow-cyan-500/30',
+      enabled: true,
+    },
+    {
+      id: 'claude',
+      name: 'Claude',
+      description: 'Access projects & writing styles.',
+      icon: <span className="text-amber-400">✦</span>,
+      iconBg: 'bg-amber-500/20',
+      glowColor: 'shadow-amber-500/30',
+      enabled: false,
+    },
+  ]);
+  
+  // Persona state
+  const [selectedPersona, setSelectedPersona] = useState<'internal' | 'external' | null>(null);
+  
+  // API Keys state
+  const [apiKeys, setApiKeys] = useState<APIKey[]>([
+    {
+      id: 'openai',
+      name: 'OpenAI',
+      icon: <div className="w-6 h-6 rounded bg-teal-600 flex items-center justify-center text-white text-xs font-bold">AI</div>,
+      iconBg: 'bg-teal-500/20',
+      value: '',
+      status: 'empty',
+    },
+    {
+      id: 'anthropic',
+      name: 'Anthropic',
+      icon: <div className="w-6 h-6 rounded bg-orange-500 flex items-center justify-center text-white text-xs font-bold">C</div>,
+      iconBg: 'bg-orange-500/20',
+      value: '',
+      status: 'empty',
+    },
+    {
+      id: 'gemini',
+      name: 'Google Gemini',
+      icon: <div className="w-6 h-6 rounded bg-slate-500 flex items-center justify-center text-white text-xs font-bold">G</div>,
+      iconBg: 'bg-slate-500/20',
+      value: '',
+      status: 'empty',
+    },
+  ]);
 
-  const handleNext = () => {
-    setDirection(1);
-    nextStep();
+  const stepOrder: OnboardingStep[] = ['splash', 'ecosystem', 'persona', 'api'];
+  const currentIndex = stepOrder.indexOf(currentStep);
+
+  const goToStep = (step: OnboardingStep) => {
+    const newIndex = stepOrder.indexOf(step);
+    setDirection(newIndex > currentIndex ? 1 : -1);
+    setCurrentStep(step);
   };
 
-  const handleBack = () => {
-    setDirection(-1);
-    prevStep();
+  const goBack = () => {
+    if (currentIndex > 0) {
+      goToStep(stepOrder[currentIndex - 1]);
+    }
   };
 
-  const handleSkip = () => {
-    setDirection(1);
-    skipStep(wizardSteps[currentStep].id);
+  const handleToggleEcosystem = (id: string) => {
+    setEcosystems(prev =>
+      prev.map(eco =>
+        eco.id === id ? { ...eco, enabled: !eco.enabled } : eco
+      )
+    );
+  };
+
+  const handleUpdateApiKey = (id: string, value: string) => {
+    setApiKeys(prev =>
+      prev.map(key =>
+        key.id === id ? { ...key, value, status: value ? 'pending' : 'empty' } : key
+      )
+    );
+  };
+
+  const handleValidateApiKey = async (id: string) => {
+    setApiKeys(prev =>
+      prev.map(key =>
+        key.id === id ? { ...key, status: 'validated', lastUpdated: 'just now' } : key
+      )
+    );
   };
 
   const handleComplete = async () => {
@@ -88,171 +155,106 @@ export function OnboardingWizard() {
     }
   };
 
-  const handleEditSection = (step: number) => {
-    setDirection(step > currentStep ? 1 : -1);
-    setCurrentStep(step);
-  };
-
-  const renderStep = () => {
+  const getStepNumber = () => {
     switch (currentStep) {
-      case 0:
-        return (
-          <WelcomeStep
-            data={profile.welcome}
-            onChange={(data) => updateSection('welcome', data)}
-          />
-        );
-      case 1:
-        return (
-          <DealSourcingStep
-            data={profile.dealSourcing}
-            onChange={(data) => updateSection('dealSourcing', data)}
-            welcomeData={profile.welcome}
-          />
-        );
-      case 2:
-        return (
-          <PortfolioGoalsStep
-            data={profile.portfolioGoals}
-            onChange={(data) => updateSection('portfolioGoals', data)}
-          />
-        );
-      case 3:
-        return (
-          <CommunityStep
-            data={profile.communityPreferences}
-            onChange={(data) => updateSection('communityPreferences', data)}
-          />
-        );
-      case 4:
-        return (
-          <ReviewStep
-            profile={profile}
-            onEditSection={handleEditSection}
-          />
-        );
-      default:
-        return null;
+      case 'ecosystem': return 2;
+      case 'persona': return 3;
+      case 'api': return 4;
+      default: return 1;
     }
   };
-
-  const isLastStep = currentStep === wizardSteps.length - 1;
-  const isFirstStep = currentStep === 0;
-  const currentStepConfig = wizardSteps[currentStep];
-
-  // Validation for each step
-  const isStepValid = () => {
-    switch (currentStep) {
-      case 0:
-        return profile.welcome.fullName.trim().length > 0;
-      case 1:
-        return profile.dealSourcing.targetIndustries.length > 0;
-      case 2:
-        return true; // Optional defaults are fine
-      case 3:
-        return true; // Optional
-      case 4:
-        return true; // Review is always valid
-      default:
-        return true;
-    }
-  };
-
-  const completedSteps = wizardSteps
-    .filter((_, i) => i < currentStep)
-    .map(s => s.id);
 
   return (
-    <div className="min-h-screen bg-background pb-24 pt-8">
-      <div className="container max-w-3xl">
-        {/* Progress */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <OnboardingProgress
-            steps={wizardSteps}
-            currentStep={currentStep}
-            onStepClick={handleEditSection}
-            completedSteps={completedSteps}
-          />
-        </motion.div>
+    <div className="min-h-screen bg-onboarding-dark dark">
+      <div className="relative mx-auto flex min-h-screen max-w-md flex-col overflow-hidden">
+        {/* Top App Bar - only show after splash */}
+        {currentStep !== 'splash' && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="sticky top-0 z-50 flex items-center justify-between p-4 pb-2 bg-onboarding-dark/80 backdrop-blur-md"
+          >
+            <button
+              onClick={goBack}
+              className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-white/10 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5 text-white" />
+            </button>
+            <span className="text-sm font-semibold uppercase tracking-wider text-white/60">
+              Step {getStepNumber()} of 4
+            </span>
+            <div className="w-10" /> {/* Spacer for centering */}
+          </motion.div>
+        )}
+
+        {/* Progress Bar - only show after splash */}
+        {currentStep !== 'splash' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="px-6 pb-4"
+          >
+            <div className="flex gap-2">
+              {stepOrder.slice(1).map((step, index) => (
+                <div
+                  key={step}
+                  className={cn(
+                    'h-1 flex-1 rounded-full transition-all duration-300',
+                    index < currentIndex
+                      ? 'bg-primary'
+                      : index === currentIndex - 1
+                      ? 'bg-primary'
+                      : 'bg-white/20'
+                  )}
+                />
+              ))}
+            </div>
+          </motion.div>
+        )}
 
         {/* Step Content */}
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={currentStep}
             custom={direction}
-            initial={{ opacity: 0, x: direction * 50 }}
+            initial={{ opacity: 0, x: direction * 100 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: direction * -50 }}
+            exit={{ opacity: 0, x: direction * -100 }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="flex-1"
           >
-            {renderStep()}
+            {currentStep === 'splash' && (
+              <SplashStep onGetStarted={() => goToStep('ecosystem')} />
+            )}
+            
+            {currentStep === 'ecosystem' && (
+              <AIEcosystemStep
+                ecosystems={ecosystems}
+                onToggle={handleToggleEcosystem}
+                onContinue={() => goToStep('persona')}
+                onSkip={() => goToStep('persona')}
+              />
+            )}
+            
+            {currentStep === 'persona' && (
+              <PersonaSelectionStep
+                selectedPersona={selectedPersona}
+                onSelect={setSelectedPersona}
+                onContinue={() => goToStep('api')}
+              />
+            )}
+            
+            {currentStep === 'api' && (
+              <APIIntegrationStep
+                apiKeys={apiKeys}
+                onUpdateKey={handleUpdateApiKey}
+                onValidate={handleValidateApiKey}
+                onComplete={handleComplete}
+                onSkip={handleComplete}
+              />
+            )}
           </motion.div>
         </AnimatePresence>
-
-        {/* Navigation */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="fixed bottom-0 left-0 right-0 border-t border-border bg-background/95 backdrop-blur"
-        >
-          <div className="container flex max-w-3xl items-center justify-between py-4">
-            <Button
-              variant="outline"
-              onClick={handleBack}
-              disabled={isFirstStep}
-              className="gap-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Back
-            </Button>
-
-            <div className="flex items-center gap-3">
-              {/* Skip button for optional steps */}
-              {currentStepConfig?.isOptional && !isLastStep && (
-                <Button
-                  variant="ghost"
-                  onClick={handleSkip}
-                  className="gap-2 text-muted-foreground"
-                >
-                  <SkipForward className="h-4 w-4" />
-                  Skip
-                </Button>
-              )}
-
-              {isLastStep ? (
-                <Button
-                  onClick={handleComplete}
-                  disabled={isSaving}
-                  className="gap-2 primary-gradient border-0"
-                >
-                  {isSaving ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Check className="h-4 w-4" />
-                  )}
-                  Complete Setup
-                </Button>
-              ) : (
-                <Button
-                  onClick={handleNext}
-                  disabled={!isStepValid()}
-                  className={cn(
-                    'gap-2',
-                    isStepValid() && 'primary-gradient border-0'
-                  )}
-                >
-                  Continue
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-          </div>
-        </motion.div>
       </div>
     </div>
   );
