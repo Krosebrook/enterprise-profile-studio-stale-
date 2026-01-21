@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.validate-api-key]
 verify_jwt = false
+
+[functions.generate-persona]
+verify_jwt = false

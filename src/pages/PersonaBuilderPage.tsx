@@ -6,7 +6,8 @@ import { useEmployeePersona, useUpdatePersona } from '@/hooks/useEmployeePersona
 import { PersonaBuilderWizard } from '@/components/persona/PersonaBuilderWizard';
 import { HatsRoleManager } from '@/components/persona/HatsRoleManager';
 import { EcosystemExportPanel } from '@/components/persona/EcosystemExportPanel';
-import { ArrowLeft, User, HardHat, Download, Loader2 } from 'lucide-react';
+import { AIPersonaGenerator, GeneratedPersonaData } from '@/components/persona/AIPersonaGenerator';
+import { ArrowLeft, User, HardHat, Download, Loader2, Sparkles } from 'lucide-react';
 import type { EmployeePersona } from '@/types/employee-persona';
 
 export default function PersonaBuilderPage() {
@@ -19,6 +20,25 @@ export default function PersonaBuilderPage() {
   const handleUpdate = async (updates: Partial<EmployeePersona>) => {
     if (!id) return;
     await updatePersona.mutateAsync({ id, updates });
+  };
+
+  const handleAIGenerated = async (data: GeneratedPersonaData) => {
+    if (!id) return;
+    await updatePersona.mutateAsync({
+      id,
+      updates: {
+        communication_style: data.communication_style,
+        work_preferences: data.work_preferences,
+        skills: data.skills,
+        expertise_areas: data.expertise_areas,
+        tools_used: data.tools_used,
+        pain_points: data.pain_points,
+        goals: data.goals,
+        ai_interaction_style: data.ai_interaction_style,
+        preferred_response_length: data.preferred_response_length,
+        preferred_tone: data.preferred_tone,
+      },
+    });
   };
 
   if (isLoading) {
@@ -50,12 +70,25 @@ export default function PersonaBuilderPage() {
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Personas
           </Button>
-          <h1 className="font-display text-3xl font-bold">{persona.name}</h1>
-          <p className="mt-1 text-muted-foreground">
-            {persona.job_title && persona.department 
-              ? `${persona.job_title} • ${persona.department}`
-              : 'Configure your AI persona profile'}
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+              <h1 className="font-display text-3xl font-bold">{persona.name}</h1>
+              <p className="mt-1 text-muted-foreground">
+                {persona.job_title && persona.department 
+                  ? `${persona.job_title} • ${persona.department}`
+                  : 'Configure your AI persona profile'}
+              </p>
+            </div>
+            <AIPersonaGenerator 
+              onGenerated={handleAIGenerated}
+              trigger={
+                <Button variant="outline" className="gap-2 border-primary/30 hover:border-primary/60 hover:bg-primary/5">
+                  <Sparkles className="h-4 w-4 text-primary" />
+                  AI Auto-Fill
+                </Button>
+              }
+            />
+          </div>
         </div>
 
         {/* Tabs */}

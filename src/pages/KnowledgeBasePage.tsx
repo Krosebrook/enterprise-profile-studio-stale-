@@ -11,6 +11,7 @@ import { DraggableDocumentCard } from '@/components/knowledge/DraggableDocumentC
 import { FolderTree } from '@/components/knowledge/FolderTree';
 import { ImportDocumentsDialog } from '@/components/knowledge/ImportDocumentsDialog';
 import { SeedDocumentsButton } from '@/components/knowledge/SeedDocumentsButton';
+import { SeedStrategyDocsButton } from '@/components/knowledge/SeedStrategyDocsButton';
 import { TagManager } from '@/components/knowledge/TagManager';
 import { MultiTagFilter } from '@/components/knowledge/MultiTagFilter';
 import { DocumentTemplateDialog } from '@/components/knowledge/DocumentTemplateDialog';
@@ -196,6 +197,7 @@ export default function KnowledgeBasePage() {
                       <span>K</span>
                     </div>
                     <TagManager />
+                    <SeedStrategyDocsButton />
                     <SeedDocumentsButton />
                     <ImportDocumentsDialog />
                     <DocumentTemplateDialog />

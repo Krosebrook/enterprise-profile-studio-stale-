@@ -7,9 +7,11 @@ import { PersonaTemplateSelector } from '@/components/persona/PersonaTemplateSel
 import { PersonaCard } from '@/components/persona/PersonaCard';
 import { PersonaStatsBar } from '@/components/persona/PersonaStatsBar';
 import { PersonaFilterBar } from '@/components/persona/PersonaFilterBar';
+import { AIPersonaGenerator, GeneratedPersonaData } from '@/components/persona/AIPersonaGenerator';
+import { PersonaComparisonView } from '@/components/persona/PersonaComparisonView';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
-import { Plus, Loader2, Bot, Sparkles } from 'lucide-react';
+import { Plus, Loader2, Bot, Sparkles, GitCompare, Wand2 } from 'lucide-react';
 import type { PersonaTemplate } from '@/data/personaTemplates';
 
 export default function PersonasListPage() {
@@ -145,15 +147,25 @@ export default function PersonasListPage() {
                   Build AI-ready personas for your team. Configure communication styles, roles, and export to Claude, Copilot, and Gemini.
                 </p>
               </div>
-              <Button 
-                size="lg" 
-                className="primary-gradient border-0 gap-2 shadow-lg hover:shadow-xl transition-shadow" 
-                onClick={() => setDialogOpen(true)}
-              >
-                <Plus className="h-5 w-5" />
-                New Persona
-                <Sparkles className="h-4 w-4 ml-1" />
-              </Button>
+              <div className="flex flex-wrap gap-2">
+                <PersonaComparisonView 
+                  trigger={
+                    <Button variant="outline" className="gap-2">
+                      <GitCompare className="h-4 w-4" />
+                      Compare
+                    </Button>
+                  }
+                />
+                <Button 
+                  size="lg" 
+                  className="primary-gradient border-0 gap-2 shadow-lg hover:shadow-xl transition-shadow" 
+                  onClick={() => setDialogOpen(true)}
+                >
+                  <Plus className="h-5 w-5" />
+                  New Persona
+                  <Sparkles className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
             </div>
           </motion.div>
 
