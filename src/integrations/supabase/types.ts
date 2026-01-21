@@ -221,6 +221,190 @@ export type Database = {
           },
         ]
       }
+      ecosystem_exports: {
+        Row: {
+          configuration: Json | null
+          content: string
+          created_at: string
+          ecosystem: string
+          export_type: string
+          id: string
+          is_active: boolean | null
+          name: string
+          persona_id: string
+          updated_at: string
+          user_id: string
+          version: number | null
+        }
+        Insert: {
+          configuration?: Json | null
+          content: string
+          created_at?: string
+          ecosystem: string
+          export_type: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          persona_id: string
+          updated_at?: string
+          user_id: string
+          version?: number | null
+        }
+        Update: {
+          configuration?: Json | null
+          content?: string
+          created_at?: string
+          ecosystem?: string
+          export_type?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          persona_id?: string
+          updated_at?: string
+          user_id?: string
+          version?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ecosystem_exports_persona_id_fkey"
+            columns: ["persona_id"]
+            isOneToOne: false
+            referencedRelation: "employee_personas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      employee_hats: {
+        Row: {
+          ai_suggestions: Json | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          key_tasks: string[] | null
+          name: string
+          optimized_prompt: string | null
+          persona_id: string
+          priority: number | null
+          responsibilities: string[] | null
+          stakeholders: string[] | null
+          time_percentage: number | null
+          tools: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_suggestions?: Json | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          key_tasks?: string[] | null
+          name: string
+          optimized_prompt?: string | null
+          persona_id: string
+          priority?: number | null
+          responsibilities?: string[] | null
+          stakeholders?: string[] | null
+          time_percentage?: number | null
+          tools?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_suggestions?: Json | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          key_tasks?: string[] | null
+          name?: string
+          optimized_prompt?: string | null
+          persona_id?: string
+          priority?: number | null
+          responsibilities?: string[] | null
+          stakeholders?: string[] | null
+          time_percentage?: number | null
+          tools?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_hats_persona_id_fkey"
+            columns: ["persona_id"]
+            isOneToOne: false
+            referencedRelation: "employee_personas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      employee_personas: {
+        Row: {
+          ai_interaction_style: string | null
+          communication_style: Json | null
+          created_at: string
+          department: string | null
+          email: string | null
+          expertise_areas: string[] | null
+          goals: string[] | null
+          id: string
+          job_title: string | null
+          name: string
+          pain_points: string[] | null
+          preferred_response_length: string | null
+          preferred_tone: string | null
+          skills: string[] | null
+          status: string | null
+          tools_used: string[] | null
+          updated_at: string
+          user_id: string
+          work_preferences: Json | null
+        }
+        Insert: {
+          ai_interaction_style?: string | null
+          communication_style?: Json | null
+          created_at?: string
+          department?: string | null
+          email?: string | null
+          expertise_areas?: string[] | null
+          goals?: string[] | null
+          id?: string
+          job_title?: string | null
+          name: string
+          pain_points?: string[] | null
+          preferred_response_length?: string | null
+          preferred_tone?: string | null
+          skills?: string[] | null
+          status?: string | null
+          tools_used?: string[] | null
+          updated_at?: string
+          user_id: string
+          work_preferences?: Json | null
+        }
+        Update: {
+          ai_interaction_style?: string | null
+          communication_style?: Json | null
+          created_at?: string
+          department?: string | null
+          email?: string | null
+          expertise_areas?: string[] | null
+          goals?: string[] | null
+          id?: string
+          job_title?: string | null
+          name?: string
+          pain_points?: string[] | null
+          preferred_response_length?: string | null
+          preferred_tone?: string | null
+          skills?: string[] | null
+          status?: string | null
+          tools_used?: string[] | null
+          updated_at?: string
+          user_id?: string
+          work_preferences?: Json | null
+        }
+        Relationships: []
+      }
       enterprise_profiles: {
         Row: {
           branding: Json | null
