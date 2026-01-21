@@ -14,6 +14,99 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_assessments: {
+        Row: {
+          budget_timeline: Json | null
+          created_at: string | null
+          current_ai_usage: Json | null
+          id: string
+          organization_profile: Json | null
+          readiness_score: number | null
+          recommendations: Json | null
+          technical_readiness: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          budget_timeline?: Json | null
+          created_at?: string | null
+          current_ai_usage?: Json | null
+          id?: string
+          organization_profile?: Json | null
+          readiness_score?: number | null
+          recommendations?: Json | null
+          technical_readiness?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          budget_timeline?: Json | null
+          created_at?: string | null
+          current_ai_usage?: Json | null
+          id?: string
+          organization_profile?: Json | null
+          readiness_score?: number | null
+          recommendations?: Json | null
+          technical_readiness?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_platforms: {
+        Row: {
+          capabilities: Json
+          category: string
+          compliance: string[] | null
+          context_window: string | null
+          created_at: string | null
+          ecosystem: string | null
+          id: string
+          logo_color: string | null
+          market_share: string | null
+          name: string
+          pricing: string | null
+          priority: string
+          specialties: string[] | null
+          target_users: string | null
+          verdict: string | null
+        }
+        Insert: {
+          capabilities?: Json
+          category: string
+          compliance?: string[] | null
+          context_window?: string | null
+          created_at?: string | null
+          ecosystem?: string | null
+          id: string
+          logo_color?: string | null
+          market_share?: string | null
+          name: string
+          pricing?: string | null
+          priority: string
+          specialties?: string[] | null
+          target_users?: string | null
+          verdict?: string | null
+        }
+        Update: {
+          capabilities?: Json
+          category?: string
+          compliance?: string[] | null
+          context_window?: string | null
+          created_at?: string | null
+          ecosystem?: string | null
+          id?: string
+          logo_color?: string | null
+          market_share?: string | null
+          name?: string
+          pricing?: string | null
+          priority?: string
+          specialties?: string[] | null
+          target_users?: string | null
+          verdict?: string | null
+        }
+        Relationships: []
+      }
       analytics_events: {
         Row: {
           created_at: string
@@ -45,6 +138,85 @@ export type Database = {
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "enterprise_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_favorites: {
+        Row: {
+          created_at: string | null
+          document_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          document_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          document_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_favorites_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_base_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_versions: {
+        Row: {
+          category: string | null
+          change_summary: string | null
+          content: string
+          created_at: string | null
+          description: string | null
+          document_id: string
+          id: string
+          tags: string[] | null
+          title: string
+          user_id: string
+          version_number: number
+        }
+        Insert: {
+          category?: string | null
+          change_summary?: string | null
+          content: string
+          created_at?: string | null
+          description?: string | null
+          document_id: string
+          id?: string
+          tags?: string[] | null
+          title: string
+          user_id: string
+          version_number: number
+        }
+        Update: {
+          category?: string | null
+          change_summary?: string | null
+          content?: string
+          created_at?: string | null
+          description?: string | null
+          document_id?: string
+          id?: string
+          tags?: string[] | null
+          title?: string
+          user_id?: string
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_versions_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_base_documents"
             referencedColumns: ["id"]
           },
         ]
@@ -234,6 +406,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      roi_calculations: {
+        Row: {
+          created_at: string | null
+          id: string
+          inputs: Json
+          name: string
+          outputs: Json
+          platform_ids: string[] | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          inputs?: Json
+          name: string
+          outputs?: Json
+          platform_ids?: string[] | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          inputs?: Json
+          name?: string
+          outputs?: Json
+          platform_ids?: string[] | null
+          user_id?: string
+        }
+        Relationships: []
       }
       user_profiles: {
         Row: {
