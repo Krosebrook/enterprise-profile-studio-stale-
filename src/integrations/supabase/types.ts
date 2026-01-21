@@ -621,6 +621,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_onboarding_preferences: {
+        Row: {
+          ai_ecosystems: Json | null
+          api_keys: Json | null
+          created_at: string
+          id: string
+          onboarding_completed: boolean | null
+          persona_type: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_ecosystems?: Json | null
+          api_keys?: Json | null
+          created_at?: string
+          id?: string
+          onboarding_completed?: boolean | null
+          persona_type?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_ecosystems?: Json | null
+          api_keys?: Json | null
+          created_at?: string
+          id?: string
+          onboarding_completed?: boolean | null
+          persona_type?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_profiles: {
         Row: {
           avatar_url: string | null
