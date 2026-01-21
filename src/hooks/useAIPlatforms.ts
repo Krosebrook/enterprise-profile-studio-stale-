@@ -3,15 +3,19 @@ import { platforms } from '@/data/platformData';
 import { AIPlatform, CapabilityKey } from '@/types/ai-platforms';
 
 export interface PlatformFilters {
-  search: string;
-  categories: string[];
-  priorities: string[];
-  ecosystems: string[];
-  complianceRequired: string[];
+  search?: string;
+  categories?: string[];
+  priorities?: string[];
+  ecosystems?: string[];
+  complianceRequired?: string[];
 }
 
-export function useAIPlatforms(filters: PlatformFilters) {
+export function useAIPlatforms(filters?: PlatformFilters) {
+  const [comparedPlatforms, setComparedPlatforms] = useState<string[]>([]);
+
   const filteredPlatforms = useMemo(() => {
+    if (!filters) return platforms;
+
     return platforms.filter((platform) => {
       // Search filter
       if (filters.search) {
@@ -25,22 +29,22 @@ export function useAIPlatforms(filters: PlatformFilters) {
       }
 
       // Category filter
-      if (filters.categories.length > 0 && !filters.categories.includes(platform.category)) {
+      if (filters.categories && filters.categories.length > 0 && !filters.categories.includes(platform.category)) {
         return false;
       }
 
       // Priority filter
-      if (filters.priorities.length > 0 && !filters.priorities.includes(platform.priority)) {
+      if (filters.priorities && filters.priorities.length > 0 && !filters.priorities.includes(platform.priority)) {
         return false;
       }
 
       // Ecosystem filter
-      if (filters.ecosystems.length > 0 && !filters.ecosystems.includes(platform.ecosystem)) {
+      if (filters.ecosystems && filters.ecosystems.length > 0 && !filters.ecosystems.includes(platform.ecosystem)) {
         return false;
       }
 
       // Compliance filter
-      if (filters.complianceRequired.length > 0) {
+      if (filters.complianceRequired && filters.complianceRequired.length > 0) {
         const hasRequiredCompliance = filters.complianceRequired.every((req) =>
           platform.compliance.includes(req)
         );
@@ -51,7 +55,37 @@ export function useAIPlatforms(filters: PlatformFilters) {
     });
   }, [filters]);
 
-  return { platforms: filteredPlatforms, totalCount: platforms.length };
+  const toggleComparison = (platformId: string) => {
+    setComparedPlatforms((prev) => {
+      if (prev.includes(platformId)) {
+        return prev.filter((id) => id !== platformId);
+      }
+      if (prev.length >= 4) return prev;
+      return [...prev, platformId];
+    });
+  };
+
+  const isInComparison = (platformId: string) => comparedPlatforms.includes(platformId);
+
+  const getComparedPlatformData = () => {
+    return comparedPlatforms
+      .map((id) => platforms.find((p) => p.id === id))
+      .filter((p): p is AIPlatform => p !== undefined);
+  };
+
+  const clearComparison = () => {
+    setComparedPlatforms([]);
+  };
+
+  return {
+    platforms: filteredPlatforms,
+    totalCount: platforms.length,
+    comparedPlatforms,
+    toggleComparison,
+    isInComparison,
+    getComparedPlatformData,
+    clearComparison,
+  };
 }
 
 export function usePlatformComparison() {

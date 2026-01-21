@@ -17,6 +17,7 @@ import DealComparisonPage from '@/pages/DealComparisonPage';
 import DealDetailPage from '@/pages/DealDetailPage';
 import DealPipelinePage from '@/pages/DealPipelinePage';
 import DealAnalyticsPage from '@/pages/DealAnalyticsPage';
+import AIPlatformExplorerPage from '@/pages/AIPlatformExplorerPage';
 import NotFound from '@/pages/NotFound';
 
 export function AnimatedRoutes() {
@@ -102,6 +103,14 @@ export function AnimatedRoutes() {
           element={
             <PageTransition>
               <AnalyticsDashboardPage />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/ai-explorer"
+          element={
+            <PageTransition>
+              <AIPlatformExplorerPage />
             </PageTransition>
           }
         />
