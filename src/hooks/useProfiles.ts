@@ -7,10 +7,7 @@ import type { Json } from '@/integrations/supabase/types';
 
 export type { EnterpriseProfile };
 
-// Helper to convert profile types to JSON-compatible format
-function toJson<T>(value: T): Json {
-  return value as unknown as Json;
-}
+// Note: toJson helper is defined inline where needed to avoid scope issues
 
 export function useProfiles() {
   const { user } = useAuth();
@@ -91,18 +88,20 @@ export function useUpdateProfile() {
   return useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<EnterpriseProfile> }) => {
       // Convert typed objects to JSON-compatible format for Supabase
+      const convertToJson = <T,>(value: T): Json => value as unknown as Json;
+      
       const dbUpdates: Record<string, unknown> = {};
       
       if (updates.name !== undefined) dbUpdates.name = updates.name;
       if (updates.slug !== undefined) dbUpdates.slug = updates.slug;
       if (updates.description !== undefined) dbUpdates.description = updates.description;
       if (updates.status !== undefined) dbUpdates.status = updates.status;
-      if (updates.company_info !== undefined) dbUpdates.company_info = toJson(updates.company_info);
-      if (updates.branding !== undefined) dbUpdates.branding = toJson(updates.branding);
-      if (updates.services !== undefined) dbUpdates.services = toJson(updates.services);
-      if (updates.team !== undefined) dbUpdates.team = toJson(updates.team);
-      if (updates.compliance !== undefined) dbUpdates.compliance = toJson(updates.compliance);
-      if (updates.metadata !== undefined) dbUpdates.metadata = toJson(updates.metadata);
+      if (updates.company_info !== undefined) dbUpdates.company_info = convertToJson(updates.company_info);
+      if (updates.branding !== undefined) dbUpdates.branding = convertToJson(updates.branding);
+      if (updates.services !== undefined) dbUpdates.services = convertToJson(updates.services);
+      if (updates.team !== undefined) dbUpdates.team = convertToJson(updates.team);
+      if (updates.compliance !== undefined) dbUpdates.compliance = convertToJson(updates.compliance);
+      if (updates.metadata !== undefined) dbUpdates.metadata = convertToJson(updates.metadata);
       if (updates.published_at !== undefined) dbUpdates.published_at = updates.published_at;
 
       const { data, error } = await supabase
