@@ -21,6 +21,7 @@ import AIPlatformExplorerPage from '@/pages/AIPlatformExplorerPage';
 import PersonasListPage from '@/pages/PersonasListPage';
 import PersonaBuilderPage from '@/pages/PersonaBuilderPage';
 import TeamManagementPage from '@/pages/TeamManagementPage';
+import AIPlaybooksPage from '@/pages/AIPlaybooksPage';
 import NotFound from '@/pages/NotFound';
 
 export function AnimatedRoutes() {
@@ -138,6 +139,14 @@ export function AnimatedRoutes() {
           element={
             <PageTransition>
               <AIPlatformExplorerPage />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/ai-playbooks"
+          element={
+            <PageTransition>
+              <AIPlaybooksPage />
             </PageTransition>
           }
         />

@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserRole } from '@/hooks/useUserRole';
-import { LogOut, LayoutDashboard, BookOpen, BarChart3, Brain, Users, Bot } from 'lucide-react';
+import { LogOut, LayoutDashboard, BookOpen, BarChart3, Brain, Users, Bot, FileText } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,6 +55,12 @@ export function Navbar() {
                 <Link to="/ai-explorer">
                   <Brain className="h-4 w-4" />
                   <span className="hidden sm:inline">AI Explorer</span>
+                </Link>
+              </Button>
+              <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground" asChild>
+                <Link to="/ai-playbooks">
+                  <FileText className="h-4 w-4" />
+                  <span className="hidden sm:inline">Playbooks</span>
                 </Link>
               </Button>
               <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground" asChild>
