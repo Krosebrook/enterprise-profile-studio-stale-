@@ -3,13 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { useOnboarding } from '@/hooks/useOnboarding';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { SplashStep } from './steps/SplashStep';
 import { AIEcosystemStep } from './steps/AIEcosystemStep';
 import { PersonaSelectionStep } from './steps/PersonaSelectionStep';
-import { APIIntegrationStep } from './steps/APIIntegrationStep';
+import { APIIntegrationStep, APIKey } from './steps/APIIntegrationStep';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
-type OnboardingStep = 'splash' | 'ecosystem' | 'persona' | 'api';
+type OnboardingStepType = 'splash' | 'ecosystem' | 'persona' | 'api';
 
 interface AIEcosystem {
   id: string;
@@ -21,22 +24,13 @@ interface AIEcosystem {
   enabled: boolean;
 }
 
-interface APIKey {
-  id: string;
-  name: string;
-  icon: React.ReactNode;
-  iconBg: string;
-  value: string;
-  status: 'empty' | 'pending' | 'validated' | 'error';
-  helpUrl?: string;
-  lastUpdated?: string;
-}
-
 export function OnboardingWizard() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { completeOnboarding, isSaving } = useOnboarding();
-  const [currentStep, setCurrentStep] = useState<OnboardingStep>('splash');
+  const [currentStep, setCurrentStep] = useState<OnboardingStepType>('splash');
   const [direction, setDirection] = useState(1);
+  const [isSavingPreferences, setIsSavingPreferences] = useState(false);
   
   // AI Ecosystem state
   const [ecosystems, setEcosystems] = useState<AIEcosystem[]>([
@@ -86,6 +80,7 @@ export function OnboardingWizard() {
     {
       id: 'openai',
       name: 'OpenAI',
+      provider: 'openai',
       icon: <div className="w-6 h-6 rounded bg-teal-600 flex items-center justify-center text-white text-xs font-bold">AI</div>,
       iconBg: 'bg-teal-500/20',
       value: '',
@@ -94,6 +89,7 @@ export function OnboardingWizard() {
     {
       id: 'anthropic',
       name: 'Anthropic',
+      provider: 'anthropic',
       icon: <div className="w-6 h-6 rounded bg-orange-500 flex items-center justify-center text-white text-xs font-bold">C</div>,
       iconBg: 'bg-orange-500/20',
       value: '',
@@ -102,6 +98,7 @@ export function OnboardingWizard() {
     {
       id: 'gemini',
       name: 'Google Gemini',
+      provider: 'gemini',
       icon: <div className="w-6 h-6 rounded bg-slate-500 flex items-center justify-center text-white text-xs font-bold">G</div>,
       iconBg: 'bg-slate-500/20',
       value: '',
@@ -109,10 +106,10 @@ export function OnboardingWizard() {
     },
   ]);
 
-  const stepOrder: OnboardingStep[] = ['splash', 'ecosystem', 'persona', 'api'];
+  const stepOrder: OnboardingStepType[] = ['splash', 'ecosystem', 'persona', 'api'];
   const currentIndex = stepOrder.indexOf(currentStep);
 
-  const goToStep = (step: OnboardingStep) => {
+  const goToStep = (step: OnboardingStepType) => {
     const newIndex = stepOrder.indexOf(step);
     setDirection(newIndex > currentIndex ? 1 : -1);
     setCurrentStep(step);
@@ -135,20 +132,85 @@ export function OnboardingWizard() {
   const handleUpdateApiKey = (id: string, value: string) => {
     setApiKeys(prev =>
       prev.map(key =>
-        key.id === id ? { ...key, value, status: value ? 'pending' : 'empty' } : key
+        key.id === id ? { ...key, value, status: value ? 'pending' : 'empty', errorMessage: undefined } : key
       )
     );
   };
 
-  const handleValidateApiKey = async (id: string) => {
+  const handleValidationComplete = (id: string, valid: boolean, errorMessage?: string) => {
     setApiKeys(prev =>
       prev.map(key =>
-        key.id === id ? { ...key, status: 'validated', lastUpdated: 'just now' } : key
+        key.id === id 
+          ? { 
+              ...key, 
+              status: valid ? 'validated' : 'error', 
+              lastUpdated: valid ? 'just now' : undefined,
+              errorMessage: errorMessage
+            } 
+          : key
       )
     );
+  };
+
+  const saveOnboardingPreferences = async () => {
+    if (!user) {
+      console.error('No user found');
+      return false;
+    }
+
+    try {
+      setIsSavingPreferences(true);
+      
+      // Prepare the data to save
+      const preferencesData = {
+        user_id: user.id,
+        persona_type: selectedPersona,
+        ai_ecosystems: ecosystems
+          .filter(e => e.enabled)
+          .map(e => ({ id: e.id, name: e.name })),
+        api_keys: apiKeys
+          .filter(k => k.status === 'validated')
+          .reduce((acc, k) => {
+            acc[k.id] = { validated: true, provider: k.provider };
+            return acc;
+          }, {} as Record<string, { validated: boolean; provider: string }>),
+        onboarding_completed: true,
+      };
+
+      console.log('Saving onboarding preferences:', preferencesData);
+
+      // Upsert the preferences
+      const { error } = await supabase
+        .from('user_onboarding_preferences')
+        .upsert(preferencesData, {
+          onConflict: 'user_id',
+        });
+
+      if (error) {
+        console.error('Error saving preferences:', error);
+        throw error;
+      }
+
+      console.log('Onboarding preferences saved successfully');
+      return true;
+    } catch (error) {
+      console.error('Failed to save onboarding preferences:', error);
+      return false;
+    } finally {
+      setIsSavingPreferences(false);
+    }
   };
 
   const handleComplete = async () => {
+    // First save the new onboarding preferences
+    const preferencesSaved = await saveOnboardingPreferences();
+    
+    if (!preferencesSaved) {
+      toast.error('Failed to save your preferences. Please try again.');
+      return;
+    }
+
+    // Then complete the existing onboarding flow
     const success = await completeOnboarding();
     if (success) {
       navigate('/dashboard');
@@ -248,7 +310,7 @@ export function OnboardingWizard() {
               <APIIntegrationStep
                 apiKeys={apiKeys}
                 onUpdateKey={handleUpdateApiKey}
-                onValidate={handleValidateApiKey}
+                onValidationComplete={handleValidationComplete}
                 onComplete={handleComplete}
                 onSkip={handleComplete}
               />

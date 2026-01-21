@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.generate-persona-prompts]
 verify_jwt = false
+
+[functions.validate-api-key]
+verify_jwt = false
