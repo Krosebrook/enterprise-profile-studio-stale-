@@ -69,19 +69,29 @@ export default function ProfilePreviewPage() {
   const handleExportPDF = () => {
     if (!profile || !contentRef.current) return;
     
-    const companyInfo = (profile.company_info || {}) as CompanyInfo;
-    const branding = (profile.branding || {}) as BrandingInfo;
-    const services = (Array.isArray(profile.services) ? { services: [] } : profile.services || {}) as ServicesInfo;
-    const team = (Array.isArray(profile.team) ? { members: [] } : profile.team || {}) as TeamInfo;
-    const compliance = (profile.compliance || {}) as ComplianceInfo;
+    const rawCompanyInfo = profile.company_info || {};
+    const rawBranding = profile.branding || {};
+    const rawServices = profile.services;
+    const rawTeam = profile.team;
+    const rawCompliance = profile.compliance || {};
+
+    const pdfCompanyInfo = rawCompanyInfo as unknown as CompanyInfo;
+    const pdfBranding = rawBranding as unknown as BrandingInfo;
+    const pdfServices: ServicesInfo = Array.isArray(rawServices) 
+      ? { services: [] } 
+      : (rawServices as unknown as ServicesInfo) || { services: [] };
+    const pdfTeam: TeamInfo = Array.isArray(rawTeam) 
+      ? { members: [] } 
+      : (rawTeam as unknown as TeamInfo) || { members: [] };
+    const pdfCompliance = rawCompliance as unknown as ComplianceInfo;
 
     generateProfilePDF({
       name: profile.name,
-      companyInfo,
-      branding,
-      services,
-      team,
-      compliance,
+      companyInfo: pdfCompanyInfo,
+      branding: pdfBranding,
+      services: pdfServices,
+      team: pdfTeam,
+      compliance: pdfCompliance,
     });
 
     toast.success('PDF export started! Check your downloads.');
@@ -99,20 +109,21 @@ export default function ProfilePreviewPage() {
     return null;
   }
 
-  const companyInfo: CompanyInfo = (profile.company_info || {}) as CompanyInfo;
-  const branding: BrandingInfo = (profile.branding || {}) as BrandingInfo;
-  const services: ServicesInfo = (Array.isArray(profile.services) ? { services: [] } : profile.services || {}) as ServicesInfo;
-  const team: TeamInfo = (Array.isArray(profile.team) ? { members: [] } : profile.team || {}) as TeamInfo;
-  const compliance: ComplianceInfo = (profile.compliance || {}) as ComplianceInfo;
+  const rawCompanyInfo = profile.company_info || {};
+  const rawBranding = profile.branding || {};
+  const rawServices = profile.services;
+  const rawTeam = profile.team;
+  const rawCompliance = profile.compliance || {};
 
-  const certificationLabels: Record<string, string> = {
-    iso27001: 'ISO 27001',
-    soc2: 'SOC 2',
-    gdpr: 'GDPR',
-    hipaa: 'HIPAA',
-    pciDss: 'PCI DSS',
-    ccpa: 'CCPA',
-  };
+  const companyInfo = rawCompanyInfo as unknown as CompanyInfo;
+  const branding = rawBranding as unknown as BrandingInfo;
+  const services: ServicesInfo = Array.isArray(rawServices) 
+    ? { services: [] } 
+    : (rawServices as unknown as ServicesInfo) || { services: [] };
+  const team: TeamInfo = Array.isArray(rawTeam) 
+    ? { members: [] } 
+    : (rawTeam as unknown as TeamInfo) || { members: [] };
+  const compliance = rawCompliance as unknown as ComplianceInfo;
 
   return (
     <>
