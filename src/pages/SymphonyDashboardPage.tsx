@@ -6,6 +6,7 @@ import { SymphonyPhaseGrid } from '@/components/symphony/SymphonyPhaseGrid';
 import { SymphonyAgentNetwork } from '@/components/symphony/SymphonyAgentNetwork';
 import { SymphonyRACIMatrix } from '@/components/symphony/SymphonyRACIMatrix';
 import { SymphonyMetricsBar } from '@/components/symphony/SymphonyMetricsBar';
+import { ZoneConfigWizard } from '@/components/symphony/ZoneConfigWizard';
 import { Button } from '@/components/ui/button';
 import { useSymphonyData } from '@/hooks/useSymphonyData';
 import { useAuth } from '@/contexts/AuthContext';
@@ -75,6 +76,11 @@ export default function SymphonyDashboardPage() {
         
         {/* Main Content */}
         <div className="container py-12 space-y-16">
+          {/* Zone Configuration */}
+          <div className="flex justify-end">
+            <ZoneConfigWizard onComplete={(config) => console.log('Zone config:', config)} />
+          </div>
+          
           {/* Agent Network Visualization */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
