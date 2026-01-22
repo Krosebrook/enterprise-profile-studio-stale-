@@ -142,6 +142,42 @@ export type Database = {
           },
         ]
       }
+      anomaly_alerts: {
+        Row: {
+          alert_type: string
+          created_at: string
+          id: string
+          is_read: boolean | null
+          message: string
+          metadata: Json | null
+          sent_email: boolean | null
+          severity: string | null
+          user_id: string | null
+        }
+        Insert: {
+          alert_type: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          message: string
+          metadata?: Json | null
+          sent_email?: boolean | null
+          severity?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          metadata?: Json | null
+          sent_email?: boolean | null
+          severity?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       document_favorites: {
         Row: {
           created_at: string | null
@@ -456,6 +492,78 @@ export type Database = {
         }
         Relationships: []
       }
+      feature_requests: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          priority: string | null
+          status: string | null
+          title: string
+          updated_at: string
+          user_id: string | null
+          votes: number | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          priority?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string
+          user_id?: string | null
+          votes?: number | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          priority?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string | null
+          votes?: number | null
+        }
+        Relationships: []
+      }
+      feedback_ratings: {
+        Row: {
+          category: string | null
+          created_at: string
+          feedback_text: string | null
+          id: string
+          platform_id: string
+          rating: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          feedback_text?: string | null
+          id?: string
+          platform_id: string
+          rating: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          feedback_text?: string | null
+          id?: string
+          platform_id?: string
+          rating?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       knowledge_base_documents: {
         Row: {
           category: string | null
@@ -663,6 +771,51 @@ export type Database = {
         }
         Relationships: []
       }
+      scheduled_reports: {
+        Row: {
+          config: Json | null
+          created_at: string
+          id: string
+          is_active: boolean | null
+          last_sent_at: string | null
+          name: string
+          next_send_at: string | null
+          recipients: Json
+          report_type: string
+          schedule: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          config?: Json | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          last_sent_at?: string | null
+          name: string
+          next_send_at?: string | null
+          recipients?: Json
+          report_type: string
+          schedule?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          config?: Json | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          last_sent_at?: string | null
+          name?: string
+          next_send_at?: string | null
+          recipients?: Json
+          report_type?: string
+          schedule?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       symphony_agents: {
         Row: {
           avg_response_time: number | null
@@ -849,6 +1002,39 @@ export type Database = {
           rules?: Json
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_dashboard_configs: {
+        Row: {
+          created_at: string
+          id: string
+          is_default: boolean | null
+          layout: Json
+          name: string
+          updated_at: string
+          user_id: string
+          widgets: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          layout?: Json
+          name?: string
+          updated_at?: string
+          user_id: string
+          widgets?: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          layout?: Json
+          name?: string
+          updated_at?: string
+          user_id?: string
+          widgets?: Json
         }
         Relationships: []
       }

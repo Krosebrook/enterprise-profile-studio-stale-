@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Brain, GitCompare, Grid3X3, Calculator, ClipboardCheck, Building2, Users, TrendingUp, Activity, Shield, Sparkles, Trophy, CalendarDays, Star, FileText, Bell, BarChart3, Briefcase } from 'lucide-react';
+import { Brain, GitCompare, Grid3X3, Calculator, ClipboardCheck, Building2, Users, TrendingUp, Activity, Shield, Sparkles, Trophy, CalendarDays, Star, FileText, Bell, BarChart3, Briefcase, LayoutDashboard, Wand2, Mail } from 'lucide-react';
 import { PlatformExplorerTab } from '@/components/ai-explorer/PlatformExplorerTab';
 import { PlatformComparisonTab } from '@/components/ai-explorer/PlatformComparisonTab';
 import { CapabilityMatrixTab } from '@/components/ai-explorer/CapabilityMatrixTab';
@@ -22,6 +22,9 @@ import { AIGovernanceTab } from '@/components/ai-explorer/AIGovernanceTab';
 import { ExecutiveSummaryTab } from '@/components/ai-explorer/ExecutiveSummaryTab';
 import { ImplementationPlanTab } from '@/components/ai-explorer/ImplementationPlanTab';
 import { EnhancedAnalyticsTab } from '@/components/ai-explorer/EnhancedAnalyticsTab';
+import { AIRecommendationEngine } from '@/components/ai-explorer/AIRecommendationEngine';
+import { DashboardBuilderTab } from '@/components/ai-explorer/DashboardBuilderTab';
+import { EmailNotificationsTab } from '@/components/ai-explorer/EmailNotificationsTab';
 
 export default function AIPlatformExplorerPage() {
   const [activeTab, setActiveTab] = useState('executive');
@@ -119,6 +122,18 @@ export default function AIPlatformExplorerPage() {
                 <Star className="h-4 w-4" />
                 <span className="hidden sm:inline">Feedback</span>
               </TabsTrigger>
+              <TabsTrigger value="ai-recommend" className="gap-2 data-[state=active]:bg-background py-2">
+                <Wand2 className="h-4 w-4" />
+                <span className="hidden sm:inline">AI Recommend</span>
+              </TabsTrigger>
+              <TabsTrigger value="builder" className="gap-2 data-[state=active]:bg-background py-2">
+                <LayoutDashboard className="h-4 w-4" />
+                <span className="hidden sm:inline">Builder</span>
+              </TabsTrigger>
+              <TabsTrigger value="notifications" className="gap-2 data-[state=active]:bg-background py-2">
+                <Mail className="h-4 w-4" />
+                <span className="hidden sm:inline">Notifications</span>
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="executive" className="mt-6">
@@ -174,6 +189,15 @@ export default function AIPlatformExplorerPage() {
             </TabsContent>
             <TabsContent value="feedback" className="mt-6">
               <FeedbackDashboardTab />
+            </TabsContent>
+            <TabsContent value="ai-recommend" className="mt-6">
+              <AIRecommendationEngine />
+            </TabsContent>
+            <TabsContent value="builder" className="mt-6">
+              <DashboardBuilderTab />
+            </TabsContent>
+            <TabsContent value="notifications" className="mt-6">
+              <EmailNotificationsTab />
             </TabsContent>
           </Tabs>
         </div>

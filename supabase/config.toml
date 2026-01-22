@@ -29,3 +29,12 @@ verify_jwt = false
 
 [functions.send-lead-notification]
 verify_jwt = false
+
+[functions.ai-recommendations]
+verify_jwt = false
+
+[functions.send-scheduled-report]
+verify_jwt = false
+
+[functions.send-anomaly-alert]
+verify_jwt = false

@@ -1,0 +1,163 @@
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+interface AnomalyAlertRequest {
+  userId: string;
+  alertType: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  message: string;
+  metadata?: Record<string, unknown>;
+  recipientEmail: string;
+}
+
+serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+    if (!RESEND_API_KEY) {
+      throw new Error("RESEND_API_KEY is not configured");
+    }
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const { userId, alertType, severity, message, metadata, recipientEmail }: AnomalyAlertRequest = await req.json();
+
+    const baseUrl = req.headers.get("origin") || "https://lovable.app";
+
+    // Save alert to database
+    const { data: alert, error: dbError } = await supabase
+      .from('anomaly_alerts')
+      .insert({
+        user_id: userId,
+        alert_type: alertType,
+        severity,
+        message,
+        metadata: metadata || {},
+        sent_email: true
+      })
+      .select()
+      .single();
+
+    if (dbError) {
+      console.error("Database error:", dbError);
+    }
+
+    const severityColors: Record<string, string> = {
+      critical: '#DC2626',
+      high: '#EA580C',
+      medium: '#D97706',
+      low: '#2563EB'
+    };
+
+    const severityEmojis: Record<string, string> = {
+      critical: '🚨',
+      high: '⚠️',
+      medium: '⚡',
+      low: 'ℹ️'
+    };
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #1a1a1a; margin: 0; padding: 0; background: #f5f5f5; }
+          .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+          .header { background: ${severityColors[severity]}; color: white; padding: 30px; border-radius: 12px 12px 0 0; text-align: center; }
+          .content { background: white; padding: 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+          .severity-badge { display: inline-block; background: ${severityColors[severity]}20; color: ${severityColors[severity]}; padding: 4px 12px; border-radius: 20px; font-weight: 600; text-transform: uppercase; font-size: 12px; margin-bottom: 15px; }
+          .alert-message { background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid ${severityColors[severity]}; margin: 20px 0; }
+          .metadata { background: #f1f5f9; padding: 15px; border-radius: 8px; margin: 15px 0; }
+          .metadata-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #e2e8f0; }
+          .metadata-item:last-child { border-bottom: none; }
+          .button { display: inline-block; background: #3B82F6; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; }
+          .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1 style="margin: 0;">${severityEmojis[severity]} Anomaly Detected</h1>
+            <p style="margin: 10px 0 0 0; opacity: 0.9;">${alertType}</p>
+          </div>
+          <div class="content">
+            <span class="severity-badge">${severity} severity</span>
+            
+            <div class="alert-message">
+              <p style="margin: 0; font-size: 16px;">${message}</p>
+            </div>
+            
+            ${metadata && Object.keys(metadata).length > 0 ? `
+              <h3>📋 Details</h3>
+              <div class="metadata">
+                ${Object.entries(metadata).map(([key, value]) => `
+                  <div class="metadata-item">
+                    <span style="color: #666;">${key.replace(/_/g, ' ')}</span>
+                    <span style="font-weight: 600;">${value}</span>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+            
+            <div style="text-align: center; margin-top: 30px;">
+              <a href="${baseUrl}/ai-explorer" class="button">View Dashboard</a>
+            </div>
+            
+            <p style="margin-top: 20px; font-size: 14px; color: #666;">
+              <strong>Recommended Action:</strong> Review the affected systems and check for any unusual activity patterns.
+            </p>
+          </div>
+          <div class="footer">
+            <p>This alert was generated by INT OS Anomaly Detection System</p>
+            <p>Alert ID: ${alert?.id || 'N/A'} | Time: ${new Date().toISOString()}</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    const emailResponse = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: "INT OS Alerts <onboarding@resend.dev>",
+        to: [recipientEmail],
+        subject: `${severityEmojis[severity]} [${severity.toUpperCase()}] ${alertType}: ${message.substring(0, 50)}...`,
+        html,
+      }),
+    });
+
+    if (!emailResponse.ok) {
+      const errorData = await emailResponse.text();
+      console.error("Resend API error:", errorData);
+      throw new Error(`Failed to send email: ${emailResponse.status}`);
+    }
+
+    const emailData = await emailResponse.json();
+
+    console.log("Anomaly alert email sent:", emailResponse);
+
+    return new Response(JSON.stringify({ success: true, alertId: alert?.id, ...emailData }), {
+      status: 200,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
+  } catch (error) {
+    console.error("Error sending anomaly alert:", error);
+    return new Response(
+      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
+      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+    );
+  }
+});
