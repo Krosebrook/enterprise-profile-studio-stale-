@@ -7,6 +7,7 @@ import { SymphonyAgentNetwork } from '@/components/symphony/SymphonyAgentNetwork
 import { SymphonyRACIMatrix } from '@/components/symphony/SymphonyRACIMatrix';
 import { SymphonyMetricsBar } from '@/components/symphony/SymphonyMetricsBar';
 import { ZoneConfigWizard } from '@/components/symphony/ZoneConfigWizard';
+import { TaskCreationDialog } from '@/components/symphony/TaskCreationDialog';
 import { Button } from '@/components/ui/button';
 import { useSymphonyData } from '@/hooks/useSymphonyData';
 import { useAuth } from '@/contexts/AuthContext';
@@ -21,7 +22,9 @@ export default function SymphonyDashboardPage() {
     isLoading, 
     hasData, 
     initializeData, 
-    isInitializing 
+    isInitializing,
+    createTask,
+    isCreatingTask,
   } = useSymphonyData();
 
   return (
@@ -76,8 +79,16 @@ export default function SymphonyDashboardPage() {
         
         {/* Main Content */}
         <div className="container py-12 space-y-16">
-          {/* Zone Configuration */}
-          <div className="flex justify-end">
+          {/* Zone Configuration & Task Creation */}
+          <div className="flex justify-end gap-3">
+            {user && hasData && (
+              <TaskCreationDialog
+                agents={agents}
+                phases={phases}
+                onCreateTask={createTask}
+                isCreating={isCreatingTask}
+              />
+            )}
             <ZoneConfigWizard onComplete={(config) => console.log('Zone config:', config)} />
           </div>
           

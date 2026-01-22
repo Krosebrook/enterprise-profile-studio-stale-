@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Shield, AlertTriangle, CheckCircle2, XCircle, 
   Building2, Stethoscope, ShoppingCart, Banknote, Factory, GraduationCap,
-  ArrowRight, ArrowLeft, Sparkles, Settings, Save
+  ArrowRight, ArrowLeft, Sparkles, Settings, Save, Loader2
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -14,8 +14,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { useZoneConfiguration, ZoneRule } from '@/hooks/useZoneConfiguration';
 
-interface ZoneRule {
+interface LocalZoneRule {
   id: string;
   name: string;
   description: string;
@@ -29,7 +30,7 @@ interface IndustryVertical {
   name: string;
   icon: React.ComponentType<{ className?: string }>;
   description: string;
-  defaultRules: ZoneRule[];
+  defaultRules: LocalZoneRule[];
 }
 
 const industries: IndustryVertical[] = [
@@ -133,10 +134,25 @@ export function ZoneConfigWizard({ onComplete }: ZoneConfigWizardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState(1);
   const [selectedIndustry, setSelectedIndustry] = useState<IndustryVertical | null>(null);
-  const [rules, setRules] = useState<ZoneRule[]>([]);
+  const [rules, setRules] = useState<LocalZoneRule[]>([]);
   const [customInstructions, setCustomInstructions] = useState('');
+  
+  const { configuration, saveConfiguration, isSaving, hasConfiguration } = useZoneConfiguration();
 
   const totalSteps = 4;
+
+  // Load existing configuration when dialog opens
+  useEffect(() => {
+    if (isOpen && configuration) {
+      const industry = industries.find(i => i.id === configuration.industry);
+      if (industry) {
+        setSelectedIndustry(industry);
+        setRules(configuration.rules as LocalZoneRule[]);
+        setCustomInstructions(configuration.custom_instructions || '');
+        setStep(4); // Go to review step if config exists
+      }
+    }
+  }, [isOpen, configuration]);
 
   const handleIndustrySelect = (industry: IndustryVertical) => {
     setSelectedIndustry(industry);
@@ -157,22 +173,31 @@ export function ZoneConfigWizard({ onComplete }: ZoneConfigWizardProps) {
 
   const handleComplete = () => {
     if (selectedIndustry) {
-      onComplete?.({
+      // Save to database
+      saveConfiguration({
         industry: selectedIndustry.id,
-        rules,
+        rules: rules as ZoneRule[],
         customInstructions,
       });
-      toast.success('Zone configuration saved successfully!');
+      
+      onComplete?.({
+        industry: selectedIndustry.id,
+        rules: rules as ZoneRule[],
+        customInstructions,
+      });
+      
       setIsOpen(false);
       setStep(1);
     }
   };
 
   const resetWizard = () => {
-    setStep(1);
-    setSelectedIndustry(null);
-    setRules([]);
-    setCustomInstructions('');
+    if (!configuration) {
+      setStep(1);
+      setSelectedIndustry(null);
+      setRules([]);
+      setCustomInstructions('');
+    }
   };
 
   return (
@@ -440,9 +465,18 @@ export function ZoneConfigWizard({ onComplete }: ZoneConfigWizardProps) {
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           ) : (
-            <Button onClick={handleComplete} className="btn-premium">
-              <Save className="w-4 h-4 mr-2" />
-              Save Configuration
+            <Button onClick={handleComplete} className="btn-premium" disabled={isSaving}>
+              {isSaving ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Save Configuration
+                </>
+              )}
             </Button>
           )}
         </div>

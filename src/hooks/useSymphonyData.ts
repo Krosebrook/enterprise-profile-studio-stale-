@@ -203,6 +203,75 @@ export function useSymphonyData() {
     },
   });
 
+  // Create task
+  const createTask = useMutation({
+    mutationFn: async (task: {
+      title: string;
+      description: string;
+      priority: 'low' | 'medium' | 'high' | 'critical';
+      agent_id: string | null;
+      phase_id: string | null;
+    }) => {
+      if (!user) throw new Error('Not authenticated');
+      
+      const { data, error } = await supabase
+        .from('symphony_tasks')
+        .insert({
+          ...task,
+          user_id: user.id,
+          status: 'pending',
+        })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['symphony-tasks'] });
+      toast.success('Task created successfully!');
+    },
+    onError: (error) => {
+      console.error('Failed to create task:', error);
+      toast.error('Failed to create task');
+    },
+  });
+
+  // Update task
+  const updateTask = useMutation({
+    mutationFn: async (updates: Partial<SymphonyTask> & { id: string }) => {
+      const { id, ...rest } = updates;
+      const { data, error } = await supabase
+        .from('symphony_tasks')
+        .update(rest)
+        .eq('id', id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['symphony-tasks'] });
+    },
+  });
+
+  // Delete task
+  const deleteTask = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('symphony_tasks')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['symphony-tasks'] });
+      toast.success('Task deleted');
+    },
+  });
+
   // Set up realtime subscriptions
   useEffect(() => {
     if (!user) return;
@@ -257,6 +326,10 @@ export function useSymphonyData() {
     isInitializing: initializeData.isPending,
     updateAgent: updateAgent.mutate,
     updatePhase: updatePhase.mutate,
+    createTask: createTask.mutateAsync,
+    isCreatingTask: createTask.isPending,
+    updateTask: updateTask.mutate,
+    deleteTask: deleteTask.mutate,
     refetchAgents,
     refetchPhases,
     refetchTasks,

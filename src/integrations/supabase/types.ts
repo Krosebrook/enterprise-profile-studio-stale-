@@ -777,6 +777,39 @@ export type Database = {
           },
         ]
       }
+      symphony_zone_configurations: {
+        Row: {
+          created_at: string
+          custom_instructions: string | null
+          id: string
+          industry: string
+          is_active: boolean | null
+          rules: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          custom_instructions?: string | null
+          id?: string
+          industry: string
+          is_active?: boolean | null
+          rules?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          custom_instructions?: string | null
+          id?: string
+          industry?: string
+          is_active?: boolean | null
+          rules?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_onboarding_preferences: {
         Row: {
           ai_ecosystems: Json | null
