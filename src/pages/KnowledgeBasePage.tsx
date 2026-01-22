@@ -13,6 +13,7 @@ import { ImportDocumentsDialog } from '@/components/knowledge/ImportDocumentsDia
 import { SeedDocumentsButton } from '@/components/knowledge/SeedDocumentsButton';
 import { SeedStrategyDocsButton } from '@/components/knowledge/SeedStrategyDocsButton';
 import { SeedResearchDocsButton } from '@/components/knowledge/SeedResearchDocsButton';
+import { SeedMethodologyDocsButton } from '@/components/knowledge/SeedMethodologyDocsButton';
 import { TagManager } from '@/components/knowledge/TagManager';
 import { MultiTagFilter } from '@/components/knowledge/MultiTagFilter';
 import { DocumentTemplateDialog } from '@/components/knowledge/DocumentTemplateDialog';
@@ -198,6 +199,7 @@ export default function KnowledgeBasePage() {
                       <span>K</span>
                     </div>
                     <TagManager />
+                    <SeedMethodologyDocsButton />
                     <SeedResearchDocsButton />
                     <SeedStrategyDocsButton />
                     <SeedDocumentsButton />
