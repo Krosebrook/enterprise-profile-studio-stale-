@@ -51,20 +51,17 @@ describe('localStorageManager', () => {
 });
 
 describe('downloadManager', () => {
-  let mockCreateElement: ReturnType<typeof vi.spyOn>;
-  let mockAppendChild: ReturnType<typeof vi.spyOn>;
-  let mockRemoveChild: ReturnType<typeof vi.spyOn>;
-  let mockCreateObjectURL: ReturnType<typeof vi.spyOn>;
-  let mockRevokeObjectURL: ReturnType<typeof vi.spyOn>;
   let mockAnchor: { href: string; download: string; click: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     mockAnchor = { href: '', download: '', click: vi.fn() };
-    mockCreateElement = vi.spyOn(document, 'createElement').mockReturnValue(mockAnchor as any);
-    mockAppendChild = vi.spyOn(document.body, 'appendChild').mockImplementation(() => mockAnchor as any);
-    mockRemoveChild = vi.spyOn(document.body, 'removeChild').mockImplementation(() => mockAnchor as any);
-    mockCreateObjectURL = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test-url');
-    mockRevokeObjectURL = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
+    vi.spyOn(document, 'createElement').mockReturnValue(mockAnchor as any);
+    vi.spyOn(document.body, 'appendChild').mockImplementation(() => mockAnchor as any);
+    vi.spyOn(document.body, 'removeChild').mockImplementation(() => mockAnchor as any);
+    
+    // Mock URL.createObjectURL and revokeObjectURL globally
+    global.URL.createObjectURL = vi.fn(() => 'blob:test-url');
+    global.URL.revokeObjectURL = vi.fn();
   });
 
   afterEach(() => {
@@ -75,10 +72,10 @@ describe('downloadManager', () => {
     const testData = { foo: 'bar' };
     await downloadManager.downloadAsJSON(testData, 'test.json');
 
-    expect(mockCreateElement).toHaveBeenCalledWith('a');
+    expect(document.createElement).toHaveBeenCalledWith('a');
     expect(mockAnchor.download).toBe('test.json');
     expect(mockAnchor.click).toHaveBeenCalled();
-    expect(mockRevokeObjectURL).toHaveBeenCalledWith('blob:test-url');
+    expect(global.URL.revokeObjectURL).toHaveBeenCalledWith('blob:test-url');
   });
 
   it('should download Markdown content', async () => {
