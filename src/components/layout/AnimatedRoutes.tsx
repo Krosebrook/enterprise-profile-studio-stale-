@@ -22,7 +22,6 @@ import PersonasListPage from '@/pages/PersonasListPage';
 import PersonaBuilderPage from '@/pages/PersonaBuilderPage';
 import TeamManagementPage from '@/pages/TeamManagementPage';
 import AIPlaybooksPage from '@/pages/AIPlaybooksPage';
-import SymphonyDashboardPage from '@/pages/SymphonyDashboardPage';
 import NotFound from '@/pages/NotFound';
 
 export function AnimatedRoutes() {
@@ -148,14 +147,6 @@ export function AnimatedRoutes() {
           element={
             <PageTransition>
               <AIPlaybooksPage />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/symphony"
-          element={
-            <PageTransition>
-              <SymphonyDashboardPage />
             </PageTransition>
           }
         />

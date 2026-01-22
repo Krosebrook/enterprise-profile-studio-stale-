@@ -14,7 +14,9 @@ import {
   Check,
   Download,
   RefreshCw,
-  FileText
+  FileText,
+  Code,
+  Webhook
 } from 'lucide-react';
 import { useEcosystemExports, useSaveEcosystemExport, useEmployeeHats } from '@/hooks/useEmployeePersonas';
 import { supabase } from '@/integrations/supabase/client';
@@ -27,30 +29,47 @@ interface EcosystemExportPanelProps {
   persona: EmployeePersona;
 }
 
-const ECOSYSTEMS = [
+type EcosystemId = 'claude' | 'copilot' | 'gemini' | 'api';
+
+const ECOSYSTEMS: Array<{
+  id: EcosystemId;
+  name: string;
+  subtitle: string;
+  icon: typeof Bot;
+  color: string;
+  description: string;
+}> = [
   { 
-    id: 'claude' as const, 
+    id: 'claude', 
     name: 'Claude', 
     subtitle: 'Anthropic', 
     icon: Bot, 
     color: 'bg-orange-500',
-    description: 'System prompt for Claude conversations'
+    description: 'API key from console.anthropic.com • SDKs for Python/TS/Java/Go/Ruby • Enterprise: AWS Bedrock with IdP integration'
   },
   { 
-    id: 'copilot' as const, 
+    id: 'copilot', 
     name: 'Microsoft Copilot', 
     subtitle: 'Microsoft 365', 
     icon: Sparkles, 
     color: 'bg-blue-500',
-    description: 'Custom instructions for Copilot'
+    description: 'Requires M365 E3/E5 or F1/F3 license + $30/user add-on • Entra ID + MFA required • Purview for sensitivity labels'
   },
   { 
-    id: 'gemini' as const, 
+    id: 'gemini', 
     name: 'Google Gemini', 
     subtitle: 'Google Workspace', 
     icon: Zap, 
     color: 'bg-purple-500',
-    description: 'Context configuration for Gemini'
+    description: 'Context configuration for Google AI Studio or Workspace AI'
+  },
+  { 
+    id: 'api', 
+    name: 'Custom API', 
+    subtitle: 'n8n / Webhooks', 
+    icon: Webhook, 
+    color: 'bg-emerald-500',
+    description: 'Structured JSON for n8n workflows, custom integrations, or any AI platform'
   },
 ];
 
@@ -59,26 +78,88 @@ export function EcosystemExportPanel({ persona }: EcosystemExportPanelProps) {
   const { data: hats = [] } = useEmployeeHats(persona.id);
   const saveExport = useSaveEcosystemExport();
   
-  const [activeTab, setActiveTab] = useState<'claude' | 'copilot' | 'gemini'>('claude');
+  const [activeTab, setActiveTab] = useState<EcosystemId>('claude');
   const [generating, setGenerating] = useState<string | null>(null);
   const [editedContent, setEditedContent] = useState<Record<string, string>>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const getExportForEcosystem = (ecosystem: 'claude' | 'copilot' | 'gemini'): EcosystemExport | undefined => {
+  const getExportForEcosystem = (ecosystem: EcosystemId): EcosystemExport | undefined => {
     return exports.find(e => e.ecosystem === ecosystem && e.export_type === 'system_prompt');
   };
 
-  const getCurrentContent = (ecosystem: 'claude' | 'copilot' | 'gemini'): string => {
+  const getCurrentContent = (ecosystem: EcosystemId): string => {
     if (editedContent[ecosystem] !== undefined) {
       return editedContent[ecosystem];
     }
     return getExportForEcosystem(ecosystem)?.content || '';
   };
 
-  const handleGenerate = async (ecosystem: 'claude' | 'copilot' | 'gemini') => {
+  // Generate structured JSON for API/n8n export
+  const generateApiJson = () => {
+    const apiConfig = {
+      persona: {
+        id: persona.id,
+        name: persona.name,
+        job_title: persona.job_title,
+        department: persona.department,
+        email: persona.email,
+      },
+      communication: {
+        style: persona.communication_style,
+        preferred_tone: persona.preferred_tone,
+        response_length: persona.preferred_response_length,
+        ai_interaction_style: persona.ai_interaction_style,
+      },
+      work_context: {
+        preferences: persona.work_preferences,
+        skills: persona.skills || [],
+        expertise_areas: persona.expertise_areas || [],
+        tools_used: persona.tools_used || [],
+      },
+      objectives: {
+        goals: persona.goals || [],
+        pain_points: persona.pain_points || [],
+      },
+      roles: hats.map(hat => ({
+        name: hat.name,
+        description: hat.description,
+        time_allocation: hat.time_percentage,
+        responsibilities: hat.responsibilities || [],
+        key_tasks: hat.key_tasks || [],
+        stakeholders: hat.stakeholders || [],
+        tools: hat.tools || [],
+      })),
+      metadata: {
+        generated_at: new Date().toISOString(),
+        version: '1.0',
+        format: 'int-os-persona-v1',
+      },
+    };
+    return JSON.stringify(apiConfig, null, 2);
+  };
+
+  const handleGenerate = async (ecosystem: EcosystemId) => {
     setGenerating(ecosystem);
     
     try {
+      // For API export, generate JSON locally without AI
+      if (ecosystem === 'api') {
+        const jsonContent = generateApiJson();
+        setEditedContent(prev => ({ ...prev, [ecosystem]: jsonContent }));
+        
+        await saveExport.mutateAsync({
+          persona_id: persona.id,
+          ecosystem: ecosystem as any,
+          export_type: 'system_prompt',
+          name: `${persona.name} - API Configuration`,
+          content: jsonContent,
+        });
+        
+        toast.success('API configuration generated!');
+        setGenerating(null);
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke('generate-persona-prompts', {
         body: {
           type: ecosystem,
@@ -126,7 +207,7 @@ export function EcosystemExportPanel({ persona }: EcosystemExportPanelProps) {
         // Auto-save
         await saveExport.mutateAsync({
           persona_id: persona.id,
-          ecosystem,
+          ecosystem: ecosystem as any,
           export_type: 'system_prompt',
           name: `${persona.name} - ${ecosystem.charAt(0).toUpperCase() + ecosystem.slice(1)} System Prompt`,
           content: data.content,
@@ -142,20 +223,20 @@ export function EcosystemExportPanel({ persona }: EcosystemExportPanelProps) {
     }
   };
 
-  const handleSave = async (ecosystem: 'claude' | 'copilot' | 'gemini') => {
+  const handleSave = async (ecosystem: EcosystemId) => {
     const content = editedContent[ecosystem];
     if (!content) return;
 
     await saveExport.mutateAsync({
       persona_id: persona.id,
-      ecosystem,
+      ecosystem: ecosystem as any,
       export_type: 'system_prompt',
-      name: `${persona.name} - ${ecosystem.charAt(0).toUpperCase() + ecosystem.slice(1)} System Prompt`,
+      name: `${persona.name} - ${ecosystem.charAt(0).toUpperCase() + ecosystem.slice(1)} ${ecosystem === 'api' ? 'Configuration' : 'System Prompt'}`,
       content,
     });
   };
 
-  const handleCopy = async (ecosystem: 'claude' | 'copilot' | 'gemini') => {
+  const handleCopy = async (ecosystem: EcosystemId) => {
     const content = getCurrentContent(ecosystem);
     if (!content) return;
 
@@ -165,15 +246,16 @@ export function EcosystemExportPanel({ persona }: EcosystemExportPanelProps) {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const handleDownload = (ecosystem: 'claude' | 'copilot' | 'gemini') => {
+  const handleDownload = (ecosystem: EcosystemId) => {
     const content = getCurrentContent(ecosystem);
     if (!content) return;
 
-    const blob = new Blob([content], { type: 'text/plain' });
+    const isJson = ecosystem === 'api';
+    const blob = new Blob([content], { type: isJson ? 'application/json' : 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${persona.name.toLowerCase().replace(/\s+/g, '-')}-${ecosystem}-prompt.txt`;
+    a.download = `${persona.name.toLowerCase().replace(/\s+/g, '-')}-${ecosystem}-${isJson ? 'config.json' : 'prompt.txt'}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -226,7 +308,7 @@ export function EcosystemExportPanel({ persona }: EcosystemExportPanelProps) {
         </CardHeader>
       <CardContent>
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             {ECOSYSTEMS.map((eco) => {
               const hasExport = !!getExportForEcosystem(eco.id);
               return (
@@ -337,24 +419,34 @@ export function EcosystemExportPanel({ persona }: EcosystemExportPanelProps) {
                 {/* Usage Instructions */}
                 {content && (
                   <div className="rounded-lg border bg-muted/50 p-4">
-                    <h5 className="font-medium text-sm mb-2">How to use this prompt</h5>
+                    <h5 className="font-medium text-sm mb-2">How to use this {eco.id === 'api' ? 'configuration' : 'prompt'}</h5>
                     {eco.id === 'claude' && (
-                      <p className="text-sm text-muted-foreground">
-                        Paste this as the system prompt when starting a new Claude conversation, 
-                        or use it in the Claude API as the system message.
-                      </p>
+                      <div className="text-sm text-muted-foreground space-y-2">
+                        <p>Paste this as the system prompt when starting a new Claude conversation, or use it in the Claude API.</p>
+                        <p className="text-xs"><strong>Developer Setup:</strong> Get API key from console.anthropic.com • Use Python/TypeScript/Java/Go/Ruby SDKs</p>
+                        <p className="text-xs"><strong>Enterprise:</strong> Deploy via AWS Bedrock with Direct IdP Integration for SSO + MFA</p>
+                      </div>
                     )}
                     {eco.id === 'copilot' && (
-                      <p className="text-sm text-muted-foreground">
-                        Add this to your Microsoft 365 Copilot custom instructions in Settings → 
-                        Copilot → Custom instructions.
-                      </p>
+                      <div className="text-sm text-muted-foreground space-y-2">
+                        <p>Add this to Microsoft 365 Copilot custom instructions in Settings → Copilot.</p>
+                        <p className="text-xs"><strong>License Required:</strong> M365 E3/E5 or F1/F3 + $30/user Copilot add-on</p>
+                        <p className="text-xs"><strong>Front-of-House (F1/F3):</strong> Enable Restricted SharePoint Search to limit data access</p>
+                        <p className="text-xs"><strong>Back-Office (E3/E5):</strong> Configure Microsoft Purview sensitivity labels</p>
+                      </div>
                     )}
                     {eco.id === 'gemini' && (
                       <p className="text-sm text-muted-foreground">
                         Use this as context when interacting with Google Gemini, or configure it 
                         in Google AI Studio as a system instruction.
                       </p>
+                    )}
+                    {eco.id === 'api' && (
+                      <div className="text-sm text-muted-foreground space-y-2">
+                        <p>Import this JSON into n8n workflows, webhook handlers, or any custom integration.</p>
+                        <p className="text-xs"><strong>n8n:</strong> Use HTTP Request node to POST this config to your AI endpoints</p>
+                        <p className="text-xs"><strong>Custom Apps:</strong> Parse the persona object to configure any LLM system prompt</p>
+                      </div>
                     )}
                   </div>
                 )}

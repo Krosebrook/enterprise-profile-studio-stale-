@@ -17,43 +17,43 @@ import {
 const features = [
   {
     icon: <Sparkles className="h-5 w-5" />,
-    title: 'Professional Profiles',
-    description: 'Create stunning enterprise profiles that showcase your company\'s strengths.',
+    title: 'AI-Ready Work Profiles',
+    description: 'Create personalized AI configurations for every employee role in your organization.',
   },
   {
     icon: <Shield className="h-5 w-5" />,
-    title: 'Compliance Ready',
-    description: 'Display certifications and security credentials with confidence.',
+    title: 'Multi-Ecosystem Export',
+    description: 'Deploy to Claude, Microsoft Copilot, Google Gemini, n8n, and custom APIs.',
   },
   {
     icon: <Zap className="h-5 w-5" />,
-    title: 'Quick Setup',
-    description: 'Guided wizard walks you through each section in minutes.',
+    title: 'AIaaS Platform',
+    description: 'AI-as-a-Service infrastructure for enterprise AI enablement at scale.',
   },
   {
     icon: <Globe className="h-5 w-5" />,
-    title: 'Share Anywhere',
-    description: 'Publish with a unique URL or export to PDF for offline use.',
+    title: 'Role-Based Personas',
+    description: 'Define "hats" for each job function with specific AI optimization.',
   },
   {
     icon: <Users className="h-5 w-5" />,
-    title: 'Team Showcase',
-    description: 'Highlight your leadership team with rich profiles.',
+    title: 'Team Management',
+    description: 'Centralized persona management for departments and teams.',
   },
   {
     icon: <BarChart3 className="h-5 w-5" />,
-    title: 'Analytics',
-    description: 'Track profile views and engagement in real-time.',
+    title: 'Knowledge Base',
+    description: 'AI-generated documentation and configuration exports.',
   },
 ];
 
 const benefits = [
-  'Streamlined profile creation',
-  'Professional, modern design',
-  'Secure data storage',
-  'Version history & revisions',
-  'Team collaboration',
-  'Export & share capabilities',
+  'Claude, Copilot & Gemini ready',
+  'n8n workflow integration',
+  'Custom API exports (JSON)',
+  'Role-based AI personas',
+  'Enterprise team management',
+  'Centralized knowledge base',
 ];
 
 export default function LandingPage() {
@@ -79,13 +79,13 @@ export default function LandingPage() {
             </div>
             
             <h1 className="font-display text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-              Create Professional
-              <span className="text-gradient block mt-2">Enterprise Profiles</span>
+              AI Enablement for
+              <span className="text-gradient block mt-2">Every Employee</span>
             </h1>
             
             <p className="mt-6 text-lg text-muted-foreground md:text-xl max-w-2xl mx-auto">
-              Showcase your company's capabilities, team, services, and compliance credentials 
-              with beautiful, shareable enterprise profiles.
+              Create AI-ready work profiles for your team. Export to Claude, Microsoft Copilot, 
+              Google Gemini, n8n workflows, and custom integrations.
             </p>
             
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
@@ -159,11 +159,11 @@ export default function LandingPage() {
               </div>
               <h2 className="font-display text-3xl font-bold md:text-4xl">
                 Built for modern
-                <span className="text-gradient"> enterprises</span>
+                <span className="text-gradient"> AI-first organizations</span>
               </h2>
               <p className="mt-4 text-lg text-muted-foreground">
-                Whether you're a startup or an established enterprise, our platform 
-                helps you create professional profiles that win trust and business.
+                Whether your team uses Microsoft 365, Google Workspace, or multiple AI platforms, 
+                INT OS creates personalized AI configurations that work everywhere.
               </p>
               
               <ul className="mt-8 grid gap-3 sm:grid-cols-2">
