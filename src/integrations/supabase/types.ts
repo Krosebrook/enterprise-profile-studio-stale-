@@ -621,6 +621,162 @@ export type Database = {
         }
         Relationships: []
       }
+      symphony_agents: {
+        Row: {
+          avg_response_time: number | null
+          capabilities: string[] | null
+          created_at: string
+          current_status: string | null
+          description: string | null
+          efficiency_score: number | null
+          icon: string
+          id: string
+          name: string
+          phase: number
+          role_type: string
+          tasks_completed: number | null
+          tasks_pending: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avg_response_time?: number | null
+          capabilities?: string[] | null
+          created_at?: string
+          current_status?: string | null
+          description?: string | null
+          efficiency_score?: number | null
+          icon?: string
+          id?: string
+          name: string
+          phase: number
+          role_type: string
+          tasks_completed?: number | null
+          tasks_pending?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avg_response_time?: number | null
+          capabilities?: string[] | null
+          created_at?: string
+          current_status?: string | null
+          description?: string | null
+          efficiency_score?: number | null
+          icon?: string
+          id?: string
+          name?: string
+          phase?: number
+          role_type?: string
+          tasks_completed?: number | null
+          tasks_pending?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      symphony_phases: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          name: string
+          phase_number: number
+          progress: number | null
+          started_at: string | null
+          status: string | null
+          tasks_completed: number | null
+          tasks_total: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          phase_number: number
+          progress?: number | null
+          started_at?: string | null
+          status?: string | null
+          tasks_completed?: number | null
+          tasks_total?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          phase_number?: number
+          progress?: number | null
+          started_at?: string | null
+          status?: string | null
+          tasks_completed?: number | null
+          tasks_total?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      symphony_tasks: {
+        Row: {
+          agent_id: string | null
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          id: string
+          phase_id: string | null
+          priority: string | null
+          status: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          agent_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          phase_id?: string | null
+          priority?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          agent_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          phase_id?: string | null
+          priority?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "symphony_tasks_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "symphony_agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "symphony_tasks_phase_id_fkey"
+            columns: ["phase_id"]
+            isOneToOne: false
+            referencedRelation: "symphony_phases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_onboarding_preferences: {
         Row: {
           ai_ecosystems: Json | null

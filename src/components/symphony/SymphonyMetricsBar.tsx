@@ -1,15 +1,45 @@
 import { motion } from 'framer-motion';
-import { TrendingUp, Clock, CheckCircle2, Zap, Activity, Shield } from 'lucide-react';
+import { TrendingUp, Clock, CheckCircle2, Activity, Shield, Loader2 } from 'lucide-react';
+import type { SymphonyAgent, SymphonyPhase, SymphonyTask } from '@/hooks/useSymphonyData';
 
-const metrics = [
-  { label: 'Tasks Completed', value: '2,847', change: '+12%', icon: CheckCircle2, color: 'text-success' },
-  { label: 'Avg Response Time', value: '1.2s', change: '-23%', icon: Clock, color: 'text-cyan-accent' },
-  { label: 'Agent Efficiency', value: '94.7%', change: '+5%', icon: TrendingUp, color: 'text-purple-accent' },
-  { label: 'Active Workflows', value: '18', change: '+3', icon: Activity, color: 'text-primary' },
-  { label: 'System Health', value: '99.9%', change: 'stable', icon: Shield, color: 'text-success' },
-];
+interface SymphonyMetricsBarProps {
+  agents?: SymphonyAgent[];
+  phases?: SymphonyPhase[];
+  tasks?: SymphonyTask[];
+  isLoading?: boolean;
+}
 
-export function SymphonyMetricsBar() {
+export function SymphonyMetricsBar({ agents = [], phases = [], tasks = [], isLoading = false }: SymphonyMetricsBarProps) {
+  // Calculate metrics from real data or use defaults
+  const tasksCompleted = phases.reduce((acc, p) => acc + p.tasks_completed, 0) || 2847;
+  const activeAgents = agents.filter(a => a.current_status === 'active' || a.current_status === 'busy').length || 18;
+  const avgEfficiency = agents.length > 0 
+    ? Math.round(agents.reduce((acc, a) => acc + Number(a.efficiency_score), 0) / agents.length * 10) / 10
+    : 94.7;
+  const avgResponseTime = agents.length > 0 
+    ? Math.round(agents.reduce((acc, a) => acc + Number(a.avg_response_time), 0) / agents.length * 10) / 10
+    : 1.2;
+  const completedPhases = phases.filter(p => p.status === 'complete').length;
+  const totalPhases = phases.length || 6;
+
+  const metrics = [
+    { label: 'Tasks Completed', value: tasksCompleted.toLocaleString(), change: '+12%', icon: CheckCircle2, color: 'text-success' },
+    { label: 'Avg Response Time', value: `${avgResponseTime}s`, change: '-23%', icon: Clock, color: 'text-cyan-accent' },
+    { label: 'Agent Efficiency', value: `${avgEfficiency}%`, change: '+5%', icon: TrendingUp, color: 'text-purple-accent' },
+    { label: 'Active Agents', value: activeAgents.toString(), change: `${agents.length || 11} total`, icon: Activity, color: 'text-primary' },
+    { label: 'Phases Complete', value: `${completedPhases}/${totalPhases}`, change: 'on track', icon: Shield, color: 'text-success' },
+  ];
+
+  if (isLoading) {
+    return (
+      <div className="border-y border-border/50 bg-card/50 backdrop-blur-sm">
+        <div className="container flex items-center justify-center py-8">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="border-y border-border/50 bg-card/50 backdrop-blur-sm">
       <div className="container">

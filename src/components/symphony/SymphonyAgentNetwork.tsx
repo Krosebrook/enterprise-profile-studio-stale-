@@ -1,19 +1,27 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Bot, Brain, Shield, Zap, Target, Users, FileText, Search, MessageSquare, BarChart, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { AgentDetailModal } from './AgentDetailModal';
+import type { SymphonyAgent, SymphonyTask } from '@/hooks/useSymphonyData';
 
-const agents = [
-  { id: 'strategist', name: 'Strategist', icon: Target, role: 'A', phase: 1, description: 'Defines project vision and goals' },
-  { id: 'researcher', name: 'Researcher', icon: Search, role: 'R', phase: 1, description: 'Gathers data and market intelligence' },
-  { id: 'architect', name: 'Architect', icon: Brain, role: 'A', phase: 2, description: 'Designs system architecture' },
-  { id: 'developer', name: 'Developer', icon: Settings, role: 'R', phase: 3, description: 'Builds and implements solutions' },
-  { id: 'analyst', name: 'Analyst', icon: BarChart, role: 'C', phase: 2, description: 'Analyzes performance metrics' },
-  { id: 'communicator', name: 'Communicator', icon: MessageSquare, role: 'I', phase: 4, description: 'Manages stakeholder comms' },
-  { id: 'validator', name: 'Validator', icon: Shield, role: 'R', phase: 5, description: 'Ensures quality and compliance' },
-  { id: 'integrator', name: 'Integrator', icon: Zap, role: 'R', phase: 3, description: 'Connects systems and workflows' },
-  { id: 'coordinator', name: 'Coordinator', icon: Users, role: 'A', phase: 4, description: 'Orchestrates team activities' },
-  { id: 'documenter', name: 'Documenter', icon: FileText, role: 'C', phase: 6, description: 'Creates and maintains docs' },
-  { id: 'optimizer', name: 'Optimizer', icon: Bot, role: 'R', phase: 6, description: 'Improves efficiency continuously' },
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  Target, Search, Brain, Settings, BarChart, MessageSquare, Shield, Zap, Users, FileText, Bot,
+};
+
+// Fallback data for display when no DB data
+const fallbackAgents: Omit<SymphonyAgent, 'id' | 'user_id' | 'created_at' | 'updated_at'>[] = [
+  { name: 'Strategist', icon: 'Target', role_type: 'A', phase: 1, description: 'Defines project vision and goals', capabilities: ['Strategic Planning', 'Goal Setting'], current_status: 'active', tasks_completed: 24, tasks_pending: 3, efficiency_score: 94, avg_response_time: 1.2 },
+  { name: 'Researcher', icon: 'Search', role_type: 'R', phase: 1, description: 'Gathers data and market intelligence', capabilities: ['Data Analysis', 'Research'], current_status: 'active', tasks_completed: 48, tasks_pending: 5, efficiency_score: 91, avg_response_time: 2.1 },
+  { name: 'Architect', icon: 'Brain', role_type: 'A', phase: 2, description: 'Designs system architecture', capabilities: ['System Design', 'Planning'], current_status: 'idle', tasks_completed: 32, tasks_pending: 2, efficiency_score: 97, avg_response_time: 1.8 },
+  { name: 'Developer', icon: 'Settings', role_type: 'R', phase: 3, description: 'Builds and implements solutions', capabilities: ['Coding', 'Testing'], current_status: 'busy', tasks_completed: 156, tasks_pending: 12, efficiency_score: 89, avg_response_time: 0.8 },
+  { name: 'Analyst', icon: 'BarChart', role_type: 'C', phase: 2, description: 'Analyzes performance metrics', capabilities: ['Analytics', 'Reporting'], current_status: 'active', tasks_completed: 67, tasks_pending: 4, efficiency_score: 93, avg_response_time: 1.5 },
+  { name: 'Communicator', icon: 'MessageSquare', role_type: 'I', phase: 4, description: 'Manages stakeholder comms', capabilities: ['Communication', 'Documentation'], current_status: 'idle', tasks_completed: 28, tasks_pending: 0, efficiency_score: 96, avg_response_time: 0.9 },
+  { name: 'Validator', icon: 'Shield', role_type: 'R', phase: 5, description: 'Ensures quality and compliance', capabilities: ['QA', 'Compliance'], current_status: 'idle', tasks_completed: 42, tasks_pending: 0, efficiency_score: 99, avg_response_time: 1.1 },
+  { name: 'Integrator', icon: 'Zap', role_type: 'R', phase: 3, description: 'Connects systems and workflows', capabilities: ['Integration', 'Automation'], current_status: 'active', tasks_completed: 89, tasks_pending: 7, efficiency_score: 88, avg_response_time: 1.4 },
+  { name: 'Coordinator', icon: 'Users', role_type: 'A', phase: 4, description: 'Orchestrates team activities', capabilities: ['Project Management'], current_status: 'idle', tasks_completed: 34, tasks_pending: 0, efficiency_score: 95, avg_response_time: 0.7 },
+  { name: 'Documenter', icon: 'FileText', role_type: 'C', phase: 6, description: 'Creates and maintains docs', capabilities: ['Documentation'], current_status: 'idle', tasks_completed: 21, tasks_pending: 0, efficiency_score: 92, avg_response_time: 2.3 },
+  { name: 'Optimizer', icon: 'Bot', role_type: 'R', phase: 6, description: 'Improves efficiency continuously', capabilities: ['Optimization'], current_status: 'idle', tasks_completed: 15, tasks_pending: 0, efficiency_score: 94, avg_response_time: 1.6 },
 ];
 
 const roleColors: Record<string, string> = {
@@ -30,12 +38,35 @@ const roleLabels: Record<string, string> = {
   'I': 'Informed',
 };
 
-export function SymphonyAgentNetwork() {
+const statusDot: Record<string, string> = {
+  'idle': 'bg-muted-foreground',
+  'active': 'bg-success animate-pulse',
+  'busy': 'bg-warning animate-pulse',
+  'offline': 'bg-destructive',
+};
+
+interface SymphonyAgentNetworkProps {
+  agents?: SymphonyAgent[];
+  tasks?: SymphonyTask[];
+}
+
+export function SymphonyAgentNetwork({ agents = [], tasks = [] }: SymphonyAgentNetworkProps) {
+  const [selectedAgent, setSelectedAgent] = useState<SymphonyAgent | null>(null);
+  
+  // Use DB agents if available, otherwise fallback
+  const displayAgents = agents.length > 0 ? agents : fallbackAgents.map((a, i) => ({
+    ...a,
+    id: `fallback-${i}`,
+    user_id: '',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  } as SymphonyAgent));
+
   return (
     <div className="space-y-6">
       <div className="text-center space-y-2">
         <h2 className="font-display text-2xl md:text-3xl font-bold">Agent Network</h2>
-        <p className="text-muted-foreground">11 specialized AI agents working in harmony</p>
+        <p className="text-muted-foreground">11 specialized AI agents working in harmony — click to view details</p>
       </div>
       
       {/* Network Visualization */}
@@ -66,44 +97,57 @@ export function SymphonyAgentNetwork() {
         
         {/* Agent grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-          {agents.map((agent, index) => (
-            <motion.div
-              key={agent.id}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.05 * index, type: 'spring' }}
-              whileHover={{ y: -4, scale: 1.02 }}
-              className="group relative glass-card-light dark:glass-card-dark rounded-xl p-4 cursor-pointer transition-all hover:shadow-card-hover"
-            >
-              {/* Connection line to center (visual only) */}
-              <div className="absolute -top-8 left-1/2 w-px h-8 bg-gradient-to-b from-transparent to-border hidden lg:block" />
-              
-              {/* RACI Badge */}
-              <div className="absolute -top-2 -right-2">
-                <span className={cn('raci-badge text-[10px]', roleColors[agent.role])}>
-                  {agent.role}
-                </span>
-              </div>
-              
-              {/* Agent Icon */}
-              <div className="mb-3 flex justify-center">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                  <agent.icon className="w-6 h-6 text-primary" />
-                </div>
-              </div>
-              
-              {/* Agent Info */}
-              <div className="text-center space-y-1">
-                <h4 className="font-medium text-sm">{agent.name}</h4>
-                <p className="text-xs text-muted-foreground line-clamp-2">{agent.description}</p>
-                <div className="pt-1">
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
-                    Phase {agent.phase}
+          {displayAgents.map((agent, index) => {
+            const IconComponent = iconMap[agent.icon] || Bot;
+            
+            return (
+              <motion.div
+                key={agent.id}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.05 * index, type: 'spring' }}
+                whileHover={{ y: -4, scale: 1.02 }}
+                onClick={() => setSelectedAgent(agent)}
+                className="group relative glass-card-light dark:glass-card-dark rounded-xl p-4 cursor-pointer transition-all hover:shadow-card-hover hover:ring-2 hover:ring-primary/30"
+              >
+                {/* Status indicator */}
+                <div className={cn(
+                  'absolute top-2 left-2 w-2 h-2 rounded-full',
+                  statusDot[agent.current_status]
+                )} />
+                
+                {/* RACI Badge */}
+                <div className="absolute -top-2 -right-2">
+                  <span className={cn('raci-badge text-[10px]', roleColors[agent.role_type])}>
+                    {agent.role_type}
                   </span>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+                
+                {/* Agent Icon */}
+                <div className="mb-3 flex justify-center">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                    <IconComponent className="w-6 h-6 text-primary" />
+                  </div>
+                </div>
+                
+                {/* Agent Info */}
+                <div className="text-center space-y-1">
+                  <h4 className="font-medium text-sm">{agent.name}</h4>
+                  <p className="text-xs text-muted-foreground line-clamp-2">{agent.description}</p>
+                  <div className="pt-1 flex items-center justify-center gap-2">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                      Phase {agent.phase}
+                    </span>
+                    {agent.tasks_pending > 0 && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                        {agent.tasks_pending} tasks
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
         
         {/* RACI Legend */}
@@ -116,6 +160,14 @@ export function SymphonyAgentNetwork() {
           ))}
         </div>
       </div>
+
+      {/* Agent Detail Modal */}
+      <AgentDetailModal
+        agent={selectedAgent}
+        tasks={tasks}
+        isOpen={!!selectedAgent}
+        onClose={() => setSelectedAgent(null)}
+      />
     </div>
   );
 }

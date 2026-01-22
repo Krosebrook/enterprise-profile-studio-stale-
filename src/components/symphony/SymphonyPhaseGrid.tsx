@@ -4,80 +4,34 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
+import type { SymphonyPhase } from '@/hooks/useSymphonyData';
 
-const phases = [
-  {
-    id: 1,
-    name: 'Discovery',
-    icon: Lightbulb,
-    status: 'complete',
-    progress: 100,
-    description: 'Research, gather requirements, and define scope',
-    agents: ['Strategist', 'Researcher'],
-    tasks: 12,
-    completed: 12,
-    color: 'from-cyan-accent to-cyan-light',
-  },
-  {
-    id: 2,
-    name: 'Design',
-    icon: Compass,
-    status: 'complete',
-    progress: 100,
-    description: 'Architecture, planning, and solution design',
-    agents: ['Architect', 'Analyst'],
-    tasks: 8,
-    completed: 8,
-    color: 'from-primary to-cloudburst-light',
-  },
-  {
-    id: 3,
-    name: 'Development',
-    icon: Hammer,
-    status: 'in-progress',
-    progress: 68,
-    description: 'Build, integrate, and implement solutions',
-    agents: ['Developer', 'Integrator'],
-    tasks: 24,
-    completed: 16,
-    color: 'from-purple-accent to-purple-light',
-  },
-  {
-    id: 4,
-    name: 'Delivery',
-    icon: Rocket,
-    status: 'pending',
-    progress: 0,
-    description: 'Coordinate releases and stakeholder communications',
-    agents: ['Coordinator', 'Communicator'],
-    tasks: 10,
-    completed: 0,
-    color: 'from-rust to-rust-light',
-  },
-  {
-    id: 5,
-    name: 'Validation',
-    icon: Shield,
-    status: 'pending',
-    progress: 0,
-    description: 'Testing, quality assurance, and compliance checks',
-    agents: ['Validator'],
-    tasks: 15,
-    completed: 0,
-    color: 'from-success to-success/70',
-  },
-  {
-    id: 6,
-    name: 'Evolution',
-    icon: RefreshCw,
-    status: 'pending',
-    progress: 0,
-    description: 'Continuous improvement and optimization',
-    agents: ['Optimizer', 'Documenter'],
-    tasks: 6,
-    completed: 0,
-    color: 'from-warning to-warning/70',
-  },
+// Fallback data for display when no DB data
+const fallbackPhases: Omit<SymphonyPhase, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'started_at' | 'completed_at'>[] = [
+  { phase_number: 1, name: 'Discovery', status: 'complete', progress: 100, tasks_total: 12, tasks_completed: 12 },
+  { phase_number: 2, name: 'Design', status: 'complete', progress: 100, tasks_total: 8, tasks_completed: 8 },
+  { phase_number: 3, name: 'Development', status: 'in-progress', progress: 68, tasks_total: 24, tasks_completed: 16 },
+  { phase_number: 4, name: 'Delivery', status: 'pending', progress: 0, tasks_total: 10, tasks_completed: 0 },
+  { phase_number: 5, name: 'Validation', status: 'pending', progress: 0, tasks_total: 15, tasks_completed: 0 },
+  { phase_number: 6, name: 'Evolution', status: 'pending', progress: 0, tasks_total: 6, tasks_completed: 0 },
+];
+
+const phaseConfig = [
+  { icon: Lightbulb, color: 'from-cyan-accent to-cyan-light', agents: ['Strategist', 'Researcher'] },
+  { icon: Compass, color: 'from-primary to-cloudburst-light', agents: ['Architect', 'Analyst'] },
+  { icon: Hammer, color: 'from-purple-accent to-purple-light', agents: ['Developer', 'Integrator'] },
+  { icon: Rocket, color: 'from-rust to-rust-light', agents: ['Coordinator', 'Communicator'] },
+  { icon: Shield, color: 'from-success to-success/70', agents: ['Validator'] },
+  { icon: RefreshCw, color: 'from-warning to-warning/70', agents: ['Optimizer', 'Documenter'] },
+];
+
+const phaseDescriptions = [
+  'Research, gather requirements, and define scope',
+  'Architecture, planning, and solution design',
+  'Build, integrate, and implement solutions',
+  'Coordinate releases and stakeholder communications',
+  'Testing, quality assurance, and compliance checks',
+  'Continuous improvement and optimization',
 ];
 
 const statusStyles: Record<string, string> = {
@@ -86,7 +40,22 @@ const statusStyles: Record<string, string> = {
   'pending': 'bg-muted text-muted-foreground border-muted',
 };
 
-export function SymphonyPhaseGrid() {
+interface SymphonyPhaseGridProps {
+  phases?: SymphonyPhase[];
+}
+
+export function SymphonyPhaseGrid({ phases = [] }: SymphonyPhaseGridProps) {
+  // Use DB phases if available, otherwise fallback
+  const displayPhases = phases.length > 0 ? phases : fallbackPhases.map((p, i) => ({
+    ...p,
+    id: `fallback-${i}`,
+    user_id: '',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    started_at: null,
+    completed_at: null,
+  } as SymphonyPhase));
+
   return (
     <div className="space-y-6">
       <div className="text-center space-y-2">
@@ -100,86 +69,91 @@ export function SymphonyPhaseGrid() {
         <div className="absolute top-8 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-accent via-purple-accent to-warning hidden lg:block" />
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-          {phases.map((phase, index) => (
-            <motion.div
-              key={phase.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 * index }}
-              className="relative"
-            >
-              {/* Phase number badge */}
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-                <div className={cn(
-                  'w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-lg',
-                  `bg-gradient-to-br ${phase.color}`
-                )}>
-                  {phase.id}
-                </div>
-              </div>
-              
-              {/* Arrow connector */}
-              {index < phases.length - 1 && (
-                <div className="absolute top-1/2 -right-3 z-10 hidden xl:block">
-                  <ArrowRight className="w-5 h-5 text-muted-foreground/30" />
-                </div>
-              )}
-              
-              <Card className={cn(
-                'h-full pt-6 glass-card-light dark:glass-card-dark transition-all hover:shadow-card-hover',
-                phase.status === 'in-progress' && 'ring-2 ring-primary/50'
-              )}>
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <div className={cn(
-                      'w-10 h-10 rounded-lg flex items-center justify-center',
-                      `bg-gradient-to-br ${phase.color}`
-                    )}>
-                      <phase.icon className="w-5 h-5 text-white" />
-                    </div>
-                    <Badge variant="outline" className={statusStyles[phase.status]}>
-                      {phase.status === 'complete' && <CheckCircle2 className="w-3 h-3 mr-1" />}
-                      {phase.status.replace('-', ' ')}
-                    </Badge>
+          {displayPhases.map((phase, index) => {
+            const config = phaseConfig[index] || phaseConfig[0];
+            const PhaseIcon = config.icon;
+            
+            return (
+              <motion.div
+                key={phase.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * index }}
+                className="relative"
+              >
+                {/* Phase number badge */}
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+                  <div className={cn(
+                    'w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-lg',
+                    `bg-gradient-to-br ${config.color}`
+                  )}>
+                    {phase.phase_number}
                   </div>
-                  <CardTitle className="text-lg mt-2">{phase.name}</CardTitle>
-                </CardHeader>
+                </div>
                 
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground line-clamp-2">
-                    {phase.description}
-                  </p>
-                  
-                  {/* Progress */}
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-xs">
-                      <span className="text-muted-foreground">Progress</span>
-                      <span className="font-medium">{phase.progress}%</span>
+                {/* Arrow connector */}
+                {index < displayPhases.length - 1 && (
+                  <div className="absolute top-1/2 -right-3 z-10 hidden xl:block">
+                    <ArrowRight className="w-5 h-5 text-muted-foreground/30" />
+                  </div>
+                )}
+                
+                <Card className={cn(
+                  'h-full pt-6 glass-card-light dark:glass-card-dark transition-all hover:shadow-card-hover',
+                  phase.status === 'in-progress' && 'ring-2 ring-primary/50'
+                )}>
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <div className={cn(
+                        'w-10 h-10 rounded-lg flex items-center justify-center',
+                        `bg-gradient-to-br ${config.color}`
+                      )}>
+                        <PhaseIcon className="w-5 h-5 text-white" />
+                      </div>
+                      <Badge variant="outline" className={statusStyles[phase.status]}>
+                        {phase.status === 'complete' && <CheckCircle2 className="w-3 h-3 mr-1" />}
+                        {phase.status.replace('-', ' ')}
+                      </Badge>
                     </div>
-                    <Progress value={phase.progress} className="h-1.5" />
-                  </div>
+                    <CardTitle className="text-lg mt-2">{phase.name}</CardTitle>
+                  </CardHeader>
                   
-                  {/* Tasks */}
-                  <div className="flex justify-between text-xs">
-                    <span className="text-muted-foreground">Tasks</span>
-                    <span>{phase.completed}/{phase.tasks}</span>
-                  </div>
-                  
-                  {/* Assigned agents */}
-                  <div className="flex flex-wrap gap-1">
-                    {phase.agents.map((agent) => (
-                      <span
-                        key={agent}
-                        className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary"
-                      >
-                        {agent}
-                      </span>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+                  <CardContent className="space-y-4">
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      {phaseDescriptions[index]}
+                    </p>
+                    
+                    {/* Progress */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-muted-foreground">Progress</span>
+                        <span className="font-medium">{phase.progress}%</span>
+                      </div>
+                      <Progress value={phase.progress} className="h-1.5" />
+                    </div>
+                    
+                    {/* Tasks */}
+                    <div className="flex justify-between text-xs">
+                      <span className="text-muted-foreground">Tasks</span>
+                      <span>{phase.tasks_completed}/{phase.tasks_total}</span>
+                    </div>
+                    
+                    {/* Assigned agents */}
+                    <div className="flex flex-wrap gap-1">
+                      {config.agents.map((agent) => (
+                        <span
+                          key={agent}
+                          className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary"
+                        >
+                          {agent}
+                        </span>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </div>
