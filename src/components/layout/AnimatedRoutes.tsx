@@ -22,6 +22,7 @@ import PersonasListPage from '@/pages/PersonasListPage';
 import PersonaBuilderPage from '@/pages/PersonaBuilderPage';
 import TeamManagementPage from '@/pages/TeamManagementPage';
 import AIPlaybooksPage from '@/pages/AIPlaybooksPage';
+import IntIncProfilePage from '@/pages/IntIncProfilePage';
 import NotFound from '@/pages/NotFound';
 
 export function AnimatedRoutes() {
@@ -203,6 +204,14 @@ export function AnimatedRoutes() {
           element={
             <PageTransition>
               <PublicProfilePage />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/intinc"
+          element={
+            <PageTransition>
+              <IntIncProfilePage />
             </PageTransition>
           }
         />
