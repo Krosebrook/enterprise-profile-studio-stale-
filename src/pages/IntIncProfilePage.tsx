@@ -6,6 +6,7 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { ROICalculatorWidget } from '@/components/pricing/ROICalculatorWidget';
 import { FeatureComparisonTable } from '@/components/pricing/FeatureComparisonTable';
+import { StrategyToolkit } from '@/components/pricing/StrategyToolkit';
 import { 
   ArrowRight, 
   Check, 
@@ -20,7 +21,8 @@ import {
   Workflow,
   Brain,
   ChevronRight,
-  Star
+  Star,
+  Presentation
 } from 'lucide-react';
 
 const pricingTiers = [
@@ -405,6 +407,27 @@ export default function IntIncProfilePage() {
               </Card>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Strategy Toolkit Section */}
+      <section className="py-24">
+        <div className="container">
+          <div className="mx-auto mb-16 max-w-2xl text-center">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <span className="the-dot-lg" />
+              <span className="text-sm font-medium text-accent uppercase tracking-wider">Strategy Toolkit</span>
+            </div>
+            <h2 className="font-display text-3xl font-bold md:text-4xl">
+              Hybrid Intelligence
+              <span className="text-gradient"> Presentation Kit</span>
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Everything you need to present AI diversification strategy to leadership — elevator pitch, objection handling, ROI data, and pilot proposals
+            </p>
+          </div>
+          
+          <StrategyToolkit />
         </div>
       </section>
 
