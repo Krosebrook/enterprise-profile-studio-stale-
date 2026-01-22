@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { ROICalculatorWidget } from '@/components/pricing/ROICalculatorWidget';
+import { FeatureComparisonTable } from '@/components/pricing/FeatureComparisonTable';
 import { 
   ArrowRight, 
   Check, 
@@ -343,7 +344,15 @@ export default function IntIncProfilePage() {
               <ROICalculatorWidget />
             </div>
           </div>
-        </div>
+
+          {/* Feature Comparison Table */}
+          <div className="mt-16">
+            <h3 className="font-display text-2xl font-bold text-center mb-8">
+              Detailed Feature Comparison
+            </h3>
+            <FeatureComparisonTable />
+          </div>
+          </div>
       </section>
 
       {/* Integration Examples Section */}
