@@ -2,28 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
-/* INT Inc. Brand Design System
-   Eclipse Navy • Cloudburst Blue • Signature Orange
-   Professional yet playful, with "The Dot" motif */
+/* FlashFusion × INT Inc. Unified Design System
+   Eclipse Navy • Cloudburst Blue • Purple Highlight • Signature Orange
+   Symphony of Roles • Professional + Premium */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 @layer base {
   :root {
-    /* INT Inc. Brand Colors */
-    /* Eclipse - Deep sophisticated navy */
+    /* === FlashFusion Color Palette === */
+    
+    /* Dark Navy Base - Backgrounds */
+    --navy-deep: 230 35% 7%;
+    --navy-dark: 235 24% 12%;
+    --navy-mid: 230 25% 18%;
+    
+    /* Eclipse - Deep sophisticated navy (legacy INT Inc.) */
     --eclipse: 222 47% 11%;
     --eclipse-light: 220 26% 14%;
     
-    /* Cloudburst - Modern blue */
-    --cloudburst: 210 100% 45%;
-    --cloudburst-light: 210 100% 55%;
+    /* Cloudburst - Modern blue (CTAs, active states) */
+    --cloudburst: 217 91% 60%;
+    --cloudburst-light: 217 91% 70%;
+    --cloudburst-dark: 217 91% 50%;
     
-    /* Signature Orange - The Dot accent */
+    /* Purple Highlight - Premium features, active tabs */
+    --purple-accent: 270 91% 65%;
+    --purple-light: 270 91% 75%;
+    --purple-dark: 270 91% 55%;
+    
+    /* Signature Orange - FlashFusion brand CTAs */
     --signature-orange: 24 95% 53%;
     --signature-orange-light: 24 95% 60%;
+    --signature-orange-dark: 24 95% 45%;
+    
+    /* Green Success - Positive actions */
+    --success: 160 84% 39%;
+    --success-light: 160 84% 49%;
+    --success-dark: 160 84% 29%;
+    
+    /* Brown/Rust Accent - Special actions */
+    --rust-accent: 28 73% 31%;
+    --rust-light: 28 73% 41%;
+    
+    /* Cyan - Gradient component */
+    --cyan-accent: 186 93% 44%;
+    --cyan-light: 186 93% 54%;
 
-    /* Semantic mappings */
+    /* === Semantic Token Mappings === */
     --background: 220 20% 98%;
     --foreground: 222 47% 11%;
 
@@ -34,7 +60,7 @@
     --popover-foreground: 222 47% 11%;
 
     /* Primary = Cloudburst Blue */
-    --primary: 210 100% 45%;
+    --primary: 217 91% 60%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 220 14% 96%;
@@ -46,89 +72,111 @@
     /* Accent = Signature Orange */
     --accent: 24 95% 53%;
     --accent-foreground: 0 0% 100%;
+    
+    /* Premium = Purple */
+    --premium: 270 91% 65%;
+    --premium-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 210 100% 45%;
+    --ring: 217 91% 60%;
 
     --radius: 0.625rem;
 
-    /* Extended palette */
-    --success: 142 76% 36%;
+    /* Success/Warning/Info */
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
+    --info: 217 91% 60%;
+    --info-foreground: 0 0% 100%;
     
     /* The Dot - Signature Orange variations */
     --dot: 24 95% 53%;
     --dot-glow: 24 95% 53%;
     
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(210 100% 45%) 0%, hsl(210 100% 55%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(222 47% 11%) 0%, hsl(220 26% 14%) 50%, hsl(222 47% 11%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(24 95% 53%) 0%, hsl(24 95% 60%) 100%);
+    /* === FlashFusion Gradients === */
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(217 91% 70%) 100%);
+    --gradient-purple: linear-gradient(135deg, hsl(270 91% 65%) 0%, hsl(270 91% 75%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(160 84% 39%) 0%, hsl(186 93% 44%) 50%, hsl(217 91% 60%) 100%);
+    --gradient-hero-dark: linear-gradient(135deg, hsl(230 35% 7%) 0%, hsl(235 24% 12%) 50%, hsl(230 35% 7%) 100%);
+    --gradient-rainbow: linear-gradient(90deg, hsl(160 84% 39%), hsl(186 93% 44%), hsl(270 91% 65%), hsl(330 90% 65%));
+    --gradient-accent: linear-gradient(135deg, hsl(24 95% 53%) 0%, hsl(24 95% 45%) 100%);
     --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(220 20% 99%) 100%);
+    --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
     
-    /* Shadows */
+    /* === Shadows === */
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.03);
     --shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.08);
     --shadow-lg: 0 12px 24px -4px rgb(0 0 0 / 0.1);
     --shadow-xl: 0 24px 48px -12px rgb(0 0 0 / 0.12);
-    --shadow-glow: 0 0 30px -8px hsl(210 100% 45% / 0.25);
+    --shadow-glow: 0 0 40px -10px hsl(217 91% 60% / 0.3);
+    --shadow-glow-purple: 0 0 40px -10px hsl(270 91% 65% / 0.3);
     --shadow-dot: 0 0 20px -4px hsl(24 95% 53% / 0.4);
     --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.04);
+    --shadow-card-hover: 0 20px 40px -15px rgb(0 0 0 / 0.15);
 
     /* Sidebar */
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222 47% 11%;
-    --sidebar-primary: 210 100% 45%;
+    --sidebar-primary: 217 91% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 220 14% 96%;
     --sidebar-accent-foreground: 222 47% 11%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 210 100% 45%;
+    --sidebar-ring: 217 91% 60%;
   }
 
   .dark {
-    --background: 222 47% 6%;
+    /* Dark mode - FlashFusion navy theme */
+    --background: 230 35% 7%;
     --foreground: 210 40% 98%;
 
-    --card: 222 47% 8%;
+    --card: 235 24% 12%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222 47% 8%;
+    --popover: 235 24% 12%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 260 100% 65%;
+    /* Primary = Blue in dark mode */
+    --primary: 217 91% 60%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 26% 14%;
+    --secondary: 230 25% 18%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 220 26% 14%;
+    --muted: 230 25% 18%;
     --muted-foreground: 215 20% 65%;
 
-    --accent: 24 95% 53%;
+    /* Accent = Purple in dark mode for premium feel */
+    --accent: 270 91% 65%;
     --accent-foreground: 0 0% 100%;
+    
+    --premium: 270 91% 65%;
+    --premium-foreground: 0 0% 100%;
 
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 220 26% 14%;
-    --input: 220 26% 14%;
-    --ring: 260 100% 65%;
+    --border: 230 25% 18%;
+    --input: 230 25% 18%;
+    --ring: 217 91% 60%;
 
-    --sidebar-background: 222 47% 8%;
+    --sidebar-background: 235 24% 12%;
     --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 260 100% 65%;
+    --sidebar-primary: 217 91% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 26% 14%;
+    --sidebar-accent: 230 25% 18%;
     --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 220 26% 14%;
-    --sidebar-ring: 260 100% 65%;
+    --sidebar-border: 230 25% 18%;
+    --sidebar-ring: 217 91% 60%;
+    
+    /* FlashFusion Dark Mode Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 55%) 0%, hsl(217 91% 65%) 100%);
+    --gradient-purple: linear-gradient(135deg, hsl(270 91% 60%) 0%, hsl(270 91% 70%) 100%);
+    --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
     
     /* Onboarding specific */
     --onboarding-dark: 260 30% 6%;
@@ -167,6 +215,8 @@
 }
 
 @layer components {
+  /* === FlashFusion Signature Elements === */
+  
   /* The Dot - INT Inc. signature element */
   .the-dot {
     @apply inline-block w-2 h-2 rounded-full;
@@ -180,28 +230,58 @@
     box-shadow: var(--shadow-dot);
   }
 
-  /* Glass morphism card */
+  /* === Glass Morphism === */
   .glass-card {
+    @apply backdrop-blur-xl border;
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: var(--shadow-card);
+  }
+  
+  .glass-card-light {
     @apply bg-white/90 backdrop-blur-xl border border-white/40;
     box-shadow: var(--shadow-card);
   }
+  
+  .glass-card-dark {
+    @apply backdrop-blur-xl border;
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
 
-  /* Hero gradient - Eclipse based */
+  /* === FlashFusion Gradients === */
+  
+  /* Hero gradient - Green → Cyan → Blue */
   .hero-gradient {
     background: var(--gradient-hero);
+  }
+  
+  /* Hero gradient dark - Navy vignette */
+  .hero-gradient-dark {
+    background: var(--gradient-hero-dark);
   }
 
   /* Primary gradient - Cloudburst */
   .primary-gradient {
     background: var(--gradient-primary);
   }
+  
+  /* Purple gradient - Premium features */
+  .purple-gradient {
+    background: var(--gradient-purple);
+  }
 
   /* Accent gradient - Signature Orange */
   .accent-gradient {
     background: var(--gradient-accent);
   }
+  
+  /* Rainbow gradient - Multi-color statements */
+  .rainbow-gradient {
+    background: var(--gradient-rainbow);
+  }
 
-  /* Text gradient */
+  /* === Text Gradients === */
   .text-gradient {
     background: var(--gradient-primary);
     -webkit-background-clip: text;
@@ -215,27 +295,122 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+  
+  .text-gradient-purple {
+    background: var(--gradient-purple);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .text-gradient-hero {
+    background: var(--gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .text-gradient-rainbow {
+    background: var(--gradient-rainbow);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 
-  /* Glow effects */
+  /* === Glow Effects === */
   .glow-effect {
     box-shadow: var(--shadow-glow);
+  }
+  
+  .glow-effect-purple {
+    box-shadow: var(--shadow-glow-purple);
   }
 
   .dot-glow {
     box-shadow: var(--shadow-dot);
   }
+  
+  /* Selection glow - Blue border for selected items */
+  .selection-glow {
+    @apply ring-2 ring-primary/50;
+    box-shadow: 0 0 20px -5px hsl(var(--primary) / 0.4);
+  }
 
-  /* Card hover effect */
+  /* === Card Patterns === */
   .card-hover {
     @apply transition-all duration-300 ease-out;
   }
 
   .card-hover:hover {
     @apply -translate-y-1;
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-card-hover);
+  }
+  
+  /* FlashFusion featured card */
+  .card-featured {
+    @apply relative overflow-hidden rounded-xl p-6;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .card-featured::before {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity duration-300;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  }
+  
+  .card-featured:hover::before {
+    @apply opacity-100;
   }
 
-  /* Halftone pattern - INT Inc. style */
+  /* === Button Patterns === */
+  
+  /* Premium button - Purple gradient */
+  .btn-premium {
+    @apply relative overflow-hidden font-semibold;
+    background: var(--gradient-purple);
+    box-shadow: 0 4px 15px -3px hsl(270 91% 65% / 0.4);
+  }
+  
+  .btn-premium:hover {
+    box-shadow: 0 6px 20px -3px hsl(270 91% 65% / 0.5);
+    transform: translateY(-1px);
+  }
+  
+  /* Success button - Green */
+  .btn-success {
+    @apply font-semibold;
+    background: hsl(var(--success));
+    box-shadow: 0 4px 15px -3px hsl(var(--success) / 0.4);
+  }
+  
+  /* Rust/brown button - Special actions */
+  .btn-rust {
+    @apply font-semibold;
+    background: hsl(var(--rust-accent));
+  }
+
+  /* === Navigation Patterns === */
+  
+  /* Category tab pill - Active = purple */
+  .tab-pill {
+    @apply px-4 py-2 rounded-full text-sm font-medium transition-all duration-200;
+    background: hsl(var(--secondary));
+    color: hsl(var(--muted-foreground));
+  }
+  
+  .tab-pill-active {
+    @apply px-4 py-2 rounded-full text-sm font-medium;
+    background: hsl(var(--purple-accent));
+    color: white;
+  }
+  
+  .dark .tab-pill {
+    background: hsl(var(--secondary));
+  }
+
+  /* === Halftone & Decorative Patterns === */
   .halftone-pattern {
     background-image: radial-gradient(circle, hsl(var(--primary) / 0.1) 1px, transparent 1px);
     background-size: 16px 16px;
@@ -251,9 +426,41 @@
     @apply border-l-4;
     border-color: hsl(var(--accent));
   }
+  
+  .pillar-border-purple {
+    @apply border-l-4;
+    border-color: hsl(var(--purple-accent));
+  }
+  
+  /* === RACI Badge System === */
+  .raci-badge {
+    @apply inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold;
+  }
+  
+  .raci-r { /* Responsible */
+    background: hsl(var(--primary));
+    color: white;
+  }
+  
+  .raci-a { /* Accountable */
+    background: hsl(var(--purple-accent));
+    color: white;
+  }
+  
+  .raci-c { /* Consulted */
+    background: hsl(var(--success));
+    color: white;
+  }
+  
+  .raci-i { /* Informed */
+    background: hsl(var(--muted));
+    color: hsl(var(--muted-foreground));
+  }
 }
 
 @layer utilities {
+  /* === FlashFusion Animations === */
+  
   .animate-fade-in {
     animation: fadeIn 0.4s ease-out forwards;
   }
@@ -272,6 +479,15 @@
 
   .animate-pulse-dot {
     animation: pulseDot 2s ease-in-out infinite;
+  }
+  
+  .animate-glow-pulse {
+    animation: glowPulse 3s ease-in-out infinite;
+  }
+  
+  .animate-gradient {
+    animation: gradientShift 8s ease infinite;
+    background-size: 200% 200%;
   }
 
   @keyframes fadeIn {
@@ -315,5 +531,20 @@
       transform: scale(1.2);
       opacity: 0.8;
     }
+  }
+  
+  @keyframes glowPulse {
+    0%, 100% {
+      box-shadow: 0 0 20px -5px hsl(var(--primary) / 0.3);
+    }
+    50% {
+      box-shadow: 0 0 40px -5px hsl(var(--primary) / 0.5);
+    }
+  }
+  
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
   }
 }
