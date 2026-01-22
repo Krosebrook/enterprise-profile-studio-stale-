@@ -1,6 +1,13 @@
-import { CreateDocumentData, generateSlug } from '@/hooks/useKnowledgeBase';
+// FlashFusion Design System Documents
+// Seed data for the Knowledge Base
 
-type FlashFusionDocument = Omit<CreateDocumentData, 'slug'>;
+export interface FlashFusionDocument {
+  title: string;
+  description: string;
+  category: string;
+  tags: string[];
+  content: string;
+}
 
 export const flashFusionDocuments: FlashFusionDocument[] = [
   {
@@ -121,11 +128,3 @@ Use semantic tokens: bg-background, bg-primary, bg-premium
 `,
   },
 ];
-
-// Helper to convert to CreateDocumentData with slugs
-export function getFlashFusionDocsWithSlugs(): CreateDocumentData[] {
-  return flashFusionDocuments.map(doc => ({
-    ...doc,
-    slug: generateSlug(doc.title),
-  }));
-}

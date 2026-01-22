@@ -1,6 +1,6 @@
-# Enterprise Profile Studio
+# INT OS (Enterprise Profile Studio)
 
-A powerful platform for creating, managing, and sharing professional enterprise profiles. Build stunning company profiles with ease using our intuitive wizard-based interface, showcase your team and services, manage deals and analytics, and maintain a comprehensive knowledge base.
+A powerful platform for creating enterprise profiles, managing AI personas, and maintaining a comprehensive knowledge base. Build professional company profiles, configure AI assistants for team members across multiple ecosystems (Claude, Copilot, Gemini), and organize documentation with our intuitive interface.
 
 ## 🌟 Features
 
@@ -11,68 +11,66 @@ A powerful platform for creating, managing, and sharing professional enterprise 
 - **Public Sharing**: Share profiles via unique URLs
 - **PDF Export**: Generate professional PDF versions of your profiles
 
-### Deal Pipeline Management
-- **Deal Tracking**: Manage deals through customizable pipeline stages
-- **Deal Comparison**: Compare multiple deals side-by-side
-- **Analytics Dashboard**: Track deal metrics and performance
-- **Investment Memos**: Document deal analysis and decisions
+### AI Persona Management
+- **Employee Personas**: Create detailed AI-ready configurations for team members
+- **Multi-Ecosystem Export**: Generate optimized prompts for Claude, Microsoft Copilot, and Google Gemini
+- **Template Library**: Pre-built persona templates for common roles (Sales, Engineering, Product, etc.)
+- **AI Auto-Fill**: Generate persona details from job title and department
+- **Hats/Roles System**: Define multiple roles per person with time allocation
+- **Bulk Export**: Download all persona configurations as a ZIP file
+- **Knowledge Base Integration**: Auto-generate AI configuration documents
 
 ### Knowledge Base
-- **Document Management**: Organize documents in folders
-- **Search & Tagging**: Powerful search with tag-based organization
+- **Document Management**: Organize documents in hierarchical folders
+- **Search & Tagging**: Powerful full-text search with multi-tag filtering
 - **Templates**: Document templates for common use cases
 - **Markdown Support**: Rich text editing with markdown
+- **Version History**: Track changes with snapshot-based versioning
+- **Favorites**: Quick access to important documents
+- **Seed Libraries**: Pre-built content libraries:
+  - Industry Standard Documents
+  - INT Inc. Strategy (Hybrid Intelligence frameworks)
+  - INT Inc. Research (Department taxonomy, ROI analysis)
+  - INT Inc. Methodology (4-Agent Architecture, R-I-S-E formula)
+  - FlashFusion Design System (Component library, integration guides)
 
 ### Analytics & Insights
 - **Profile Analytics**: Track views, shares, and engagement
 - **Dashboard Metrics**: Comprehensive analytics dashboard
-- **Real-time Updates**: Live data refresh every 30 seconds
+- **Real-time Updates**: Live data refresh
 
 ### Additional Features
-- **Authentication**: Secure user authentication with Supabase
+- **Authentication**: Secure user authentication via Lovable Cloud
 - **Onboarding**: Personalized onboarding flow for new users
-- **AI Suggestions**: AI-powered content suggestions (via Supabase Edge Functions)
-- **Keyboard Shortcuts**: Power user shortcuts for common actions
-- **Command Palette**: Quick access to all features (Cmd/Ctrl+K)
-- **Dark Mode**: Built-in theme support
+- **AI Suggestions**: AI-powered content suggestions
+- **Keyboard Shortcuts**: Power user shortcuts for common actions (Cmd/Ctrl+K)
+- **Command Palette**: Quick access to all features
+- **Dark Mode**: Built-in theme support with FlashFusion design system
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
 - Node.js 18+ and npm
-- Supabase account (for backend services)
+- Lovable Cloud account (for backend services)
 
 ### Installation
 
 ```sh
 # Clone the repository
-git clone https://github.com/Krosebrook/enterprise-profile-studio.git
+git clone https://github.com/your-org/int-os.git
 
 # Navigate to the project directory
-cd enterprise-profile-studio
+cd int-os
 
 # Install dependencies
 npm install
-
-# Set up environment variables (see .env file)
-# Update VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY
 
 # Start the development server
 npm run dev
 ```
 
 The application will be available at `http://localhost:5173`
-
-### Environment Variables
-
-Create a `.env` file in the root directory with:
-
-```env
-VITE_SUPABASE_PROJECT_ID=your_project_id
-VITE_SUPABASE_PUBLISHABLE_KEY=your_publishable_key
-VITE_SUPABASE_URL=your_supabase_url
-```
 
 ## 🛠️ Development
 
@@ -108,14 +106,19 @@ src/
 ├── components/        # React components
 │   ├── auth/         # Authentication components
 │   ├── dashboard/    # Dashboard components
-│   ├── deals/        # Deal management components
 │   ├── knowledge/    # Knowledge base components
 │   ├── layout/       # Layout components
 │   ├── onboarding/   # Onboarding flow components
+│   ├── persona/      # Persona management components
 │   ├── ui/           # Reusable UI components (shadcn-ui)
 │   └── wizard/       # Profile wizard components
 ├── contexts/         # React contexts (Auth, etc.)
 ├── data/             # Static data and templates
+│   ├── flashFusionDocuments.ts    # Design system docs
+│   ├── intIncMethodologyDocuments.ts  # Methodology frameworks
+│   ├── intIncResearchDocuments.ts     # Research documents
+│   ├── intIncStrategyDocuments.ts     # Strategy documents
+│   └── personaTemplates.ts            # Persona templates
 ├── hooks/            # Custom React hooks
 ├── integrations/     # External integrations (Supabase)
 ├── lib/              # Utility libraries
@@ -125,6 +128,10 @@ src/
 
 supabase/
 ├── functions/        # Edge Functions
+│   ├── generate-document/
+│   ├── generate-persona/
+│   ├── generate-persona-prompts/
+│   └── ...
 └── migrations/       # Database migrations
 ```
 
@@ -142,28 +149,39 @@ supabase/
 - **Framer Motion**: Animations
 - **Lucide React**: Icon library
 
-### Backend & Services
-- **Supabase**: Backend-as-a-Service
-  - PostgreSQL database
-  - Authentication
-  - Real-time subscriptions
-  - Edge Functions
-  - Storage
+### Backend (Lovable Cloud)
+- PostgreSQL database
+- Authentication
+- Real-time subscriptions
+- Edge Functions (AI-powered features)
+- Storage
+
+### AI Integration
+- **Lovable AI Gateway**: Access to Gemini models without API keys
+- Multi-ecosystem prompt generation
+- Content suggestions and auto-fill
 
 ### Development Tools
 - **ESLint**: Code linting
 - **Vitest**: Unit testing
 - **Testing Library**: React component testing
+- **Playwright**: E2E testing
 
-## 🧪 Testing
+## 🎨 Design System
 
-```sh
-# Run all tests
-npm test
+The application uses the FlashFusion × INT Inc. unified design system:
 
-# Run tests in watch mode
-npm run test:watch
-```
+### Color Palette
+- **Eclipse Navy**: Deep backgrounds
+- **Cloudburst Blue**: Primary CTAs and active states
+- **Purple Highlight**: Premium features
+- **Signature Orange**: Brand accent
+
+### Components
+- RACI badge system (Responsible, Accountable, Consulted, Informed)
+- Glassmorphism cards with backdrop blur
+- Hero gradients (Green → Cyan → Blue)
+- Pillar borders for section headers
 
 ## 📝 License
 
@@ -176,13 +194,8 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for development guidelines and best pra
 ## 📚 Additional Documentation
 
 - [Architecture Documentation](./ARCHITECTURE.md) - System architecture and design patterns
-- [API Documentation](./docs/API.md) - API endpoints and integrations
-- [Deployment Guide](./docs/DEPLOYMENT.md) - How to deploy the application
+- [Security Documentation](./SECURITY.md) - Security practices and guidelines
 
 ## 🔒 Security
 
-If you discover a security vulnerability, please email security@example.com.
-
-## 📞 Support
-
-For support, please open an issue in the GitHub repository or contact the development team.
+If you discover a security vulnerability, please review [SECURITY.md](./SECURITY.md).
