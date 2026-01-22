@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
+import { ROICalculatorWidget } from '@/components/pricing/ROICalculatorWidget';
 import { 
   ArrowRight, 
   Check, 
@@ -284,55 +285,63 @@ export default function IntIncProfilePage() {
             </p>
           </div>
           
-          <div className="grid gap-8 md:grid-cols-3 max-w-6xl mx-auto">
-            {pricingTiers.map((tier, index) => (
-              <Card 
-                key={index} 
-                className={`relative ${tier.popular ? 'border-primary shadow-lg shadow-primary/10 scale-105' : ''}`}
-              >
-                {tier.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge className="accent-gradient border-0 px-4 py-1">
-                      <Star className="h-3 w-3 mr-1" />
-                      Most Popular
-                    </Badge>
-                  </div>
-                )}
-                <CardHeader className="text-center pb-8 pt-6">
-                  <div className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg ${tier.popular ? 'bg-primary text-primary-foreground' : 'bg-primary/10 text-primary'}`}>
-                    {tier.icon}
-                  </div>
-                  <CardTitle className="font-display text-xl">{tier.name}</CardTitle>
-                  <CardDescription className="text-sm">{tier.description}</CardDescription>
-                  <div className="mt-4">
-                    <span className="font-display text-4xl font-bold">{tier.price}</span>
-                    <span className="text-muted-foreground">{tier.period}</span>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3 mb-8">
-                    {tier.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-start gap-3">
-                        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-accent/10 shrink-0 mt-0.5">
-                          <Check className="h-3 w-3 text-accent" />
-                        </div>
-                        <span className="text-sm">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button 
-                    className={`w-full ${tier.popular ? 'accent-gradient border-0' : ''}`}
-                    variant={tier.popular ? 'default' : 'outline'}
-                    asChild
-                  >
-                    <Link to="/signup">
-                      {tier.cta}
-                      <ChevronRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+          <div className="grid gap-8 lg:grid-cols-4 max-w-7xl mx-auto">
+            {/* Pricing Tiers */}
+            <div className="lg:col-span-3 grid gap-8 md:grid-cols-3">
+              {pricingTiers.map((tier, index) => (
+                <Card 
+                  key={index} 
+                  className={`relative ${tier.popular ? 'border-primary shadow-lg shadow-primary/10 scale-105' : ''}`}
+                >
+                  {tier.popular && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <Badge className="accent-gradient border-0 px-4 py-1">
+                        <Star className="h-3 w-3 mr-1" />
+                        Most Popular
+                      </Badge>
+                    </div>
+                  )}
+                  <CardHeader className="text-center pb-8 pt-6">
+                    <div className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg ${tier.popular ? 'bg-primary text-primary-foreground' : 'bg-primary/10 text-primary'}`}>
+                      {tier.icon}
+                    </div>
+                    <CardTitle className="font-display text-xl">{tier.name}</CardTitle>
+                    <CardDescription className="text-sm">{tier.description}</CardDescription>
+                    <div className="mt-4">
+                      <span className="font-display text-4xl font-bold">{tier.price}</span>
+                      <span className="text-muted-foreground">{tier.period}</span>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-3 mb-8">
+                      {tier.features.map((feature, featureIndex) => (
+                        <li key={featureIndex} className="flex items-start gap-3">
+                          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-accent/10 shrink-0 mt-0.5">
+                            <Check className="h-3 w-3 text-accent" />
+                          </div>
+                          <span className="text-sm">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Button 
+                      className={`w-full ${tier.popular ? 'accent-gradient border-0' : ''}`}
+                      variant={tier.popular ? 'default' : 'outline'}
+                      asChild
+                    >
+                      <Link to="/signup">
+                        {tier.cta}
+                        <ChevronRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* ROI Calculator */}
+            <div className="lg:col-span-1">
+              <ROICalculatorWidget />
+            </div>
           </div>
         </div>
       </section>
