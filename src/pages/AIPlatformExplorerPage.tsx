@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Brain, GitCompare, Grid3X3, Calculator, ClipboardCheck, Building2, Users, TrendingUp, Activity, Shield } from 'lucide-react';
+import { Brain, GitCompare, Grid3X3, Calculator, ClipboardCheck, Building2, Users, TrendingUp, Activity, Shield, Sparkles } from 'lucide-react';
 import { PlatformExplorerTab } from '@/components/ai-explorer/PlatformExplorerTab';
 import { PlatformComparisonTab } from '@/components/ai-explorer/PlatformComparisonTab';
 import { CapabilityMatrixTab } from '@/components/ai-explorer/CapabilityMatrixTab';
@@ -14,6 +14,7 @@ import { StrategicAssessmentDashboard } from '@/components/ai-explorer/Strategic
 import { TCOCalculatorTab } from '@/components/ai-explorer/TCOCalculatorTab';
 import { PerformanceMetricsTab } from '@/components/ai-explorer/PerformanceMetricsTab';
 import { GRCControlTowerTab } from '@/components/ai-explorer/GRCControlTowerTab';
+import { MicrosoftDeepDiveTab } from '@/components/ai-explorer/MicrosoftDeepDiveTab';
 
 export default function AIPlatformExplorerPage() {
   const [activeTab, setActiveTab] = useState('enterprise');
@@ -59,6 +60,10 @@ export default function AIPlatformExplorerPage() {
                 <Shield className="h-4 w-4" />
                 <span className="hidden sm:inline">GRC</span>
               </TabsTrigger>
+              <TabsTrigger value="microsoft" className="gap-2 data-[state=active]:bg-background py-2">
+                <Sparkles className="h-4 w-4" />
+                <span className="hidden sm:inline">Microsoft</span>
+              </TabsTrigger>
               <TabsTrigger value="departments" className="gap-2 data-[state=active]:bg-background py-2">
                 <Users className="h-4 w-4" />
                 <span className="hidden sm:inline">Departments</span>
@@ -95,6 +100,9 @@ export default function AIPlatformExplorerPage() {
             </TabsContent>
             <TabsContent value="grc" className="mt-6">
               <GRCControlTowerTab />
+            </TabsContent>
+            <TabsContent value="microsoft" className="mt-6">
+              <MicrosoftDeepDiveTab />
             </TabsContent>
             <TabsContent value="departments" className="mt-6">
               <DepartmentRecommendationsTab />
