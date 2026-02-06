@@ -7,9 +7,11 @@ import { BrandingStep } from './steps/BrandingStep';
 import { ServicesStep } from './steps/ServicesStep';
 import { TeamStep } from './steps/TeamStep';
 import { ComplianceStep } from './steps/ComplianceStep';
+import { DocumentImportDialog } from '@/components/shared/DocumentImportDialog';
 import { useUpdateProfile } from '@/hooks/useProfiles';
+import type { ProfileExtractionData } from '@/hooks/useDocumentExtraction';
 import { EnterpriseProfile, CompanyInfo, BrandingInfo, ServicesInfo, TeamInfo, ComplianceInfo } from '@/types/profile';
-import { Building2, Palette, Briefcase, Users, Shield, ArrowLeft, ArrowRight, Save, Eye, Loader2 } from 'lucide-react';
+import { Building2, Palette, Briefcase, Users, Shield, ArrowLeft, ArrowRight, Save, Eye, Loader2, FileUp } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ProfileWizardProps {
@@ -45,6 +47,71 @@ export function ProfileWizard({ profile }: ProfileWizardProps) {
     setTeam(profile.team || {});
     setCompliance(profile.compliance || {});
   }, [profile]);
+
+  // Handle data extraction from document import
+  const handleDocumentExtraction = (data: ProfileExtractionData) => {
+    // Update company info
+    if (data.company_info) {
+      setCompanyInfo(prev => ({
+        ...prev,
+        name: data.company_info.name || prev.name,
+        tagline: data.company_info.tagline || prev.tagline,
+        description: data.company_info.description || prev.description,
+        industry: data.company_info.industry || prev.industry,
+        size: data.company_info.size || prev.size,
+        founded: data.company_info.founded || prev.founded,
+        headquarters: data.company_info.headquarters || prev.headquarters,
+        website: data.company_info.website || prev.website,
+        email: data.company_info.email || prev.email,
+        phone: data.company_info.phone || prev.phone,
+      }));
+    }
+    // Update branding (map to correct property names)
+    if (data.branding) {
+      setBranding(prev => ({
+        ...prev,
+        primaryColor: data.branding.primary_color || prev.primaryColor,
+        secondaryColor: data.branding.secondary_color || prev.secondaryColor,
+      }));
+    }
+    // Update services (generate IDs for new services)
+    if (data.services?.length) {
+      setServices(prev => ({
+        ...prev,
+        services: [...(prev.services || []), ...data.services.map(s => ({
+          id: crypto.randomUUID(),
+          title: s.title,
+          description: s.description,
+        }))],
+      }));
+    }
+    // Update team (generate IDs and map role to title)
+    if (data.team_members?.length) {
+      setTeam(prev => ({
+        ...prev,
+        members: [...(prev.members || []), ...data.team_members.map(m => ({
+          id: crypto.randomUUID(),
+          name: m.name,
+          title: m.role, // map role to title
+          bio: m.bio,
+        }))],
+      }));
+    }
+    // Update compliance (create certification objects from strings)
+    if (data.compliance?.certifications?.length) {
+      setCompliance(prev => ({
+        ...prev,
+        certifications: [
+          ...(prev.certifications || []),
+          ...data.compliance.certifications.map(cert => ({
+            id: crypto.randomUUID(),
+            name: cert,
+            issuer: '',
+          }))
+        ],
+      }));
+    }
+  };
 
   const saveProgress = async () => {
     setSaving(true);
@@ -117,14 +184,27 @@ export function ProfileWizard({ profile }: ProfileWizardProps) {
       <div className="container max-w-4xl">
         {/* Header */}
         <div className="mb-8">
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/dashboard')}
-            className="mb-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Dashboard
-          </Button>
+          <div className="flex items-center justify-between mb-4">
+            <Button
+              variant="ghost"
+              onClick={() => navigate('/dashboard')}
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Dashboard
+            </Button>
+            <DocumentImportDialog
+              extractionType="profile"
+              onDataExtracted={(data) => handleDocumentExtraction(data as ProfileExtractionData)}
+              trigger={
+                <Button variant="outline" className="gap-2">
+                  <FileUp className="h-4 w-4" />
+                  Import from Document
+                </Button>
+              }
+              title="Import Profile from Document"
+              description="Upload company documents, pitch decks, or about pages to auto-fill profile fields. Only explicitly stated information will be extracted."
+            />
+          </div>
           <h1 className="font-display text-3xl font-bold">{profile.name}</h1>
           <p className="mt-1 text-muted-foreground">
             Complete each section to build your enterprise profile

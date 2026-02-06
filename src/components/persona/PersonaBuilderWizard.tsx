@@ -14,9 +14,12 @@ import {
   MessageSquare, 
   Target,
   Brain,
-  Loader2
+  Loader2,
+  FileUp
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { DocumentImportDialog } from '@/components/shared/DocumentImportDialog';
+import type { PersonaExtractionData } from '@/hooks/useDocumentExtraction';
 import type { 
   EmployeePersona, 
   CommunicationStyle, 
@@ -72,6 +75,35 @@ export function PersonaBuilderWizard({ persona, onUpdate, isSaving }: PersonaBui
   const [newExpertise, setNewExpertise] = useState('');
   const [newTool, setNewTool] = useState('');
 
+  // Handle data extraction from document import
+  const handleDocumentExtraction = (data: PersonaExtractionData) => {
+    setLocalData(prev => ({
+      ...prev,
+      name: data.name || prev.name,
+      email: data.email || prev.email,
+      job_title: data.job_title || prev.job_title,
+      department: data.department || prev.department,
+      skills: data.skills?.length ? [...prev.skills, ...data.skills.filter(s => !prev.skills.includes(s))] : prev.skills,
+      expertise_areas: data.expertise_areas?.length ? [...prev.expertise_areas, ...data.expertise_areas.filter(e => !prev.expertise_areas.includes(e))] : prev.expertise_areas,
+      tools_used: data.tools_used?.length ? [...prev.tools_used, ...data.tools_used.filter(t => !prev.tools_used.includes(t))] : prev.tools_used,
+      goals: data.goals?.length ? [...prev.goals, ...data.goals.filter(g => !prev.goals.includes(g))] : prev.goals,
+      pain_points: data.pain_points?.length ? [...prev.pain_points, ...data.pain_points.filter(p => !prev.pain_points.includes(p))] : prev.pain_points,
+      communication_style: {
+        formality: data.communication_style?.formality || prev.communication_style.formality,
+        detail_level: data.communication_style?.detail_level || prev.communication_style.detail_level,
+        examples_preference: data.communication_style?.examples_preference || prev.communication_style.examples_preference,
+        technical_depth: data.communication_style?.technical_depth || prev.communication_style.technical_depth,
+      },
+      work_preferences: {
+        focus_time: data.work_preferences?.focus_time || prev.work_preferences.focus_time,
+        collaboration_style: data.work_preferences?.collaboration_style || prev.work_preferences.collaboration_style,
+        decision_making: data.work_preferences?.decision_making || prev.work_preferences.decision_making,
+        feedback_preference: data.work_preferences?.feedback_preference || prev.work_preferences.feedback_preference,
+      },
+      ai_interaction_style: data.ai_interaction_style || prev.ai_interaction_style,
+      preferred_tone: data.preferred_tone || prev.preferred_tone,
+    }));
+  };
   const handleNext = async () => {
     if (currentStep < STEPS.length - 1) {
       await onUpdate(localData);
@@ -123,6 +155,21 @@ export function PersonaBuilderWizard({ persona, onUpdate, isSaving }: PersonaBui
       case 0:
         return (
           <div className="space-y-6">
+            {/* Import from Document Button */}
+            <div className="flex justify-end">
+              <DocumentImportDialog
+                extractionType="persona"
+                onDataExtracted={(data) => handleDocumentExtraction(data as PersonaExtractionData)}
+                trigger={
+                  <Button variant="outline" className="gap-2">
+                    <FileUp className="h-4 w-4" />
+                    Import from Resume/CV
+                  </Button>
+                }
+                title="Import Persona from Document"
+                description="Upload a resume, LinkedIn profile, or job description to auto-fill persona fields. Only explicitly stated information will be extracted."
+              />
+            </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name *</Label>
