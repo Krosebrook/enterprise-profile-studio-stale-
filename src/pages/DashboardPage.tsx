@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { ProfileCard } from '@/components/dashboard/ProfileCard';
@@ -11,6 +11,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { Loader2, BarChart3, Sparkles, Command, Wand2 } from 'lucide-react';
 import { StaggerContainer, StaggerItem, FadeIn } from '@/components/ui/animations';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { FeatureTour } from '@/components/dashboard/FeatureTour';
+import { AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,10 +28,12 @@ import {
 export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { data: profiles, isLoading: profilesLoading } = useProfiles();
   const deleteProfile = useDeleteProfile();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [showTour, setShowTour] = useState(false);
   
   // Enable keyboard shortcuts
   useKeyboardShortcuts();
@@ -39,6 +44,19 @@ export default function DashboardPage() {
     window.addEventListener('shortcut:new-profile', handleNewProfile);
     return () => window.removeEventListener('shortcut:new-profile', handleNewProfile);
   }, []);
+
+  // Show tour + toast when arriving from setup wizard
+  useEffect(() => {
+    if (searchParams.get('setup_complete') === 'true') {
+      toast.success('🎉 Your AI workspace is ready!', {
+        description: 'Profile, persona, and role hats have been configured.',
+        duration: 5000,
+      });
+      setShowTour(true);
+      // Clean URL without causing navigation
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -87,6 +105,15 @@ export default function DashboardPage() {
       
       <main className="flex-1 pt-20 pb-12">
         <div className="container">
+          {/* Feature Tour */}
+          <AnimatePresence>
+            {showTour && (
+              <div className="mb-8">
+                <FeatureTour onDismiss={() => setShowTour(false)} />
+              </div>
+            )}
+          </AnimatePresence>
+
           {/* Header */}
           <FadeIn>
             <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">

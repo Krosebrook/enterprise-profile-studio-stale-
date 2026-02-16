@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import confetti from 'canvas-confetti';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -88,7 +89,16 @@ export function UnifiedSetupWizard() {
   const handleFinish = async () => {
     const success = await saveAll();
     if (success) {
-      navigate('/dashboard');
+      // Fire confetti burst
+      confetti({
+        particleCount: 150,
+        spread: 80,
+        origin: { y: 0.6 },
+        colors: ['hsl(var(--primary))', '#FFD700', '#FF6B6B', '#4ECDC4', '#A78BFA'],
+      });
+      // Brief delay so user sees confetti before navigating
+      await new Promise(r => setTimeout(r, 800));
+      navigate('/dashboard?setup_complete=true');
     }
   };
 
