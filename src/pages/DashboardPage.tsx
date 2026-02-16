@@ -7,7 +7,8 @@ import { CreateProfileDialog } from '@/components/dashboard/CreateProfileDialog'
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfiles, useDeleteProfile } from '@/hooks/useProfiles';
-import { Loader2, BarChart3, Sparkles, Command } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { Loader2, BarChart3, Sparkles, Command, Wand2 } from 'lucide-react';
 import { StaggerContainer, StaggerItem, FadeIn } from '@/components/ui/animations';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import {
@@ -39,10 +40,27 @@ export default function DashboardPage() {
     return () => window.removeEventListener('shortcut:new-profile', handleNewProfile);
   }, []);
 
+  // Redirect to login if not authenticated
   useEffect(() => {
     if (!authLoading && !user) {
       navigate('/login');
     }
+  }, [user, authLoading, navigate]);
+
+  // Auto-redirect to setup wizard on first login
+  useEffect(() => {
+    if (!user || authLoading) return;
+    const checkSetup = async () => {
+      const { data: prefs } = await supabase
+        .from('user_onboarding_preferences')
+        .select('onboarding_completed')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (!prefs?.onboarding_completed) {
+        navigate('/setup');
+      }
+    };
+    checkSetup();
   }, [user, authLoading, navigate]);
 
   const handleDelete = async () => {
@@ -85,6 +103,12 @@ export default function DashboardPage() {
                   <Command className="h-3 w-3" />
                   <span>K</span>
                 </div>
+                <Button variant="outline" size="sm" asChild className="border-border/60">
+                  <Link to="/setup">
+                    <Wand2 className="mr-2 h-4 w-4" />
+                    Setup Wizard
+                  </Link>
+                </Button>
                 <Button variant="outline" size="sm" asChild className="border-border/60">
                   <Link to="/analytics">
                     <BarChart3 className="mr-2 h-4 w-4" />

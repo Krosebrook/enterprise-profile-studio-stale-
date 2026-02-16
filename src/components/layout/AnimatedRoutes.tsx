@@ -40,6 +40,7 @@ const TeamManagementPage = lazy(() => import(/* webpackChunkName: "team" */ '@/p
 const AIPlaybooksPage = lazy(() => import(/* webpackChunkName: "playbooks" */ '@/pages/AIPlaybooksPage'));
 const IntIncProfilePage = lazy(() => import(/* webpackChunkName: "intinc" */ '@/pages/IntIncProfilePage'));
 const InstallPage = lazy(() => import(/* webpackChunkName: "install" */ '@/pages/InstallPage'));
+const SetupPage = lazy(() => import(/* webpackChunkName: "setup" */ '@/pages/SetupPage'));
 const NotFound = lazy(() => import(/* webpackChunkName: "notfound" */ '@/pages/NotFound'));
 
 // Helper to wrap lazy components with Suspense and PageTransition
@@ -83,6 +84,7 @@ export function AnimatedRoutes() {
         <Route path="/p/:slug" element={<LazyRoute Component={PublicProfilePage} />} />
         <Route path="/intinc" element={<LazyRoute Component={IntIncProfilePage} />} />
         <Route path="/install" element={<LazyRoute Component={InstallPage} />} />
+        <Route path="/setup" element={<LazyRoute Component={SetupPage} />} />
         <Route path="*" element={<LazyRoute Component={NotFound} />} />
       </Routes>
     </AnimatePresence>
