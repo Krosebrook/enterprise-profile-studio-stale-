@@ -1,4 +1,5 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef } from 'react';
+import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Dialog,
@@ -35,6 +36,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { extractTextFromFile, ACCEPT_STRING } from '@/lib/document-parser';
 
 interface DocumentImportDialogProps {
   extractionType: ExtractionType;
@@ -43,8 +45,6 @@ interface DocumentImportDialogProps {
   title?: string;
   description?: string;
 }
-
-const SUPPORTED_EXTENSIONS = ['.txt', '.md', '.json', '.yaml', '.yml', '.csv'];
 
 export function DocumentImportDialog({
   extractionType,
@@ -62,23 +62,22 @@ export function DocumentImportDialog({
   
   const { extractFromText, isExtracting, extractedData, reset } = useDocumentExtraction();
 
+  const [isParsingFile, setIsParsingFile] = useState(false);
+
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Check file extension
-    const ext = '.' + file.name.split('.').pop()?.toLowerCase();
-    if (!SUPPORTED_EXTENSIONS.includes(ext)) {
-      // For unsupported files, we'll still try to read them as text
-      console.log('Attempting to read unsupported file type:', ext);
-    }
-
+    setIsParsingFile(true);
     try {
-      const text = await file.text();
+      const text = await extractTextFromFile(file);
       setDocumentContent(text);
       setFileName(file.name);
     } catch (err) {
       console.error('Failed to read file:', err);
+      toast.error(err instanceof Error ? err.message : 'Failed to parse file');
+    } finally {
+      setIsParsingFile(false);
     }
   };
 
@@ -238,14 +237,14 @@ function UploadStep({
                 <Upload className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
                 <p className="text-sm font-medium">Click to upload or drag and drop</p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  TXT, MD, JSON, YAML, CSV supported
+                  PDF, DOCX, TXT, MD, JSON, YAML, CSV supported
                 </p>
               </>
             )}
             <input
               ref={fileInputRef}
               type="file"
-              accept=".txt,.md,.json,.yaml,.yml,.csv"
+              accept={ACCEPT_STRING}
               onChange={onFileSelect}
               className="hidden"
             />

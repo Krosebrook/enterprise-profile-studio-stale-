@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { extractTextFromFile, ACCEPT_STRING } from '@/lib/document-parser';
 
 interface BatchDocumentImportDialogProps {
   extractionType: ExtractionType;
@@ -61,15 +62,16 @@ export function BatchDocumentImportDialog({
     const newFiles: QueuedFile[] = [];
     for (const file of Array.from(selectedFiles)) {
       try {
-        const text = await file.text();
+        const text = await extractTextFromFile(file);
         newFiles.push({
           id: crypto.randomUUID(),
           name: file.name,
           content: text,
           status: 'pending',
         });
-      } catch {
+      } catch (err) {
         console.error('Failed to read:', file.name);
+        toast.error(`Failed to parse ${file.name}: ${err instanceof Error ? err.message : 'Unknown error'}`);
       }
     }
     setFiles(prev => [...prev, ...newFiles]);
@@ -182,12 +184,12 @@ export function BatchDocumentImportDialog({
               >
                 <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
                 <p className="text-sm font-medium">Click to add files</p>
-                <p className="text-xs text-muted-foreground mt-1">TXT, MD, JSON, YAML, CSV — select multiple</p>
+                <p className="text-xs text-muted-foreground mt-1">PDF, DOCX, TXT, MD, JSON, YAML, CSV — select multiple</p>
                 <input
                   ref={fileInputRef}
                   type="file"
                   multiple
-                  accept=".txt,.md,.json,.yaml,.yml,.csv"
+                  accept={ACCEPT_STRING}
                   onChange={handleFilesSelect}
                   className="hidden"
                 />
