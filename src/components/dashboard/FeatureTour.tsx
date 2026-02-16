@@ -1,8 +1,9 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import {
-  Users, BookOpen, BarChart3, BrainCircuit, Layers, ArrowRight, X, Check,
+  Users, BookOpen, BarChart3, BrainCircuit, Layers, ArrowRight, X, Check, ExternalLink,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -44,10 +45,16 @@ interface FeatureTourProps {
 }
 
 export function FeatureTour({ onDismiss }: FeatureTourProps) {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const isLast = currentStep === TOUR_STEPS.length - 1;
   const step = TOUR_STEPS[currentStep];
   const Icon = step.icon;
+
+  const handleExplore = () => {
+    onDismiss();
+    navigate(step.link);
+  };
 
   return (
     <motion.div
@@ -88,11 +95,20 @@ export function FeatureTour({ onDismiss }: FeatureTourProps) {
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10">
               <Icon className="h-6 w-6 text-primary" />
             </div>
-            <div>
+            <div className="flex-1">
               <h3 className="font-semibold text-foreground">{step.title}</h3>
               <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
                 {step.description}
               </p>
+              <Button
+                variant="link"
+                size="sm"
+                onClick={handleExplore}
+                className="mt-2 h-auto p-0 text-primary gap-1"
+              >
+                Explore {step.title}
+                <ExternalLink className="h-3 w-3" />
+              </Button>
             </div>
           </motion.div>
         </AnimatePresence>
