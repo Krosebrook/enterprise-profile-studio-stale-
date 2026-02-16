@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -7,8 +7,10 @@ import { PersonaBuilderWizard } from '@/components/persona/PersonaBuilderWizard'
 import { HatsRoleManager } from '@/components/persona/HatsRoleManager';
 import { EcosystemExportPanel } from '@/components/persona/EcosystemExportPanel';
 import { AIPersonaGenerator, GeneratedPersonaData } from '@/components/persona/AIPersonaGenerator';
+import { FullPageDropOverlay } from '@/components/persona/FullPageDropOverlay';
 import { ArrowLeft, User, HardHat, Download, Loader2, Sparkles } from 'lucide-react';
 import type { EmployeePersona } from '@/types/employee-persona';
+import type { PersonaExtractionData } from '@/hooks/useDocumentExtraction';
 
 export default function PersonaBuilderPage() {
   const { id } = useParams<{ id: string }>();
@@ -41,6 +43,28 @@ export default function PersonaBuilderPage() {
     });
   };
 
+  const handleDropExtracted = useCallback(async (data: PersonaExtractionData) => {
+    if (!id) return;
+    await updatePersona.mutateAsync({
+      id,
+      updates: {
+        ...(data.name && { name: data.name }),
+        ...(data.email && { email: data.email }),
+        ...(data.job_title && { job_title: data.job_title }),
+        ...(data.department && { department: data.department }),
+        communication_style: data.communication_style,
+        work_preferences: data.work_preferences,
+        skills: data.skills,
+        expertise_areas: data.expertise_areas,
+        tools_used: data.tools_used,
+        pain_points: data.pain_points,
+        goals: data.goals,
+        ...(data.ai_interaction_style && { ai_interaction_style: data.ai_interaction_style }),
+        ...(data.preferred_tone && { preferred_tone: data.preferred_tone }),
+      },
+    });
+  }, [id, updatePersona]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -63,6 +87,7 @@ export default function PersonaBuilderPage() {
 
   return (
     <div className="min-h-screen bg-background pb-12 pt-20">
+      <FullPageDropOverlay onDataExtracted={handleDropExtracted} />
       <div className="container max-w-5xl">
         {/* Header */}
         <div className="mb-8">
