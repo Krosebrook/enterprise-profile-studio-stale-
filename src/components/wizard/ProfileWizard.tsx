@@ -8,6 +8,7 @@ import { ServicesStep } from './steps/ServicesStep';
 import { TeamStep } from './steps/TeamStep';
 import { ComplianceStep } from './steps/ComplianceStep';
 import { DocumentImportDialog } from '@/components/shared/DocumentImportDialog';
+import { BatchDocumentImportDialog } from '@/components/shared/BatchDocumentImportDialog';
 import { useUpdateProfile } from '@/hooks/useProfiles';
 import type { ProfileExtractionData } from '@/hooks/useDocumentExtraction';
 import { EnterpriseProfile, CompanyInfo, BrandingInfo, ServicesInfo, TeamInfo, ComplianceInfo } from '@/types/profile';
@@ -203,6 +204,12 @@ export function ProfileWizard({ profile }: ProfileWizardProps) {
               }
               title="Import Profile from Document"
               description="Upload company documents, pitch decks, or about pages to auto-fill profile fields. Only explicitly stated information will be extracted."
+            />
+            <BatchDocumentImportDialog
+              extractionType="profile"
+              onDataExtracted={(data) => handleDocumentExtraction(data as ProfileExtractionData)}
+              title="Batch Import — Profile"
+              description="Upload multiple company documents and merge extracted data into a single profile."
             />
           </div>
           <h1 className="font-display text-3xl font-bold">{profile.name}</h1>

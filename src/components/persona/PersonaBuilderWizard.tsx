@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DocumentImportDialog } from '@/components/shared/DocumentImportDialog';
+import { BatchDocumentImportDialog } from '@/components/shared/BatchDocumentImportDialog';
 import type { PersonaExtractionData } from '@/hooks/useDocumentExtraction';
 import type { 
   EmployeePersona, 
@@ -156,7 +157,7 @@ export function PersonaBuilderWizard({ persona, onUpdate, isSaving }: PersonaBui
         return (
           <div className="space-y-6">
             {/* Import from Document Button */}
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-2">
               <DocumentImportDialog
                 extractionType="persona"
                 onDataExtracted={(data) => handleDocumentExtraction(data as PersonaExtractionData)}
@@ -168,6 +169,12 @@ export function PersonaBuilderWizard({ persona, onUpdate, isSaving }: PersonaBui
                 }
                 title="Import Persona from Document"
                 description="Upload a resume, LinkedIn profile, or job description to auto-fill persona fields. Only explicitly stated information will be extracted."
+              />
+              <BatchDocumentImportDialog
+                extractionType="persona"
+                onDataExtracted={(data) => handleDocumentExtraction(data as PersonaExtractionData)}
+                title="Batch Import — Persona"
+                description="Upload multiple documents (resumes, JDs, notes) and merge extracted data into a single persona."
               />
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
