@@ -1,23 +1,27 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.90.1";
+import { z } from "https://esm.sh/zod@3.25.76";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface WelcomeEmailRequest {
-  email: string;
-  name: string;
-  profile: {
-    role: string;
-    experienceLevel: string;
-    industries: string[];
-    investmentRange: { min: number; max: number };
-    riskTolerance: string;
-    timeHorizon: string;
-  };
-}
+const RequestSchema = z.object({
+  email: z.string().email().max(255),
+  name: z.string().min(1).max(100),
+  profile: z.object({
+    role: z.string().min(1).max(100),
+    experienceLevel: z.string().min(1).max(50),
+    industries: z.array(z.string().max(100)).max(20),
+    investmentRange: z.object({
+      min: z.number().nonnegative(),
+      max: z.number().nonnegative(),
+    }),
+    riskTolerance: z.string().min(1).max(50),
+    timeHorizon: z.string().min(1).max(50),
+  }),
+});
 
 const formatCurrency = (value: number): string => {
   if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
@@ -37,7 +41,6 @@ serve(async (req) => {
   }
 
   try {
-    // Authenticate the request
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), 
@@ -50,15 +53,19 @@ serve(async (req) => {
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    const { email, name, profile }: WelcomeEmailRequest = await req.json();
-    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+    const parsed = RequestSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: 'Invalid input', details: parsed.error.flatten() }), 
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+    const { email, name, profile } = parsed.data;
 
+    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     if (!RESEND_API_KEY) {
       throw new Error("RESEND_API_KEY is not configured");
     }
 
     console.log(`Sending welcome email to ${email} for ${name}`);
-
     const baseUrl = req.headers.get("origin") || "https://app.dealflow.com";
 
     const emailHtml = `
@@ -73,8 +80,6 @@ serve(async (req) => {
     .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
     .card { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
     .header { text-align: center; margin-bottom: 32px; }
-    .logo { width: 48px; height: 48px; background: linear-gradient(135deg, #0066cc, #0088ff); border-radius: 12px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; }
-    .logo-text { color: white; font-weight: bold; font-size: 24px; }
     h1 { color: #1a1f36; font-size: 28px; margin: 0 0 8px; }
     .subtitle { color: #697386; font-size: 16px; margin: 0; }
     .section { margin: 24px 0; padding: 20px; background: #f8fafc; border-radius: 12px; }
@@ -173,7 +178,6 @@ serve(async (req) => {
 </html>
     `;
 
-    // Send email using Resend API directly (same pattern as send-notification)
     const emailResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {

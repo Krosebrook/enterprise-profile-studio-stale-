@@ -1,19 +1,20 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://esm.sh/zod@3.25.76";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface AnomalyAlertRequest {
-  userId: string;
-  alertType: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  message: string;
-  metadata?: Record<string, unknown>;
-  recipientEmail: string;
-}
+const RequestSchema = z.object({
+  userId: z.string().uuid(),
+  alertType: z.string().min(1).max(100),
+  severity: z.enum(['low', 'medium', 'high', 'critical']),
+  message: z.string().min(1).max(1000),
+  metadata: z.record(z.unknown()).optional(),
+  recipientEmail: z.string().email().max(255),
+});
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -21,7 +22,6 @@ serve(async (req) => {
   }
 
   try {
-    // Authenticate the request
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), 
@@ -42,21 +42,18 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { userId, alertType, severity, message, metadata, recipientEmail }: AnomalyAlertRequest = await req.json();
+    const parsed = RequestSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: 'Invalid input', details: parsed.error.flatten() }), 
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+    const { userId, alertType, severity, message, metadata, recipientEmail } = parsed.data;
 
     const baseUrl = req.headers.get("origin") || "https://lovable.app";
 
-    // Save alert to database
     const { data: alert, error: dbError } = await supabase
       .from('anomaly_alerts')
-      .insert({
-        user_id: userId,
-        alert_type: alertType,
-        severity,
-        message,
-        metadata: metadata || {},
-        sent_email: true
-      })
+      .insert({ user_id: userId, alert_type: alertType, severity, message, metadata: metadata || {}, sent_email: true })
       .select()
       .single();
 
@@ -64,19 +61,8 @@ serve(async (req) => {
       console.error("Database error:", dbError);
     }
 
-    const severityColors: Record<string, string> = {
-      critical: '#DC2626',
-      high: '#EA580C',
-      medium: '#D97706',
-      low: '#2563EB'
-    };
-
-    const severityEmojis: Record<string, string> = {
-      critical: '🚨',
-      high: '⚠️',
-      medium: '⚡',
-      low: 'ℹ️'
-    };
+    const severityColors: Record<string, string> = { critical: '#DC2626', high: '#EA580C', medium: '#D97706', low: '#2563EB' };
+    const severityEmojis: Record<string, string> = { critical: '🚨', high: '⚠️', medium: '⚡', low: 'ℹ️' };
 
     const html = `
       <!DOCTYPE html>
@@ -104,11 +90,9 @@ serve(async (req) => {
           </div>
           <div class="content">
             <span class="severity-badge">${severity} severity</span>
-            
             <div class="alert-message">
               <p style="margin: 0; font-size: 16px;">${message}</p>
             </div>
-            
             ${metadata && Object.keys(metadata).length > 0 ? `
               <h3>📋 Details</h3>
               <div class="metadata">
@@ -120,11 +104,9 @@ serve(async (req) => {
                 `).join('')}
               </div>
             ` : ''}
-            
             <div style="text-align: center; margin-top: 30px;">
               <a href="${baseUrl}/ai-explorer" class="button">View Dashboard</a>
             </div>
-            
             <p style="margin-top: 20px; font-size: 14px; color: #666;">
               <strong>Recommended Action:</strong> Review the affected systems and check for any unusual activity patterns.
             </p>
@@ -159,7 +141,6 @@ serve(async (req) => {
     }
 
     const emailData = await emailResponse.json();
-
     console.log("Anomaly alert email sent:", emailResponse);
 
     return new Response(JSON.stringify({ success: true, alertId: alert?.id, ...emailData }), {

@@ -1,19 +1,20 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.90.1";
+import { z } from "https://esm.sh/zod@3.25.76";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface SuggestRequest {
-  role: string;
-  experienceLevel: string;
-  existingPreferences?: {
-    targetIndustries?: string[];
-    riskTolerance?: string;
-  };
-}
+const RequestSchema = z.object({
+  role: z.string().min(1).max(100),
+  experienceLevel: z.string().min(1).max(50),
+  existingPreferences: z.object({
+    targetIndustries: z.array(z.string().max(100)).max(20).optional(),
+    riskTolerance: z.string().max(50).optional(),
+  }).optional(),
+});
 
 interface RoleProfile {
   industries: string[];
@@ -68,26 +69,10 @@ interface ExperienceModifier {
 }
 
 const experienceModifiers: Record<string, ExperienceModifier> = {
-  novice: {
-    riskAdjustment: -1, // More conservative
-    stagePreference: ["Seed", "Series A"],
-    diversificationAdvice: "higher",
-  },
-  intermediate: {
-    riskAdjustment: 0,
-    stagePreference: null,
-    diversificationAdvice: "balanced",
-  },
-  experienced: {
-    riskAdjustment: 0,
-    stagePreference: null,
-    diversificationAdvice: "balanced",
-  },
-  expert: {
-    riskAdjustment: 1, // Can handle more risk
-    stagePreference: null,
-    diversificationAdvice: "flexible",
-  },
+  novice: { riskAdjustment: -1, stagePreference: ["Seed", "Series A"], diversificationAdvice: "higher" },
+  intermediate: { riskAdjustment: 0, stagePreference: null, diversificationAdvice: "balanced" },
+  experienced: { riskAdjustment: 0, stagePreference: null, diversificationAdvice: "balanced" },
+  expert: { riskAdjustment: 1, stagePreference: null, diversificationAdvice: "flexible" },
 };
 
 serve(async (req) => {
@@ -96,7 +81,6 @@ serve(async (req) => {
   }
 
   try {
-    // Authenticate the request
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), 
@@ -109,16 +93,20 @@ serve(async (req) => {
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    const { role, experienceLevel, existingPreferences }: SuggestRequest = await req.json();
+    const parsed = RequestSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: 'Invalid input', details: parsed.error.flatten() }), 
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+    const { role, experienceLevel, existingPreferences } = parsed.data;
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
     console.log(`Generating suggestions for role: ${role}, experience: ${experienceLevel}`);
 
-    // Get base profile for role
     const baseProfile = roleProfiles[role] || roleProfiles.individual_investor;
     const expMod = experienceModifiers[experienceLevel] || experienceModifiers.intermediate;
 
@@ -167,43 +155,14 @@ Tailor the recommendations to be specific and actionable for this investor profi
               parameters: {
                 type: "object",
                 properties: {
-                  industries: {
-                    type: "array",
-                    items: { type: "string" },
-                    description: "Recommended target industries"
-                  },
-                  dealStructures: {
-                    type: "array",
-                    items: { type: "string" },
-                    description: "Recommended deal structures"
-                  },
-                  stages: {
-                    type: "array",
-                    items: { type: "string" },
-                    description: "Recommended deal stages"
-                  },
-                  regions: {
-                    type: "array",
-                    items: { type: "string" },
-                    description: "Recommended geographic regions"
-                  },
-                  riskTolerance: {
-                    type: "string",
-                    enum: ["conservative", "moderate", "aggressive", "very_aggressive"]
-                  },
-                  investmentRange: {
-                    type: "object",
-                    properties: {
-                      min: { type: "number" },
-                      max: { type: "number" }
-                    },
-                    required: ["min", "max"]
-                  },
+                  industries: { type: "array", items: { type: "string" }, description: "Recommended target industries" },
+                  dealStructures: { type: "array", items: { type: "string" }, description: "Recommended deal structures" },
+                  stages: { type: "array", items: { type: "string" }, description: "Recommended deal stages" },
+                  regions: { type: "array", items: { type: "string" }, description: "Recommended geographic regions" },
+                  riskTolerance: { type: "string", enum: ["conservative", "moderate", "aggressive", "very_aggressive"] },
+                  investmentRange: { type: "object", properties: { min: { type: "number" }, max: { type: "number" } }, required: ["min", "max"] },
                   reasoning: { type: "string" },
-                  tips: {
-                    type: "array",
-                    items: { type: "string" }
-                  }
+                  tips: { type: "array", items: { type: "string" } }
                 },
                 required: ["industries", "dealStructures", "stages", "regions", "riskTolerance", "investmentRange", "reasoning", "tips"],
                 additionalProperties: false
@@ -218,16 +177,10 @@ Tailor the recommendations to be specific and actionable for this investor profi
 
     if (!response.ok) {
       if (response.status === 429) {
-        // Return fallback based on role profile
         console.log("Rate limited, returning fallback suggestions");
         return new Response(
           JSON.stringify({
-            suggestions: {
-              ...baseProfile,
-              regions: ["North America", "Europe"],
-              reasoning: "Based on your role and experience level.",
-              tips: ["Start with familiar industries", "Consider diversification"],
-            },
+            suggestions: { ...baseProfile, regions: ["North America", "Europe"], reasoning: "Based on your role and experience level.", tips: ["Start with familiar industries", "Consider diversification"] },
             source: "fallback"
           }),
           { headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -245,20 +198,12 @@ Tailor the recommendations to be specific and actionable for this investor profi
     }
 
     const data = await response.json();
-    
-    // Extract tool call result
     let suggestions;
     const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
     if (toolCall?.function?.arguments) {
       suggestions = JSON.parse(toolCall.function.arguments);
     } else {
-      // Fallback to base profile if AI doesn't return tool call
-      suggestions = {
-        ...baseProfile,
-        regions: ["North America", "Europe"],
-        reasoning: "Based on your role and experience level.",
-        tips: ["Start with familiar industries", "Consider diversification"],
-      };
+      suggestions = { ...baseProfile, regions: ["North America", "Europe"], reasoning: "Based on your role and experience level.", tips: ["Start with familiar industries", "Consider diversification"] };
     }
 
     console.log("Generated suggestions:", JSON.stringify(suggestions));

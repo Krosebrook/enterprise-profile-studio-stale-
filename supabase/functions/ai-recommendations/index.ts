@@ -1,22 +1,23 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.90.1";
+import { z } from "https://esm.sh/zod@3.25.76";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface RecommendationRequest {
-  usagePatterns: {
-    primaryUseCase: string;
-    teamSize: number;
-    budget: string;
-    technicalLevel: string;
-    industryFocus: string;
-    priorityCapabilities: string[];
-  };
-  currentPlatforms?: string[];
-}
+const RequestSchema = z.object({
+  usagePatterns: z.object({
+    primaryUseCase: z.string().min(1).max(500),
+    teamSize: z.number().int().min(1).max(100000),
+    budget: z.string().min(1).max(100),
+    technicalLevel: z.string().min(1).max(50),
+    industryFocus: z.string().min(1).max(200),
+    priorityCapabilities: z.array(z.string().max(200)).max(20),
+  }),
+  currentPlatforms: z.array(z.string().max(200)).max(20).optional(),
+});
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -24,7 +25,6 @@ serve(async (req) => {
   }
 
   try {
-    // Authenticate the request
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), 
@@ -37,36 +37,14 @@ serve(async (req) => {
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    const { usagePatterns, currentPlatforms }: RecommendationRequest = await req.json();
-
-    // Input length limits to prevent excessive token usage
-    if (usagePatterns.primaryUseCase && usagePatterns.primaryUseCase.length > 500) {
-      return new Response(
-        JSON.stringify({ error: "primaryUseCase must be under 500 characters" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    const parsed = RequestSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: 'Invalid input', details: parsed.error.flatten() }), 
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
-    if (usagePatterns.industryFocus && usagePatterns.industryFocus.length > 200) {
-      return new Response(
-        JSON.stringify({ error: "industryFocus must be under 200 characters" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-    if (usagePatterns.priorityCapabilities && usagePatterns.priorityCapabilities.length > 20) {
-      return new Response(
-        JSON.stringify({ error: "priorityCapabilities must have at most 20 items" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-    if (currentPlatforms && currentPlatforms.length > 20) {
-      return new Response(
-        JSON.stringify({ error: "currentPlatforms must have at most 20 items" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    const { usagePatterns, currentPlatforms } = parsed.data;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
@@ -147,14 +125,12 @@ Provide 3-5 platform recommendations with match scores and reasoning.`;
     if (!response.ok) {
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again later." }), {
-          status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       if (response.status === 402) {
         return new Response(JSON.stringify({ error: "AI credits exhausted. Please add funds." }), {
-          status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       const errorText = await response.text();
@@ -168,10 +144,8 @@ Provide 3-5 platform recommendations with match scores and reasoning.`;
     if (toolCall?.function?.arguments) {
       const recommendations = JSON.parse(toolCall.function.arguments);
       console.log("Generated recommendations:", recommendations);
-      
       return new Response(JSON.stringify(recommendations), {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 

@@ -1,22 +1,23 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.90.1";
+import { z } from "https://esm.sh/zod@3.25.76";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface GenerateRequest {
-  type: 'description' | 'tagline' | 'service';
-  context: {
-    companyName?: string;
-    industry?: string;
-    serviceName?: string;
-    description?: string;
-    tagline?: string;
-    keywords?: string[];
-  };
-}
+const RequestSchema = z.object({
+  type: z.enum(['description', 'tagline', 'service']),
+  context: z.object({
+    companyName: z.string().max(200).optional(),
+    industry: z.string().max(200).optional(),
+    serviceName: z.string().max(200).optional(),
+    description: z.string().max(2000).optional(),
+    tagline: z.string().max(200).optional(),
+    keywords: z.array(z.string().max(100)).max(20).optional(),
+  }),
+});
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -37,9 +38,14 @@ serve(async (req) => {
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    const { type, context }: GenerateRequest = await req.json();
+    const parsed = RequestSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: 'Invalid input', details: parsed.error.flatten() }), 
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+    const { type, context } = parsed.data;
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
@@ -78,9 +84,6 @@ ${context.companyName ? `Company: ${context.companyName}` : ''}
 ${context.industry ? `Industry: ${context.industry}` : ''}
 Provide just the description, nothing else.`;
         break;
-
-      default:
-        throw new Error("Invalid generation type");
     }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {

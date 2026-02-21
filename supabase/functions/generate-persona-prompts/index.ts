@@ -1,53 +1,58 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.90.1";
+import { z } from "https://esm.sh/zod@3.25.76";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface PersonaData {
-  name: string;
-  job_title?: string;
-  department?: string;
-  communication_style: {
-    formality: string;
-    detail_level: string;
-    examples_preference: string;
-    technical_depth: string;
-  };
-  work_preferences: {
-    focus_time: string;
-    collaboration_style: string;
-    decision_making: string;
-    feedback_preference: string;
-  };
-  pain_points: string[];
-  goals: string[];
-  skills: string[];
-  expertise_areas: string[];
-  tools_used: string[];
-  ai_interaction_style: string;
-  preferred_response_length: string;
-  preferred_tone: string;
-}
+const CommunicationStyleSchema = z.object({
+  formality: z.string().max(50).optional(),
+  detail_level: z.string().max(50).optional(),
+  examples_preference: z.string().max(50).optional(),
+  technical_depth: z.string().max(50).optional(),
+}).passthrough();
 
-interface HatData {
-  name: string;
-  description?: string;
-  responsibilities: string[];
-  key_tasks: string[];
-  stakeholders: string[];
-  tools: string[];
-  time_percentage: number;
-}
+const WorkPreferencesSchema = z.object({
+  focus_time: z.string().max(50).optional(),
+  collaboration_style: z.string().max(50).optional(),
+  decision_making: z.string().max(50).optional(),
+  feedback_preference: z.string().max(50).optional(),
+}).passthrough();
 
-interface GenerateRequest {
-  type: 'claude' | 'copilot' | 'gemini' | 'hat_suggestions';
-  persona: PersonaData;
-  hats?: HatData[];
-  hat?: HatData;
-}
+const PersonaSchema = z.object({
+  name: z.string().min(1).max(200),
+  job_title: z.string().max(200).optional(),
+  department: z.string().max(200).optional(),
+  communication_style: CommunicationStyleSchema.optional(),
+  work_preferences: WorkPreferencesSchema.optional(),
+  pain_points: z.array(z.string().max(500)).max(20).optional(),
+  goals: z.array(z.string().max(500)).max(20).optional(),
+  skills: z.array(z.string().max(200)).max(30).optional(),
+  expertise_areas: z.array(z.string().max(200)).max(20).optional(),
+  tools_used: z.array(z.string().max(200)).max(30).optional(),
+  ai_interaction_style: z.string().max(50).optional(),
+  preferred_response_length: z.string().max(50).optional(),
+  preferred_tone: z.string().max(50).optional(),
+});
+
+const HatSchema = z.object({
+  name: z.string().min(1).max(200),
+  description: z.string().max(1000).optional(),
+  responsibilities: z.array(z.string().max(500)).max(20).optional(),
+  key_tasks: z.array(z.string().max(500)).max(20).optional(),
+  stakeholders: z.array(z.string().max(200)).max(20).optional(),
+  tools: z.array(z.string().max(200)).max(20).optional(),
+  time_percentage: z.number().min(0).max(100).optional(),
+});
+
+const RequestSchema = z.object({
+  type: z.enum(['claude', 'copilot', 'gemini', 'hat_suggestions']),
+  persona: PersonaSchema,
+  hats: z.array(HatSchema).max(20).optional(),
+  hat: HatSchema.optional(),
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -55,7 +60,6 @@ serve(async (req) => {
   }
 
   try {
-    // Authenticate the request
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), 
@@ -68,9 +72,14 @@ serve(async (req) => {
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    const { type, persona, hats, hat } = await req.json() as GenerateRequest;
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const parsed = RequestSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: 'Invalid input', details: parsed.error.flatten() }), 
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+    const { type, persona, hats, hat } = parsed.data;
 
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
@@ -105,7 +114,6 @@ Employee Context:
 - Expertise: ${persona.expertise_areas?.join(', ') || 'Not specified'}
 
 Provide specific, actionable suggestions in JSON format.`;
-
     } else {
       const hatsContext = hats?.map(h => 
         `- ${h.name} (${h.time_percentage}% of time): ${h.description || h.responsibilities?.join(', ')}`
@@ -145,47 +153,15 @@ AI Interaction Preferences:
 
       if (type === 'claude') {
         systemPrompt = `You are an expert at creating Claude system prompts for enterprise users. Generate a comprehensive, production-ready system prompt that will help Claude assist this employee effectively.
-
-The system prompt should:
-1. Define Claude's role as a personalized AI assistant for this employee
-2. Incorporate their communication preferences and work style
-3. Reference their specific roles and responsibilities
-4. Address their pain points and help achieve their goals
-5. Use appropriate formality and technical depth
-6. Include specific examples of how to handle common requests
-
 Format: Return ONLY the system prompt text, no explanations or metadata.`;
-
         userPrompt = `Create a Claude system prompt for this employee:\n${personaContext}`;
-
       } else if (type === 'copilot') {
         systemPrompt = `You are an expert at creating Microsoft Copilot custom instructions and context configurations. Generate a comprehensive configuration that will help Copilot assist this employee effectively within the Microsoft 365 ecosystem.
-
-The configuration should:
-1. Define the assistant's role within Microsoft 365 apps
-2. Include context for Teams, Outlook, Word, Excel, and PowerPoint
-3. Incorporate their communication and collaboration preferences
-4. Reference their specific roles and Microsoft tools usage
-5. Provide guidance for document creation, email drafting, and meeting preparation
-6. Address their pain points with Microsoft productivity tools
-
-Format: Return ONLY the Copilot configuration/instructions text, formatted for Microsoft Copilot custom instructions.`;
-
+Format: Return ONLY the Copilot configuration/instructions text.`;
         userPrompt = `Create Microsoft Copilot custom instructions for this employee:\n${personaContext}`;
-
       } else if (type === 'gemini') {
         systemPrompt = `You are an expert at creating Google Gemini and Google Workspace AI configurations. Generate a comprehensive system prompt and configuration that will help Gemini assist this employee effectively within the Google ecosystem.
-
-The configuration should:
-1. Define the assistant's role within Google Workspace
-2. Include context for Gmail, Google Docs, Sheets, Slides, and Meet
-3. Incorporate their communication and collaboration preferences
-4. Reference their specific roles and Google tools usage
-5. Provide guidance for document creation, email management, and data analysis
-6. Address their pain points with Google productivity tools
-
-Format: Return ONLY the Gemini configuration/instructions text, formatted for Google Gemini.`;
-
+Format: Return ONLY the Gemini configuration/instructions text.`;
         userPrompt = `Create Google Gemini instructions for this employee:\n${personaContext}`;
       }
     }
@@ -210,14 +186,12 @@ Format: Return ONLY the Gemini configuration/instructions text, formatted for Go
     if (!response.ok) {
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }), {
-          status: 429,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
       if (response.status === 402) {
         return new Response(JSON.stringify({ error: 'AI credits depleted. Please add credits to continue.' }), {
-          status: 402,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
       const errorText = await response.text();
@@ -227,20 +201,13 @@ Format: Return ONLY the Gemini configuration/instructions text, formatted for Go
 
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content;
+    if (!content) throw new Error('No content generated');
 
-    if (!content) {
-      throw new Error('No content generated');
-    }
-
-    // For hat suggestions, parse as JSON
     if (type === 'hat_suggestions') {
       try {
-        // Extract JSON from potential markdown code blocks
         let jsonContent = content;
         const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
-        if (jsonMatch) {
-          jsonContent = jsonMatch[1].trim();
-        }
+        if (jsonMatch) jsonContent = jsonMatch[1].trim();
         const suggestions = JSON.parse(jsonContent);
         return new Response(JSON.stringify({ suggestions }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -255,23 +222,17 @@ Format: Return ONLY the Gemini configuration/instructions text, formatted for Go
             recommended_tools: [],
             prompt_improvements: ['Be specific about your role context when prompting AI'],
           }
-        }), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
+        }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
     }
 
     return new Response(JSON.stringify({ content }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
-
   } catch (error) {
     console.error('Error generating persona prompts:', error);
     return new Response(JSON.stringify({ 
       error: error instanceof Error ? error.message : 'Unknown error occurred' 
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   }
 });

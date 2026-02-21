@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
+import { z } from "https://esm.sh/zod@3.25.76";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -15,14 +16,14 @@ const escapeHtml = (str: string): string =>
     ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char] || char)
   );
 
-interface LeadNotificationRequest {
-  name: string;
-  email: string;
-  company?: string;
-  phone?: string;
-  interest?: string;
-  message?: string;
-}
+const RequestSchema = z.object({
+  name: z.string().trim().min(1).max(100),
+  email: z.string().trim().email().max(255),
+  company: z.string().max(200).optional(),
+  phone: z.string().max(30).optional(),
+  interest: z.string().max(200).optional(),
+  message: z.string().max(2000).optional(),
+});
 
 const RATE_LIMIT_WINDOW_MINUTES = 15;
 const RATE_LIMIT_MAX_REQUESTS = 3;
@@ -33,20 +34,14 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const lead: LeadNotificationRequest = await req.json();
+    const parsed = RequestSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: 'Invalid input', details: parsed.error.flatten() }), 
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } });
+    }
+    const lead = parsed.data;
 
-    // Input validation
-    if (!lead.name || typeof lead.name !== 'string' || lead.name.trim().length === 0 || lead.name.length > 100) {
-      return new Response(JSON.stringify({ error: "Invalid name" }), { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } });
-    }
-    if (!lead.email || typeof lead.email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(lead.email) || lead.email.length > 255) {
-      return new Response(JSON.stringify({ error: "Invalid email" }), { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } });
-    }
-    if (lead.message && lead.message.length > 2000) {
-      return new Response(JSON.stringify({ error: "Message too long" }), { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } });
-    }
-
-    // Rate limiting: check recent leads from same email
+    // Rate limiting
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
@@ -84,10 +79,8 @@ const handler = async (req: Request): Promise<Response> => {
           <div style="background: linear-gradient(135deg, #6366f1, #8b5cf6); padding: 30px; border-radius: 12px 12px 0 0;">
             <h1 style="color: white; margin: 0; font-size: 24px;">🎯 New Lead Captured</h1>
           </div>
-          
           <div style="background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
             <h2 style="color: #1f2937; margin-top: 0;">Contact Information</h2>
-            
             <table style="width: 100%; border-collapse: collapse;">
               <tr>
                 <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600; color: #6b7280; width: 120px;">Name</td>
@@ -99,37 +92,13 @@ const handler = async (req: Request): Promise<Response> => {
                   <a href="mailto:${escapeHtml(lead.email)}" style="color: #6366f1;">${escapeHtml(lead.email)}</a>
                 </td>
               </tr>
-              ${lead.company ? `
-              <tr>
-                <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600; color: #6b7280;">Company</td>
-                <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #1f2937;">${escapeHtml(lead.company)}</td>
-              </tr>
-              ` : ''}
-              ${lead.phone ? `
-              <tr>
-                <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600; color: #6b7280;">Phone</td>
-                <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #1f2937;">${escapeHtml(lead.phone)}</td>
-              </tr>
-              ` : ''}
-              ${lead.interest ? `
-              <tr>
-                <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600; color: #6b7280;">Interest</td>
-                <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #1f2937;">${escapeHtml(lead.interest)}</td>
-              </tr>
-              ` : ''}
+              ${lead.company ? `<tr><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600; color: #6b7280;">Company</td><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #1f2937;">${escapeHtml(lead.company)}</td></tr>` : ''}
+              ${lead.phone ? `<tr><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600; color: #6b7280;">Phone</td><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #1f2937;">${escapeHtml(lead.phone)}</td></tr>` : ''}
+              ${lead.interest ? `<tr><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600; color: #6b7280;">Interest</td><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #1f2937;">${escapeHtml(lead.interest)}</td></tr>` : ''}
             </table>
-            
-            ${lead.message ? `
-            <h3 style="color: #1f2937; margin-top: 24px;">Message</h3>
-            <div style="background: white; padding: 16px; border-radius: 8px; border: 1px solid #e5e7eb;">
-              <p style="margin: 0; color: #4b5563; line-height: 1.6;">${escapeHtml(lead.message)}</p>
-            </div>
-            ` : ''}
-            
+            ${lead.message ? `<h3 style="color: #1f2937; margin-top: 24px;">Message</h3><div style="background: white; padding: 16px; border-radius: 8px; border: 1px solid #e5e7eb;"><p style="margin: 0; color: #4b5563; line-height: 1.6;">${escapeHtml(lead.message)}</p></div>` : ''}
             <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
-              <p style="margin: 0; color: #9ca3af; font-size: 12px;">
-                This lead was captured from the INT Inc. profile page at ${new Date().toLocaleString()}.
-              </p>
+              <p style="margin: 0; color: #9ca3af; font-size: 12px;">This lead was captured from the INT Inc. profile page at ${new Date().toLocaleString()}.</p>
             </div>
           </div>
         </div>
@@ -148,36 +117,20 @@ const handler = async (req: Request): Promise<Response> => {
           <div style="background: linear-gradient(135deg, #6366f1, #8b5cf6); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
             <h1 style="color: white; margin: 0; font-size: 28px;">Thank You, ${escapeHtml(lead.name)}!</h1>
           </div>
-          
           <div style="background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
-            <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
-              We've received your inquiry about our Enterprise AI Enablement Platform. Our team is excited to learn more about your organization's AI transformation goals.
-            </p>
-            
-            <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
-              A member of our team will reach out within <strong>24 business hours</strong> to discuss how INT Inc. can help you:
-            </p>
-            
+            <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">We've received your inquiry about our Enterprise AI Enablement Platform. Our team is excited to learn more about your organization's AI transformation goals.</p>
+            <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">A member of our team will reach out within <strong>24 business hours</strong> to discuss how INT Inc. can help you:</p>
             <ul style="color: #4b5563; font-size: 16px; line-height: 1.8;">
               <li>Create personalized AI personas for your team</li>
               <li>Deploy across Claude, Microsoft Copilot, and Google Gemini</li>
               <li>Achieve 15-22% productivity gains through AI enablement</li>
             </ul>
-            
             <div style="text-align: center; margin-top: 30px;">
-              <a href="https://stellar-biz-story.lovable.app/intinc" 
-                 style="display: inline-block; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600;">
-                Explore Our Platform
-              </a>
+              <a href="https://stellar-biz-story.lovable.app/intinc" style="display: inline-block; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600;">Explore Our Platform</a>
             </div>
-            
             <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center;">
-              <p style="margin: 0; color: #9ca3af; font-size: 14px;">
-                INT Inc. | Enterprise AI Enablement Platform
-              </p>
-              <p style="margin: 8px 0 0; color: #9ca3af; font-size: 12px;">
-                AI-as-a-Service for the Modern Enterprise
-              </p>
+              <p style="margin: 0; color: #9ca3af; font-size: 14px;">INT Inc. | Enterprise AI Enablement Platform</p>
+              <p style="margin: 8px 0 0; color: #9ca3af; font-size: 12px;">AI-as-a-Service for the Modern Enterprise</p>
             </div>
           </div>
         </div>
@@ -187,24 +140,14 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Lead confirmation sent:", leadEmailResponse);
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
-        teamEmail: teamEmailResponse,
-        leadEmail: leadEmailResponse 
-      }), 
-      {
-        status: 200,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
+      JSON.stringify({ success: true, teamEmail: teamEmailResponse, leadEmail: leadEmailResponse }), 
+      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   } catch (error: any) {
     console.error("Error in send-lead-notification function:", error);
     return new Response(
       JSON.stringify({ error: error.message }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
+      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }
 };

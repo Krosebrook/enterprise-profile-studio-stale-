@@ -1,16 +1,17 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.90.1";
+import { z } from "https://esm.sh/zod@3.25.76";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface AnalyticsEvent {
-  profile_id: string;
-  event_type: 'view' | 'share' | 'contact_click' | 'service_view';
-  event_data?: Record<string, string | number | boolean>;
-}
+const RequestSchema = z.object({
+  profile_id: z.string().uuid(),
+  event_type: z.enum(['view', 'share', 'contact_click', 'service_view']),
+  event_data: z.record(z.union([z.string(), z.number(), z.boolean()])).optional(),
+});
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -18,7 +19,6 @@ serve(async (req) => {
   }
 
   try {
-    // Authenticate the request (required)
     const authHeader = req.headers.get("Authorization") || req.headers.get("authorization");
     if (!authHeader?.startsWith('Bearer ')) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), 
@@ -33,21 +33,17 @@ serve(async (req) => {
     }
     const userId = user.id;
 
-    const { profile_id, event_type, event_data }: AnalyticsEvent = await req.json();
-
-    if (!profile_id || !event_type) {
-      return new Response(
-        JSON.stringify({ error: "Missing required fields" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    const parsed = RequestSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: 'Invalid input', details: parsed.error.flatten() }), 
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
+    const { profile_id, event_type, event_data } = parsed.data;
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Record the analytics event
     const { error } = await supabase
       .from("analytics_events")
       .insert({

@@ -1,22 +1,23 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.90.1";
+import { z } from "https://esm.sh/zod@3.25.76";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface GenerationRequest {
-  templateType: string;
-  prompt: string;
-  context: {
-    companyName?: string;
-    industry?: string;
-    audience?: string;
-    tone?: 'formal' | 'professional' | 'casual';
-    length?: 'short' | 'medium' | 'long';
-  };
-}
+const RequestSchema = z.object({
+  templateType: z.string().min(1).max(50),
+  prompt: z.string().min(1).max(3000),
+  context: z.object({
+    companyName: z.string().max(200).optional(),
+    industry: z.string().max(200).optional(),
+    audience: z.string().max(500).optional(),
+    tone: z.enum(['formal', 'professional', 'casual']).optional(),
+    length: z.enum(['short', 'medium', 'long']).optional(),
+  }),
+});
 
 const TEMPLATE_PROMPTS: Record<string, string> = {
   proposal: `Generate a business proposal document with the following sections:
@@ -113,7 +114,6 @@ serve(async (req) => {
   }
 
   try {
-    // Authenticate the request
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), 
@@ -126,42 +126,14 @@ serve(async (req) => {
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    const { templateType, prompt, context } = await req.json() as GenerationRequest;
-
-    // Input length limits to prevent excessive token usage
-    if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
-      return new Response(
-        JSON.stringify({ error: "prompt is required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    const parsed = RequestSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: 'Invalid input', details: parsed.error.flatten() }), 
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
-    if (prompt.length > 3000) {
-      return new Response(
-        JSON.stringify({ error: "prompt must be under 3000 characters" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-    if (context?.companyName && context.companyName.length > 200) {
-      return new Response(
-        JSON.stringify({ error: "companyName must be under 200 characters" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-    if (context?.industry && context.industry.length > 200) {
-      return new Response(
-        JSON.stringify({ error: "industry must be under 200 characters" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-    if (context?.audience && context.audience.length > 500) {
-      return new Response(
-        JSON.stringify({ error: "audience must be under 500 characters" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    const { templateType, prompt, context } = parsed.data;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
@@ -243,10 +215,8 @@ Remember to output ONLY a valid JSON object with title, description, content, an
       throw new Error("No content generated");
     }
 
-    // Parse the JSON response
     let parsedContent;
     try {
-      // Try to extract JSON from the response (in case there's extra text)
       const jsonMatch = content.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         parsedContent = JSON.parse(jsonMatch[0]);
@@ -255,7 +225,6 @@ Remember to output ONLY a valid JSON object with title, description, content, an
       }
     } catch (parseError) {
       console.error("Failed to parse AI response:", content);
-      // Fallback: create a basic structure from the raw content
       parsedContent = {
         title: `${templateType.charAt(0).toUpperCase() + templateType.slice(1).replace('-', ' ')} - ${prompt.slice(0, 50)}`,
         description: `Generated ${templateType.replace('-', ' ')} document`,

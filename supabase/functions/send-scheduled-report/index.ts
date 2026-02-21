@@ -1,24 +1,29 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://esm.sh/zod@3.25.76";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface ReportRequest {
-  reportType: 'usage_summary' | 'anomaly_alert' | 'weekly_digest' | 'custom';
-  recipients: string[];
-  reportData: {
-    title: string;
-    summary?: string;
-    metrics?: Record<string, number | string>;
-    alerts?: Array<{ type: string; message: string; severity: string }>;
-    insights?: string[];
-    period?: string;
-  };
-  userId?: string;
-}
+const RequestSchema = z.object({
+  reportType: z.enum(['usage_summary', 'anomaly_alert', 'weekly_digest', 'custom']),
+  recipients: z.array(z.string().email().max(255)).min(1).max(50),
+  reportData: z.object({
+    title: z.string().min(1).max(200),
+    summary: z.string().max(2000).optional(),
+    metrics: z.record(z.union([z.number(), z.string()])).optional(),
+    alerts: z.array(z.object({
+      type: z.string().max(100),
+      message: z.string().max(500),
+      severity: z.string().max(20),
+    })).max(50).optional(),
+    insights: z.array(z.string().max(500)).max(20).optional(),
+    period: z.string().max(100).optional(),
+  }),
+  userId: z.string().uuid().optional(),
+});
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -26,7 +31,6 @@ serve(async (req) => {
   }
 
   try {
-    // Authenticate the request
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), 
@@ -44,37 +48,29 @@ serve(async (req) => {
       throw new Error("RESEND_API_KEY is not configured");
     }
 
-    const { reportType, recipients, reportData, userId }: ReportRequest = await req.json();
-
-    if (!recipients?.length) {
-      throw new Error("No recipients specified");
+    const parsed = RequestSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: 'Invalid input', details: parsed.error.flatten() }), 
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
+    const { reportType, recipients, reportData, userId } = parsed.data;
 
     const baseUrl = req.headers.get("origin") || "https://lovable.app";
     let subject = "";
-    let html = "";
 
     const headerGradient = reportType === 'anomaly_alert' 
       ? 'linear-gradient(135deg, #EF4444, #F97316)' 
       : 'linear-gradient(135deg, #3B82F6, #8B5CF6)';
-
     const headerEmoji = reportType === 'anomaly_alert' ? '⚠️' : '📊';
 
     switch (reportType) {
-      case 'usage_summary':
-        subject = `📊 AI Platform Usage Summary - ${reportData.period || 'This Week'}`;
-        break;
-      case 'anomaly_alert':
-        subject = `⚠️ Anomaly Alert: ${reportData.title}`;
-        break;
-      case 'weekly_digest':
-        subject = `📈 Weekly AI Platform Digest - ${new Date().toLocaleDateString()}`;
-        break;
-      default:
-        subject = `📋 ${reportData.title}`;
+      case 'usage_summary': subject = `📊 AI Platform Usage Summary - ${reportData.period || 'This Week'}`; break;
+      case 'anomaly_alert': subject = `⚠️ Anomaly Alert: ${reportData.title}`; break;
+      case 'weekly_digest': subject = `📈 Weekly AI Platform Digest - ${new Date().toLocaleDateString()}`; break;
+      default: subject = `📋 ${reportData.title}`;
     }
 
-    html = `
+    const html = `
       <!DOCTYPE html>
       <html>
       <head>
@@ -105,7 +101,6 @@ serve(async (req) => {
           </div>
           <div class="content">
             ${reportData.summary ? `<p style="font-size: 16px; color: #444;">${reportData.summary}</p>` : ''}
-            
             ${reportData.metrics ? `
               <h3>📈 Key Metrics</h3>
               <div class="metrics-grid">
@@ -117,7 +112,6 @@ serve(async (req) => {
                 `).join('')}
               </div>
             ` : ''}
-            
             ${reportData.alerts?.length ? `
               <h3>⚠️ Alerts</h3>
               ${reportData.alerts.map(alert => `
@@ -126,14 +120,12 @@ serve(async (req) => {
                 </div>
               `).join('')}
             ` : ''}
-            
             ${reportData.insights?.length ? `
               <h3>💡 Insights</h3>
               ${reportData.insights.map(insight => `
                 <div class="insight">${insight}</div>
               `).join('')}
             ` : ''}
-            
             <div style="text-align: center; margin-top: 30px;">
               <a href="${baseUrl}/ai-explorer" class="button">View Full Dashboard</a>
             </div>
@@ -168,10 +160,8 @@ serve(async (req) => {
     }
 
     const emailData = await emailResponse.json();
-
     console.log("Report email sent:", emailResponse);
 
-    // Log the report in the database if userId provided
     if (userId) {
       const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
       const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;

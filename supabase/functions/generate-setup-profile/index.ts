@@ -1,11 +1,20 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.90.1";
+import { z } from "https://esm.sh/zod@3.25.76";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
 };
+
+const RequestSchema = z.object({
+  full_name: z.string().max(200).optional(),
+  job_title: z.string().min(1).max(200),
+  department: z.string().min(1).max(200),
+  company_name: z.string().max(200).optional(),
+  industry: z.string().max(200).optional(),
+});
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -26,14 +35,12 @@ serve(async (req) => {
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    const { full_name, job_title, department, company_name, industry } = await req.json();
-
-    if (!job_title || !department) {
-      return new Response(
-        JSON.stringify({ error: "job_title and department are required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    const parsed = RequestSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: 'Invalid input', details: parsed.error.flatten() }), 
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
+    const { full_name, job_title, department, company_name, industry } = parsed.data;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
@@ -140,9 +147,9 @@ Return JSON with this exact structure:
     const jsonMatch = content.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("No JSON found in AI response");
 
-    const parsed = JSON.parse(jsonMatch[0]);
+    const parsedResult = JSON.parse(jsonMatch[0]);
 
-    return new Response(JSON.stringify(parsed), {
+    return new Response(JSON.stringify(parsedResult), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {

@@ -1,19 +1,20 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.90.1";
+import { z } from "https://esm.sh/zod@3.25.76";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface NotificationRequest {
-  type: 'profile_published' | 'significant_views';
-  profileId: string;
-  profileName: string;
-  recipientEmail: string;
-  viewCount?: number;
-  profileSlug?: string;
-}
+const RequestSchema = z.object({
+  type: z.enum(['profile_published', 'significant_views']),
+  profileId: z.string().uuid(),
+  profileName: z.string().min(1).max(200),
+  recipientEmail: z.string().email().max(255),
+  viewCount: z.number().int().nonnegative().optional(),
+  profileSlug: z.string().max(200).optional(),
+});
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
@@ -21,7 +22,6 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    // Authenticate the request
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), 
@@ -34,16 +34,20 @@ const handler = async (req: Request): Promise<Response> => {
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    const { type, profileId, profileName, recipientEmail, viewCount, profileSlug }: NotificationRequest = await req.json();
-    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+    const parsed = RequestSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: 'Invalid input', details: parsed.error.flatten() }), 
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+    const { type, profileId, profileName, recipientEmail, viewCount, profileSlug } = parsed.data;
 
+    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     if (!RESEND_API_KEY) {
       throw new Error("RESEND_API_KEY is not configured");
     }
 
     let subject = "";
     let html = "";
-
     const baseUrl = req.headers.get("origin") || "https://lovable.app";
 
     if (type === 'profile_published') {
@@ -130,11 +134,8 @@ const handler = async (req: Request): Promise<Response> => {
         </body>
         </html>
       `;
-    } else {
-      throw new Error("Invalid notification type");
     }
 
-    // Send email using Resend API directly
     const emailResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
