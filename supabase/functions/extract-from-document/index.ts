@@ -1,10 +1,17 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.90.1";
+import { z } from "https://esm.sh/zod@3.25.76";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
+
+const RequestSchema = z.object({
+  document_text: z.string().min(1).max(100000),
+  extraction_type: z.enum(['persona', 'profile']),
+  max_length: z.number().int().min(1000).max(100000).optional().default(15000),
+});
 
 // Schema definitions for structured extraction
 const PERSONA_EXTRACTION_SCHEMA = {
@@ -17,31 +24,11 @@ const PERSONA_EXTRACTION_SCHEMA = {
       email: { type: "string", description: "Email address. Set to null if not found." },
       job_title: { type: "string", description: "Job title or role. Set to null if not found." },
       department: { type: "string", description: "Department or team. Set to null if not found." },
-      skills: { 
-        type: "array", 
-        items: { type: "string" },
-        description: "List of skills mentioned. Empty array if none found."
-      },
-      expertise_areas: { 
-        type: "array", 
-        items: { type: "string" },
-        description: "Areas of expertise or specialization. Empty array if none found."
-      },
-      tools_used: { 
-        type: "array", 
-        items: { type: "string" },
-        description: "Software, tools, or platforms mentioned. Empty array if none found."
-      },
-      goals: { 
-        type: "array", 
-        items: { type: "string" },
-        description: "Professional goals or objectives. Empty array if none found."
-      },
-      pain_points: { 
-        type: "array", 
-        items: { type: "string" },
-        description: "Challenges or pain points mentioned. Empty array if none found."
-      },
+      skills: { type: "array", items: { type: "string" }, description: "List of skills mentioned. Empty array if none found." },
+      expertise_areas: { type: "array", items: { type: "string" }, description: "Areas of expertise or specialization. Empty array if none found." },
+      tools_used: { type: "array", items: { type: "string" }, description: "Software, tools, or platforms mentioned. Empty array if none found." },
+      goals: { type: "array", items: { type: "string" }, description: "Professional goals or objectives. Empty array if none found." },
+      pain_points: { type: "array", items: { type: "string" }, description: "Challenges or pain points mentioned. Empty array if none found." },
       communication_style: {
         type: "object",
         properties: {
@@ -84,53 +71,30 @@ const PROFILE_EXTRACTION_SCHEMA = {
       company_info: {
         type: "object",
         properties: {
-          name: { type: "string", description: "Company name. null if not found." },
-          tagline: { type: "string", description: "Company tagline or slogan. null if not found." },
-          description: { type: "string", description: "Company description. null if not found." },
-          industry: { type: "string", description: "Industry or sector. null if not found." },
-          size: { type: "string", description: "Company size or employee count. null if not found." },
-          founded: { type: "string", description: "Year founded. null if not found." },
-          headquarters: { type: "string", description: "HQ location. null if not found." },
-          website: { type: "string", description: "Website URL. null if not found." },
-          email: { type: "string", description: "Contact email. null if not found." },
-          phone: { type: "string", description: "Contact phone. null if not found." }
+          name: { type: "string" }, tagline: { type: "string" }, description: { type: "string" },
+          industry: { type: "string" }, size: { type: "string" }, founded: { type: "string" },
+          headquarters: { type: "string" }, website: { type: "string" }, email: { type: "string" }, phone: { type: "string" }
         }
       },
       branding: {
         type: "object",
-        properties: {
-          primary_color: { type: "string", description: "Primary brand color if mentioned. null if not found." },
-          secondary_color: { type: "string", description: "Secondary brand color if mentioned. null if not found." }
-        }
+        properties: { primary_color: { type: "string" }, secondary_color: { type: "string" } }
       },
       services: {
         type: "array",
-        items: {
-          type: "object",
-          properties: {
-            title: { type: "string" },
-            description: { type: "string" }
-          }
-        },
+        items: { type: "object", properties: { title: { type: "string" }, description: { type: "string" } } },
         description: "List of services or offerings. Empty array if none found."
       },
       team_members: {
         type: "array",
-        items: {
-          type: "object",
-          properties: {
-            name: { type: "string" },
-            role: { type: "string" },
-            bio: { type: "string" }
-          }
-        },
+        items: { type: "object", properties: { name: { type: "string" }, role: { type: "string" }, bio: { type: "string" } } },
         description: "Team members mentioned. Empty array if none found."
       },
       compliance: {
         type: "object",
         properties: {
-          certifications: { type: "array", items: { type: "string" }, description: "Certifications mentioned. Empty array if none." },
-          regulations: { type: "array", items: { type: "string" }, description: "Regulatory compliance mentioned. Empty array if none." }
+          certifications: { type: "array", items: { type: "string" } },
+          regulations: { type: "array", items: { type: "string" } }
         }
       },
       extraction_confidence: { 
@@ -152,7 +116,6 @@ serve(async (req) => {
   }
 
   try {
-    // Authenticate the request
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), 
@@ -165,28 +128,18 @@ serve(async (req) => {
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    const { document_text, extraction_type, max_length = 15000 } = await req.json();
-
-    if (!document_text) {
-      return new Response(
-        JSON.stringify({ error: "document_text is required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    const parsed = RequestSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: 'Invalid input', details: parsed.error.flatten() }), 
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
-
-    if (!extraction_type || !["persona", "profile"].includes(extraction_type)) {
-      return new Response(
-        JSON.stringify({ error: "extraction_type must be 'persona' or 'profile'" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    const { document_text, extraction_type, max_length } = parsed.data;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    // Truncate document if too long
     const truncatedText = document_text.length > max_length 
       ? document_text.substring(0, max_length) + "\n\n[Document truncated for processing]"
       : document_text;
@@ -232,16 +185,12 @@ Document type context for ${extraction_type === "persona" ? "Employee Persona" :
 
     if (!response.ok) {
       if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Please try again later." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again later." }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
       if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "AI credits depleted. Please add credits." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return new Response(JSON.stringify({ error: "AI credits depleted. Please add credits." }),
+          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
       const errorText = await response.text();
       console.error("AI gateway error:", response.status, errorText);
@@ -249,33 +198,22 @@ Document type context for ${extraction_type === "persona" ? "Employee Persona" :
     }
 
     const result = await response.json();
-    
-    // Extract the function call arguments
     const toolCall = result.choices?.[0]?.message?.tool_calls?.[0];
     if (!toolCall || toolCall.function.name !== schema.name) {
       throw new Error("Invalid response format from AI");
     }
 
     const extractedData = JSON.parse(toolCall.function.arguments);
-    
     console.log(`Extraction complete. Confidence: ${extractedData.extraction_confidence?.overall || 'N/A'}%`);
 
     return new Response(
-      JSON.stringify({
-        success: true,
-        extraction_type,
-        data: extractedData,
-      }),
+      JSON.stringify({ success: true, extraction_type, data: extractedData }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
-
   } catch (error) {
     console.error("Extraction error:", error);
     return new Response(
-      JSON.stringify({ 
-        error: error instanceof Error ? error.message : "Unknown error",
-        success: false 
-      }),
+      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error", success: false }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

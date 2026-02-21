@@ -1,16 +1,17 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.90.1";
+import { z } from "https://esm.sh/zod@3.25.76";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface PersonaGenerationRequest {
-  job_title: string;
-  department: string;
-  additional_context?: string;
-}
+const RequestSchema = z.object({
+  job_title: z.string().min(1).max(200),
+  department: z.string().min(1).max(200),
+  additional_context: z.string().max(2000).optional(),
+});
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -18,7 +19,6 @@ serve(async (req) => {
   }
 
   try {
-    // Authenticate the request
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), 
@@ -31,28 +31,12 @@ serve(async (req) => {
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    const { job_title, department, additional_context } = await req.json() as PersonaGenerationRequest;
-
-    if (!job_title || !department) {
-      return new Response(
-        JSON.stringify({ error: "job_title and department are required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    const parsed = RequestSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: 'Invalid input', details: parsed.error.flatten() }), 
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
-
-    // Input length limits to prevent excessive token usage
-    if (job_title.length > 200 || department.length > 200) {
-      return new Response(
-        JSON.stringify({ error: "job_title and department must be under 200 characters" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-    if (additional_context && additional_context.length > 2000) {
-      return new Response(
-        JSON.stringify({ error: "additional_context must be under 2000 characters" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    const { job_title, department, additional_context } = parsed.data;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
@@ -90,12 +74,7 @@ CRITICAL: You must return a valid JSON object with EXACTLY these values (no vari
 
 IMPORTANT: Use ONLY the exact values shown above (e.g., "balanced" not "Balanced", "mixed" not "highly_collaborative").
 
-Make the persona specific and realistic for the given job title and department. Consider:
-- Typical daily challenges and workflows
-- Common tools and technologies used in this role
-- Career goals and professional development needs
-- Communication patterns with different stakeholders
-- Technical literacy and preferred learning styles`;
+Make the persona specific and realistic for the given job title and department.`;
 
     const userPrompt = `Generate a detailed persona profile for:
 
@@ -146,10 +125,8 @@ Create a realistic and useful persona that would help AI assistants better serve
       throw new Error("No content in AI response");
     }
 
-    // Parse the JSON from the response
     let personaData;
     try {
-      // Try to extract JSON from the response
       const jsonMatch = content.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         personaData = JSON.parse(jsonMatch[0]);
@@ -162,10 +139,7 @@ Create a realistic and useful persona that would help AI assistants better serve
     }
 
     return new Response(
-      JSON.stringify({
-        success: true,
-        persona: personaData,
-      }),
+      JSON.stringify({ success: true, persona: personaData }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
