@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -8,6 +9,11 @@ const corsHeaders = {
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
 };
+
+const escapeHtml = (str: string): string =>
+  str.replace(/[&<>"']/g, (char) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char] || char)
+  );
 
 interface LeadNotificationRequest {
   name: string;
@@ -18,20 +24,54 @@ interface LeadNotificationRequest {
   message?: string;
 }
 
+const RATE_LIMIT_WINDOW_MINUTES = 15;
+const RATE_LIMIT_MAX_REQUESTS = 3;
+
 const handler = async (req: Request): Promise<Response> => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const lead: LeadNotificationRequest = await req.json();
-    
-    console.log("Received lead notification request:", { 
-      name: lead.name, 
-      email: lead.email,
-      company: lead.company,
-      interest: lead.interest 
+
+    // Input validation
+    if (!lead.name || typeof lead.name !== 'string' || lead.name.trim().length === 0 || lead.name.length > 100) {
+      return new Response(JSON.stringify({ error: "Invalid name" }), { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } });
+    }
+    if (!lead.email || typeof lead.email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(lead.email) || lead.email.length > 255) {
+      return new Response(JSON.stringify({ error: "Invalid email" }), { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } });
+    }
+    if (lead.message && lead.message.length > 2000) {
+      return new Response(JSON.stringify({ error: "Message too long" }), { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } });
+    }
+
+    // Rate limiting: check recent leads from same email
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MINUTES * 60 * 1000).toISOString();
+    const { count, error: countError } = await supabaseAdmin
+      .from("leads")
+      .select("id", { count: "exact", head: true })
+      .eq("email", lead.email.trim().toLowerCase())
+      .gte("created_at", windowStart);
+
+    if (!countError && count !== null && count >= RATE_LIMIT_MAX_REQUESTS) {
+      console.warn("Rate limit exceeded for email:", lead.email.substring(0, 5) + "...");
+      return new Response(
+        JSON.stringify({ error: "Too many requests. Please try again later." }),
+        { status: 429, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    console.log("Received lead notification request:", {
+      name: lead.name.substring(0, 20),
+      email: lead.email.substring(0, 5) + "...",
+      company: lead.company?.substring(0, 20),
+      interest: lead.interest
     });
 
     // Send notification to INT Inc team
@@ -51,30 +91,30 @@ const handler = async (req: Request): Promise<Response> => {
             <table style="width: 100%; border-collapse: collapse;">
               <tr>
                 <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600; color: #6b7280; width: 120px;">Name</td>
-                <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #1f2937;">${lead.name}</td>
+                <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #1f2937;">${escapeHtml(lead.name)}</td>
               </tr>
               <tr>
                 <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600; color: #6b7280;">Email</td>
                 <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #1f2937;">
-                  <a href="mailto:${lead.email}" style="color: #6366f1;">${lead.email}</a>
+                  <a href="mailto:${escapeHtml(lead.email)}" style="color: #6366f1;">${escapeHtml(lead.email)}</a>
                 </td>
               </tr>
               ${lead.company ? `
               <tr>
                 <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600; color: #6b7280;">Company</td>
-                <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #1f2937;">${lead.company}</td>
+                <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #1f2937;">${escapeHtml(lead.company)}</td>
               </tr>
               ` : ''}
               ${lead.phone ? `
               <tr>
                 <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600; color: #6b7280;">Phone</td>
-                <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #1f2937;">${lead.phone}</td>
+                <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #1f2937;">${escapeHtml(lead.phone)}</td>
               </tr>
               ` : ''}
               ${lead.interest ? `
               <tr>
                 <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600; color: #6b7280;">Interest</td>
-                <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #1f2937;">${lead.interest}</td>
+                <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #1f2937;">${escapeHtml(lead.interest)}</td>
               </tr>
               ` : ''}
             </table>
@@ -82,7 +122,7 @@ const handler = async (req: Request): Promise<Response> => {
             ${lead.message ? `
             <h3 style="color: #1f2937; margin-top: 24px;">Message</h3>
             <div style="background: white; padding: 16px; border-radius: 8px; border: 1px solid #e5e7eb;">
-              <p style="margin: 0; color: #4b5563; line-height: 1.6;">${lead.message}</p>
+              <p style="margin: 0; color: #4b5563; line-height: 1.6;">${escapeHtml(lead.message)}</p>
             </div>
             ` : ''}
             
@@ -106,7 +146,7 @@ const handler = async (req: Request): Promise<Response> => {
       html: `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="background: linear-gradient(135deg, #6366f1, #8b5cf6); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
-            <h1 style="color: white; margin: 0; font-size: 28px;">Thank You, ${lead.name}!</h1>
+            <h1 style="color: white; margin: 0; font-size: 28px;">Thank You, ${escapeHtml(lead.name)}!</h1>
           </div>
           
           <div style="background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
