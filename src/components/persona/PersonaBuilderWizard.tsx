@@ -15,7 +15,8 @@ import {
   Target,
   Brain,
   Loader2,
-  FileUp
+  FileUp,
+  Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DocumentImportDialog } from '@/components/shared/DocumentImportDialog';
@@ -32,6 +33,8 @@ interface PersonaBuilderWizardProps {
   persona: EmployeePersona;
   onUpdate: (updates: Partial<EmployeePersona>) => Promise<void>;
   isSaving: boolean;
+  onAIAutoFill?: () => void;
+  isAutoFilling?: boolean;
 }
 
 const STEPS = [
@@ -41,7 +44,7 @@ const STEPS = [
   { id: 'ai', title: 'AI Preferences', icon: Brain, description: 'How AI should interact' },
 ];
 
-export function PersonaBuilderWizard({ persona, onUpdate, isSaving }: PersonaBuilderWizardProps) {
+export function PersonaBuilderWizard({ persona, onUpdate, isSaving, onAIAutoFill, isAutoFilling }: PersonaBuilderWizardProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [localData, setLocalData] = useState({
     name: persona.name || '',
@@ -665,8 +668,29 @@ export function PersonaBuilderWizard({ persona, onUpdate, isSaving }: PersonaBui
       {/* Current Step Content */}
       <Card>
         <CardHeader>
-          <CardTitle>{STEPS[currentStep].title}</CardTitle>
-          <CardDescription>{STEPS[currentStep].description}</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>{STEPS[currentStep].title}</CardTitle>
+              <CardDescription>{STEPS[currentStep].description}</CardDescription>
+            </div>
+            {onAIAutoFill && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onAIAutoFill}
+                disabled={isAutoFilling || !localData.job_title}
+                className="gap-2 border-primary/30 hover:border-primary/60 hover:bg-primary/5 shrink-0"
+                title={!localData.job_title ? 'Add a job title first to use AI Auto-Fill' : 'Re-generate all fields using AI'}
+              >
+                {isAutoFilling ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Sparkles className="h-3.5 w-3.5 text-primary" />
+                )}
+                <span className="hidden sm:inline">{isAutoFilling ? 'Generating...' : 'AI Auto-Fill'}</span>
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           {renderStep()}

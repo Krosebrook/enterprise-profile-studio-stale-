@@ -18,6 +18,7 @@ export default function PersonaBuilderPage() {
   const { data: persona, isLoading } = useEmployeePersona(id);
   const updatePersona = useUpdatePersona();
   const [activeTab, setActiveTab] = useState('profile');
+  const [aiDialogOpen, setAiDialogOpen] = useState(false);
 
   const handleUpdate = async (updates: Partial<EmployeePersona>) => {
     if (!id) return;
@@ -106,6 +107,8 @@ export default function PersonaBuilderPage() {
             </div>
             <AIPersonaGenerator 
               onGenerated={handleAIGenerated}
+              externalOpen={aiDialogOpen}
+              onExternalOpenChange={setAiDialogOpen}
               trigger={
                 <Button variant="outline" className="gap-2 border-primary/30 hover:border-primary/60 hover:bg-primary/5">
                   <Sparkles className="h-4 w-4 text-primary" />
@@ -138,6 +141,7 @@ export default function PersonaBuilderPage() {
               persona={persona} 
               onUpdate={handleUpdate}
               isSaving={updatePersona.isPending}
+              onAIAutoFill={() => setAiDialogOpen(true)}
             />
           </TabsContent>
 

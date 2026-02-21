@@ -27,6 +27,8 @@ import { cn } from '@/lib/utils';
 interface AIPersonaGeneratorProps {
   onGenerated: (personaData: GeneratedPersonaData) => void;
   trigger?: React.ReactNode;
+  externalOpen?: boolean;
+  onExternalOpenChange?: (open: boolean) => void;
 }
 
 export interface GeneratedPersonaData {
@@ -70,8 +72,13 @@ const DEPARTMENTS = [
   'Data Science',
 ];
 
-export function AIPersonaGenerator({ onGenerated, trigger }: AIPersonaGeneratorProps) {
-  const [open, setOpen] = useState(false);
+export function AIPersonaGenerator({ onGenerated, trigger, externalOpen, onExternalOpenChange }: AIPersonaGeneratorProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = externalOpen !== undefined ? externalOpen : internalOpen;
+  const setOpen = (v: boolean) => {
+    if (onExternalOpenChange) onExternalOpenChange(v);
+    setInternalOpen(v);
+  };
   const [isGenerating, setIsGenerating] = useState(false);
   const [step, setStep] = useState<'input' | 'generating' | 'success'>('input');
   const [jobTitle, setJobTitle] = useState('');
