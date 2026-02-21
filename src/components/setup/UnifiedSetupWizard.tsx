@@ -125,8 +125,10 @@ export function UnifiedSetupWizard() {
                   const prev = STEP_ORDER[currentIndex - 1];
                   if (prev && prev !== 'generating') goTo(prev);
                 }}
-                className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-muted transition-colors"
-                disabled={currentIndex <= 1}
+                className={cn(
+                  "flex h-9 w-9 items-center justify-center rounded-full hover:bg-muted transition-colors",
+                  currentIndex <= 1 && "opacity-30 pointer-events-none"
+                )}
               >
                 <ArrowLeft className="w-4 h-4 text-muted-foreground" />
               </button>
@@ -154,44 +156,47 @@ export function UnifiedSetupWizard() {
         )}
 
         {/* Content */}
-        <div className="flex-1 flex items-center justify-center py-8">
-          <AnimatePresence mode="wait" custom={direction}>
-            <motion.div
-              key={step}
-              custom={direction}
-              initial={{ opacity: 0, x: direction * 60 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: direction * -60 }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className="w-full"
-            >
-              {step === 'welcome' && <WelcomeStep onStart={() => goTo('personal')} />}
-              {step === 'personal' && (
-                <PersonalStep
-                  data={data}
-                  onChange={updateData}
-                  onNext={() => goTo('company')}
-                  canProceed={!!canProceedPersonal}
-                />
-              )}
-              {step === 'company' && (
-                <CompanyStep
-                  data={data}
-                  onChange={updateData}
-                  onGenerate={handleGenerate}
-                />
-              )}
-              {step === 'generating' && <GeneratingStep />}
-              {step === 'review' && (
-                <ReviewStep
-                  data={data}
-                  onFinish={handleFinish}
-                  isSaving={isSaving}
-                  onUpdateField={updatePersonaField}
-                />
-              )}
-            </motion.div>
-          </AnimatePresence>
+        <div className="flex-1 overflow-y-auto py-8">
+          <div className="flex min-h-full items-center justify-center">
+            <AnimatePresence mode="wait" custom={direction}>
+              <motion.div
+                key={step}
+                custom={direction}
+                initial={{ opacity: 0, x: direction * 60 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: direction * -60 }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                className="w-full"
+              >
+                {step === 'welcome' && <WelcomeStep onStart={() => goTo('personal')} />}
+                {step === 'personal' && (
+                  <PersonalStep
+                    data={data}
+                    onChange={updateData}
+                    onNext={() => goTo('company')}
+                    canProceed={!!canProceedPersonal}
+                  />
+                )}
+                {step === 'company' && (
+                  <CompanyStep
+                    data={data}
+                    onChange={updateData}
+                    onGenerate={handleGenerate}
+                  />
+                )}
+                {step === 'generating' && <GeneratingStep />}
+                {step === 'review' && (
+                  <ReviewStep
+                    data={data}
+                    onFinish={handleFinish}
+                    isSaving={isSaving}
+                    onUpdateField={updatePersonaField}
+                    onStartOver={() => goTo('welcome')}
+                  />
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </div>
@@ -413,11 +418,13 @@ function ReviewStep({
   onFinish,
   isSaving,
   onUpdateField,
+  onStartOver,
 }: {
   data: ReturnType<typeof useUnifiedSetup>['data'];
   onFinish: () => void;
   isSaving: boolean;
   onUpdateField: (field: string, value: string[]) => void;
+  onStartOver: () => void;
 }) {
   const profile = data.generatedProfile;
   const persona = profile?.persona;
@@ -432,63 +439,65 @@ function ReviewStep({
         </p>
       </div>
 
-      <ScrollArea className="max-h-[60vh]">
-        <div className="space-y-6 pr-4">
-          {/* Personal */}
-          <Section title="You" icon={<User className="h-4 w-4" />}>
-            <InfoRow label="Name" value={data.fullName} />
-            <InfoRow label="Title" value={data.jobTitle} />
-            <InfoRow label="Department" value={data.department} />
+      <div className="space-y-6 pr-4">
+        {/* Personal */}
+        <Section title="You" icon={<User className="h-4 w-4" />}>
+          <InfoRow label="Name" value={data.fullName} />
+          <InfoRow label="Title" value={data.jobTitle} />
+          <InfoRow label="Department" value={data.department} />
+        </Section>
+
+        {/* Skills */}
+        {persona?.skills?.length ? (
+          <Section title="Skills & Expertise" icon={<BrainCircuit className="h-4 w-4" />}>
+            <EditableTagRow label="Skills" items={persona.skills} onSave={v => onUpdateField('skills', v)} />
+            <EditableTagRow label="Expertise" items={persona.expertise_areas} onSave={v => onUpdateField('expertise_areas', v)} />
+            <EditableTagRow label="Tools" items={persona.tools_used} onSave={v => onUpdateField('tools_used', v)} />
           </Section>
+        ) : null}
 
-          {/* Skills */}
-          {persona?.skills?.length ? (
-            <Section title="Skills & Expertise" icon={<BrainCircuit className="h-4 w-4" />}>
-              <EditableTagRow label="Skills" items={persona.skills} onSave={v => onUpdateField('skills', v)} />
-              <EditableTagRow label="Expertise" items={persona.expertise_areas} onSave={v => onUpdateField('expertise_areas', v)} />
-              <EditableTagRow label="Tools" items={persona.tools_used} onSave={v => onUpdateField('tools_used', v)} />
-            </Section>
-          ) : null}
+        {/* Goals */}
+        {persona?.goals?.length ? (
+          <Section title="Goals & Challenges" icon={<Rocket className="h-4 w-4" />}>
+            <EditableTagRow label="Goals" items={persona.goals} onSave={v => onUpdateField('goals', v)} />
+            <EditableTagRow label="Pain Points" items={persona.pain_points} onSave={v => onUpdateField('pain_points', v)} />
+          </Section>
+        ) : null}
 
-          {/* Goals */}
-          {persona?.goals?.length ? (
-            <Section title="Goals & Challenges" icon={<Rocket className="h-4 w-4" />}>
-              <EditableTagRow label="Goals" items={persona.goals} onSave={v => onUpdateField('goals', v)} />
-              <EditableTagRow label="Pain Points" items={persona.pain_points} onSave={v => onUpdateField('pain_points', v)} />
-            </Section>
-          ) : null}
-
-          {/* Hats */}
-          {hats.length > 0 && (
-            <Section title={`${hats.length} Role Hats`} icon={<HardHat className="h-4 w-4" />}>
-              <div className="space-y-3">
-                {hats.map((hat, i) => (
-                  <div key={i} className="p-3 rounded-lg bg-muted/50 border border-border/50">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium text-sm">{hat.name}</span>
-                      <Badge variant="secondary" className="text-xs">{hat.time_percentage}%</Badge>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">{hat.description}</p>
+        {/* Hats */}
+        {hats.length > 0 && (
+          <Section title={`${hats.length} Role Hats`} icon={<HardHat className="h-4 w-4" />}>
+            <div className="space-y-3">
+              {hats.map((hat, i) => (
+                <div key={i} className="p-3 rounded-lg bg-muted/50 border border-border/50">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-sm">{hat.name}</span>
+                    <Badge variant="secondary" className="text-xs">{hat.time_percentage}%</Badge>
                   </div>
-                ))}
-              </div>
-            </Section>
-          )}
+                  <p className="text-xs text-muted-foreground mt-1">{hat.description}</p>
+                </div>
+              ))}
+            </div>
+          </Section>
+        )}
 
-          {/* Company */}
-          {data.companyName && (
-            <Section title="Organization" icon={<Building2 className="h-4 w-4" />}>
-              <InfoRow label="Company" value={data.companyName} />
-              <InfoRow label="Industry" value={data.industry} />
-              {profile?.company?.tagline && <InfoRow label="Tagline" value={profile.company.tagline} />}
-            </Section>
-          )}
-        </div>
-      </ScrollArea>
+        {/* Company */}
+        {data.companyName && (
+          <Section title="Organization" icon={<Building2 className="h-4 w-4" />}>
+            <InfoRow label="Company" value={data.companyName} />
+            <InfoRow label="Industry" value={data.industry} />
+            {profile?.company?.tagline && <InfoRow label="Tagline" value={profile.company.tagline} />}
+          </Section>
+        )}
+      </div>
 
       <Separator />
 
-      <div className="flex justify-end gap-3">
+      <div className="flex justify-between gap-3">
+        <Button variant="outline" onClick={onStartOver} disabled={isSaving} className="gap-2">
+          <ArrowLeft className="h-4 w-4" />
+          Start Over
+        </Button>
         <Button
           size="lg"
           onClick={onFinish}
