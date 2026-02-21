@@ -4,6 +4,17 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserRole } from '@/hooks/useUserRole';
 import { LogOut, LayoutDashboard, BookOpen, BarChart3, Brain, Users, Bot, FileText, Wand2 } from 'lucide-react';
+import { useState } from 'react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +31,7 @@ export function Navbar() {
   const { user, signOut } = useAuth();
   const { role, isAdmin } = useUserRole();
   const navigate = useNavigate();
+  const [showRerunConfirm, setShowRerunConfirm] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
@@ -108,16 +120,7 @@ export function Navbar() {
                     </div>
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={async () => {
-                      if (!user) return;
-                      await supabase
-                        .from('user_onboarding_preferences')
-                        .update({ onboarding_completed: false })
-                        .eq('user_id', user.id);
-                      navigate('/setup');
-                    }}
-                  >
+                  <DropdownMenuItem onClick={() => setShowRerunConfirm(true)}>
                     <Wand2 className="mr-2 h-4 w-4" />
                     Re-run Setup Wizard
                   </DropdownMenuItem>
@@ -128,6 +131,31 @@ export function Navbar() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+              <AlertDialog open={showRerunConfirm} onOpenChange={setShowRerunConfirm}>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Re-run Setup Wizard?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will regenerate your enterprise profile, AI personas, and dashboard configuration. Any customizations you've made may be overwritten.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={async () => {
+                        if (!user) return;
+                        await supabase
+                          .from('user_onboarding_preferences')
+                          .update({ onboarding_completed: false })
+                          .eq('user_id', user.id);
+                        navigate('/setup');
+                      }}
+                    >
+                      Continue
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </>
           ) : (
             <>
