@@ -40,6 +40,20 @@ serve(async (req) => {
       );
     }
 
+    // Input length limits to prevent excessive token usage
+    if (job_title.length > 200 || department.length > 200) {
+      return new Response(
+        JSON.stringify({ error: "job_title and department must be under 200 characters" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    if (additional_context && additional_context.length > 2000) {
+      return new Response(
+        JSON.stringify({ error: "additional_context must be under 2000 characters" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");

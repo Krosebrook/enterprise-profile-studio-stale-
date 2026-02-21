@@ -127,6 +127,39 @@ serve(async (req) => {
     }
 
     const { templateType, prompt, context } = await req.json() as GenerationRequest;
+
+    // Input length limits to prevent excessive token usage
+    if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
+      return new Response(
+        JSON.stringify({ error: "prompt is required" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    if (prompt.length > 3000) {
+      return new Response(
+        JSON.stringify({ error: "prompt must be under 3000 characters" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    if (context?.companyName && context.companyName.length > 200) {
+      return new Response(
+        JSON.stringify({ error: "companyName must be under 200 characters" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    if (context?.industry && context.industry.length > 200) {
+      return new Response(
+        JSON.stringify({ error: "industry must be under 200 characters" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    if (context?.audience && context.audience.length > 500) {
+      return new Response(
+        JSON.stringify({ error: "audience must be under 500 characters" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
     if (!LOVABLE_API_KEY) {

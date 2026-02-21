@@ -38,6 +38,33 @@ serve(async (req) => {
     }
 
     const { usagePatterns, currentPlatforms }: RecommendationRequest = await req.json();
+
+    // Input length limits to prevent excessive token usage
+    if (usagePatterns.primaryUseCase && usagePatterns.primaryUseCase.length > 500) {
+      return new Response(
+        JSON.stringify({ error: "primaryUseCase must be under 500 characters" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    if (usagePatterns.industryFocus && usagePatterns.industryFocus.length > 200) {
+      return new Response(
+        JSON.stringify({ error: "industryFocus must be under 200 characters" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    if (usagePatterns.priorityCapabilities && usagePatterns.priorityCapabilities.length > 20) {
+      return new Response(
+        JSON.stringify({ error: "priorityCapabilities must have at most 20 items" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    if (currentPlatforms && currentPlatforms.length > 20) {
+      return new Response(
+        JSON.stringify({ error: "currentPlatforms must have at most 20 items" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
     if (!LOVABLE_API_KEY) {
