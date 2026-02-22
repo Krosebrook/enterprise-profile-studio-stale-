@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserRole } from '@/hooks/useUserRole';
-import { LogOut, LayoutDashboard, BookOpen, BarChart3, Brain, Users, Bot, FileText, Wand2 } from 'lucide-react';
+import { LogOut, LayoutDashboard, BookOpen, BarChart3, Brain, Users, Bot, FileText, Wand2, Menu, MessageSquare, Settings } from 'lucide-react';
 import { useState } from 'react';
 import {
   AlertDialog,
@@ -22,16 +22,34 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { KeyboardShortcutsHelp } from '@/components/ui/KeyboardShortcutsHelp';
 import { Badge } from '@/components/ui/badge';
+
+const navItems = [
+  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/knowledge', icon: BookOpen, label: 'Knowledge' },
+  { to: '/ai-explorer', icon: Brain, label: 'AI Explorer' },
+  { to: '/ai-playbooks', icon: FileText, label: 'Playbooks' },
+  { to: '/ai-chat', icon: MessageSquare, label: 'AI Chat' },
+  { to: '/analytics', icon: BarChart3, label: 'Analytics' },
+  { to: '/personas', icon: Bot, label: 'Personas' },
+];
 
 export function Navbar() {
   const { user, signOut } = useAuth();
   const { role, isAdmin } = useUserRole();
   const navigate = useNavigate();
   const [showRerunConfirm, setShowRerunConfirm] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
@@ -52,53 +70,91 @@ export function Navbar() {
         <nav className="flex items-center gap-1">
           {user ? (
             <>
-              <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground" asChild>
-                <Link to="/dashboard">
-                  <LayoutDashboard className="h-4 w-4" />
-                  <span className="hidden sm:inline">Dashboard</span>
-                </Link>
-              </Button>
-              <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground" asChild>
-                <Link to="/knowledge">
-                  <BookOpen className="h-4 w-4" />
-                  <span className="hidden sm:inline">Knowledge</span>
-                </Link>
-              </Button>
-              <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground" asChild>
-                <Link to="/ai-explorer">
-                  <Brain className="h-4 w-4" />
-                  <span className="hidden sm:inline">AI Explorer</span>
-                </Link>
-              </Button>
-              <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground" asChild>
-                <Link to="/ai-playbooks">
-                  <FileText className="h-4 w-4" />
-                  <span className="hidden sm:inline">Playbooks</span>
-                </Link>
-              </Button>
-              <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground" asChild>
-                <Link to="/analytics">
-                  <BarChart3 className="h-4 w-4" />
-                  <span className="hidden sm:inline">Analytics</span>
-                </Link>
-              </Button>
-              <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground" asChild>
-                <Link to="/personas">
-                  <Bot className="h-4 w-4" />
-                  <span className="hidden sm:inline">Personas</span>
-                </Link>
-              </Button>
-              {isAdmin && (
-                <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground" asChild>
-                  <Link to="/team">
-                    <Users className="h-4 w-4" />
-                    <span className="hidden sm:inline">Team</span>
-                  </Link>
-                </Button>
-              )}
-              <div className="ml-1 h-6 w-px bg-border" />
-              <KeyboardShortcutsHelp />
-              <ThemeToggle />
+              {/* Desktop Nav */}
+              <div className="hidden lg:flex items-center gap-1">
+                {navItems.map(item => (
+                  <Button key={item.to} variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground" asChild>
+                    <Link to={item.to}>
+                      <item.icon className="h-4 w-4" />
+                      <span className="hidden xl:inline">{item.label}</span>
+                    </Link>
+                  </Button>
+                ))}
+                {isAdmin && (
+                  <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground" asChild>
+                    <Link to="/team">
+                      <Users className="h-4 w-4" />
+                      <span className="hidden xl:inline">Team</span>
+                    </Link>
+                  </Button>
+                )}
+              </div>
+
+              {/* Mobile Hamburger */}
+              <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="lg:hidden">
+                    <Menu className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-72">
+                  <SheetHeader>
+                    <SheetTitle className="flex items-baseline gap-0.5 font-display text-xl">
+                      <span>int</span>
+                      <span className="the-dot" />
+                      <span>nc</span>
+                    </SheetTitle>
+                  </SheetHeader>
+                  <nav className="mt-6 flex flex-col gap-1">
+                    {navItems.map(item => (
+                      <Button
+                        key={item.to}
+                        variant="ghost"
+                        className="justify-start gap-3 text-muted-foreground hover:text-foreground"
+                        asChild
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        <Link to={item.to}>
+                          <item.icon className="h-4 w-4" />
+                          {item.label}
+                        </Link>
+                      </Button>
+                    ))}
+                    {isAdmin && (
+                      <Button variant="ghost" className="justify-start gap-3 text-muted-foreground hover:text-foreground" asChild onClick={() => setMobileOpen(false)}>
+                        <Link to="/team">
+                          <Users className="h-4 w-4" />
+                          Team
+                        </Link>
+                      </Button>
+                    )}
+                    <div className="my-2 h-px bg-border" />
+                    <Button variant="ghost" className="justify-start gap-3 text-muted-foreground hover:text-foreground" asChild onClick={() => setMobileOpen(false)}>
+                      <Link to="/settings">
+                        <Settings className="h-4 w-4" />
+                        Settings
+                      </Link>
+                    </Button>
+                    <Button variant="ghost" className="justify-start gap-3 text-muted-foreground hover:text-foreground" asChild onClick={() => setMobileOpen(false)}>
+                      <Link to="/setup">
+                        <Wand2 className="h-4 w-4" />
+                        Setup Wizard
+                      </Link>
+                    </Button>
+                    <div className="my-2 h-px bg-border" />
+                    <Button variant="ghost" className="justify-start gap-3 text-destructive hover:text-destructive" onClick={() => { setMobileOpen(false); handleSignOut(); }}>
+                      <LogOut className="h-4 w-4" />
+                      Sign out
+                    </Button>
+                  </nav>
+                </SheetContent>
+              </Sheet>
+
+              <div className="hidden lg:flex items-center gap-1">
+                <div className="ml-1 h-6 w-px bg-border" />
+                <KeyboardShortcutsHelp />
+                <ThemeToggle />
+              </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-9 w-9 rounded-full">
@@ -120,6 +176,10 @@ export function Navbar() {
                     </div>
                   </div>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate('/settings')}>
+                    <Settings className="mr-2 h-4 w-4" />
+                    Settings
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setShowRerunConfirm(true)}>
                     <Wand2 className="mr-2 h-4 w-4" />
                     Re-run Setup Wizard

@@ -12,6 +12,7 @@ import { Loader2, BarChart3, Sparkles, Command, Wand2 } from 'lucide-react';
 import { StaggerContainer, StaggerItem, FadeIn } from '@/components/ui/animations';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { FeatureTour } from '@/components/dashboard/FeatureTour';
+import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 import { AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import {
@@ -174,27 +175,38 @@ export default function DashboardPage() {
             </FadeIn>
           )}
 
-          {/* Stats Footer */}
-          {profiles && profiles.length > 0 && (
-            <FadeIn delay={0.2}>
-              <div className="mt-8 pt-6 border-t border-border/40">
-                <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <span className="the-dot" />
-                    <span>{profiles.length} profile{profiles.length !== 1 ? 's' : ''}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-success" />
-                    <span>{profiles.filter(p => p.status === 'published').length} published</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-warning" />
-                    <span>{profiles.filter(p => p.status === 'draft').length} drafts</span>
+          {/* Activity Feed + Stats */}
+          <div className="mt-8 grid gap-6 lg:grid-cols-3">
+            <FadeIn delay={0.2} className="lg:col-span-2">
+              {profiles && profiles.length > 0 && (
+                <div className="pt-6 border-t border-border/40">
+                  <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      <span className="the-dot" />
+                      <span>{profiles.length} profile{profiles.length !== 1 ? 's' : ''}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-success" />
+                      <span>{profiles.filter(p => p.status === 'published').length} published</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-warning" />
+                      <span>{profiles.filter(p => p.status === 'draft').length} drafts</span>
+                    </div>
                   </div>
                 </div>
+              )}
+            </FadeIn>
+            <FadeIn delay={0.3}>
+              <div className="rounded-xl border border-border/50 bg-card p-4">
+                <h3 className="font-display text-sm font-semibold mb-3 flex items-center gap-2">
+                  <span className="the-dot" />
+                  Recent Activity
+                </h3>
+                <ActivityFeed />
               </div>
             </FadeIn>
-          )}
+          </div>
         </div>
       </main>
 
