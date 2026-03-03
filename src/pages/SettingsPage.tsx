@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { useAuth } from '@/contexts/AuthContext';
@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
-import { Loader2, User, Bell, Shield, Upload } from 'lucide-react';
+import { Loader2, User, Bell, Shield, Upload, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { FadeIn } from '@/components/ui/animations';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -173,8 +173,29 @@ export default function SettingsPage() {
               </Card>
             </FadeIn>
 
-            {/* Security */}
+            {/* Data Export */}
             <FadeIn delay={0.2}>
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Download className="h-5 w-5 text-primary" />
+                    <CardTitle>Data Export</CardTitle>
+                  </div>
+                  <CardDescription>Download your data as CSV or JSON</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to="/settings/export">
+                      <Download className="mr-2 h-4 w-4" />
+                      Open Data Export
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </FadeIn>
+
+            {/* Security */}
+            <FadeIn delay={0.25}>
               <Card>
                 <CardHeader>
                   <div className="flex items-center gap-2">

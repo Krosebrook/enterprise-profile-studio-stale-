@@ -43,6 +43,7 @@ const InstallPage = lazy(() => import(/* webpackChunkName: "install" */ '@/pages
 const SetupPage = lazy(() => import(/* webpackChunkName: "setup" */ '@/pages/SetupPage'));
 const AIChatPage = lazy(() => import(/* webpackChunkName: "ai-chat" */ '@/pages/AIChatPage'));
 const SettingsPage = lazy(() => import(/* webpackChunkName: "settings" */ '@/pages/SettingsPage'));
+const DataExportPage = lazy(() => import(/* webpackChunkName: "data-export" */ '@/pages/DataExportPage'));
 const NotFound = lazy(() => import(/* webpackChunkName: "notfound" */ '@/pages/NotFound'));
 
 // Helper to wrap lazy components with Suspense and PageTransition
@@ -89,6 +90,7 @@ export function AnimatedRoutes() {
         <Route path="/setup" element={<LazyRoute Component={SetupPage} />} />
         <Route path="/ai-chat" element={<LazyRoute Component={AIChatPage} />} />
         <Route path="/settings" element={<LazyRoute Component={SettingsPage} />} />
+        <Route path="/settings/export" element={<LazyRoute Component={DataExportPage} />} />
         <Route path="*" element={<LazyRoute Component={NotFound} />} />
       </Routes>
     </AnimatePresence>
