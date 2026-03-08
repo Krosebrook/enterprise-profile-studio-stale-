@@ -118,6 +118,7 @@ export function AuthForm({ mode }: AuthFormProps) {
                   className="pl-10 border-border/60 focus:border-primary"
                 />
               </div>
+              {mode === 'signup' && <PasswordStrengthIndicator password={password} />}
             </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-4 pt-2">
