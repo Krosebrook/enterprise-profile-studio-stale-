@@ -39,8 +39,7 @@ export function AuthForm({ mode }: AuthFormProps) {
         if (error) {
           toast.error(error.message);
         } else {
-          toast.success('Account created successfully!');
-          navigate('/dashboard');
+          toast.success('Check your email to confirm your account before signing in.');
         }
       }
     } finally {
